@@ -14,8 +14,14 @@ export type Place = {
   lat: number
 }
 
-// Photon kennt kein Arabisch als Sprache – "default" liefert die örtlichen (oft arabischen) Namen
-const PHOTON_LANGUAGES: Record<string, string> = { de: 'de', en: 'en', ar: 'default' }
+// Welche Namen Photon liefern soll:
+// - Deutsch → englische Namen: deutsche Namen gibt es in Dubai fast nie (sonst käme der arabische Name)
+// - Arabisch → "default" = örtliche (meist arabische) Namen; Photon kennt Arabisch nicht direkt
+const PHOTON_LANGUAGES: Record<string, string> = { de: 'en', en: 'en', ar: 'default' }
+
+// Arabische Schrift erkennen (Unicode-Bereich U+0600 bis U+06FF).
+// Für Deutsch/Englisch werden arabische Namen ausgeblendet.
+const ARABIC_SCRIPT = /[؀-ۿ]/
 
 type PhotonFeature = {
   geometry: { coordinates: [number, number] }
@@ -35,13 +41,16 @@ export async function searchPlaces(query: string, language: string, signal: Abor
   if (!response.ok) throw new Error(`Photon: ${response.status}`)
   const data: { features: PhotonFeature[] } = await response.json()
 
+  const latinOnly = language !== 'ar'
+
   const places = data.features.filter(isUsefulDestination).map((feature): Place => {
     const p = feature.properties
     const [lon, lat] = feature.geometry.coordinates
     const name = p.name ?? [p.street, p.housenumber].filter(Boolean).join(' ')
-    // Zusatzinfo ohne Wiederholungen und ohne den Namen selbst
+    // Zusatzinfo ohne Wiederholungen, ohne den Namen selbst (und bei DE/EN ohne arabische Teile)
     const detail = [...new Set([p.street, p.district, p.city])]
-      .filter((part) => part && part !== name)
+      .filter((part): part is string => !!part && part !== name)
+      .filter((part) => !(latinOnly && ARABIC_SCRIPT.test(part)))
       .join(', ')
     return { id: `${p.osm_type}${p.osm_id}`, name: name || '–', detail, lon, lat }
   })
@@ -49,6 +58,7 @@ export async function searchPlaces(query: string, language: string, signal: Abor
   // Doppelte Treffer (gleicher Name + gleiche Zusatzinfo) nur einmal zeigen
   const seen = new Set<string>()
   return places
+    .filter((place) => !(latinOnly && ARABIC_SCRIPT.test(place.name)))
     .filter((place) => {
       const key = `${place.name}|${place.detail}`
       if (seen.has(key)) return false
