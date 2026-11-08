@@ -177,3 +177,92 @@
     box-shadow: var(--shadow);
   }
 }
+
+/* Blitzer-Warnung unter dem Abbiege-Banner */
+.nav-camera {
+  position: absolute;
+  z-index: 6;
+  top: calc(max(var(--space), env(safe-area-inset-top)) + 86px);
+  inset-inline: var(--space);
+  width: fit-content;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: #b3261e;
+  color: #ffffff;
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.nav-camera svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+/* Tempolimit-Schild und eigene Geschwindigkeit (links über der Fußleiste) */
+.nav-speed {
+  position: absolute;
+  z-index: 6;
+  bottom: calc(100px + env(safe-area-inset-bottom));
+  inset-inline-start: var(--space);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-speed__limit {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 5px solid #d32f2f;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #1c1c1e;
+  font-size: 18px;
+  font-weight: 800;
+  box-shadow: var(--shadow);
+}
+
+.nav-speed__current {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow);
+  line-height: 1;
+}
+
+.nav-speed__current strong {
+  font-size: 18px;
+}
+
+.nav-speed__current span {
+  font-size: 10px;
+  color: var(--color-text-muted);
+}
+
+.nav-speed__current--over {
+  background: #d32f2f;
+  color: #ffffff;
+}
+
+.nav-speed__current--over span {
+  color: #ffffff;
+}
+
+@media (min-width: 768px) {
+  .nav-speed {
+    bottom: calc(var(--space) + 12px);
+  }
+}

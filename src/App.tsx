@@ -10,13 +10,16 @@ import { PlaceCard } from './components/PlaceCard'
 import { PlaceMarker } from './components/PlaceMarker'
 import { RoutePanel } from './components/RoutePanel'
 import { SearchBox } from './components/SearchBox'
+import { SpeedCameraLayer } from './components/SpeedCameraLayer'
 import { Toast } from './components/Toast'
 import type { Place } from './services/geocoding'
 import type { LonLat, Route } from './services/routing'
+import { useSettings } from './settings'
 
 function App() {
   // t('schlüssel') liefert den Text in der aktuellen Sprache
   const { t } = useTranslation()
+  const settings = useSettings()
   // Die fertige Karte (erst nach dem Laden vorhanden)
   const [map, setMap] = useState<MapLibreMap | null>(null)
   // Aktuelle Hinweis-Meldung (Übersetzungsschlüssel) oder null = keine
@@ -58,6 +61,7 @@ function App() {
     <>
       <MapView onNotice={setNotice} onMapReady={setMap} onLocation={setUserLocation} />
       {map && place && <PlaceMarker map={map} place={place} />}
+      {map && settings.speedCameras && <SpeedCameraLayer map={map} />}
       {map && navigation ? (
         <NavigationView
           map={map}

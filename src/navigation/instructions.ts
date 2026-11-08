@@ -15,6 +15,8 @@ export type ManeuverIcon =
   | 'arrive'
 
 const ARABIC_SCRIPT = /[؀-ۿ]/
+// Deutsche Anweisungen, die mit einem Nomen beginnen (bleiben im Satz großgeschrieben)
+const GERMAN_NOUN_START = /^(Ausfahrt|Auffahrt|Kreisverkehr|Ziel|Zwischenstopp)/
 
 // Richtung aus dem OSRM-"modifier" (z. B. "slight left") → Schlüssel
 const DIRECTIONS: Record<string, Exclude<ManeuverIcon, 'roundabout' | 'arrive'>> = {
@@ -99,7 +101,9 @@ export function announcementText(step: RouteStep, meters: number, t: TFunction, 
     return t(step.isFinal ? 'nav.arriveIn' : 'nav.waypointIn', { distance: distanceText })
   }
   let instruction = instructionText(step, t, language)
-  // Im Satz klein weiterschreiben: "In 300 Metern rechts abbiegen" (gilt nicht für Arabisch)
-  if (language !== 'ar') instruction = instruction.charAt(0).toLowerCase() + instruction.slice(1)
+  // Im Satz klein weiterschreiben: "In 300 Metern rechts abbiegen" (gilt nicht für Arabisch).
+  // Deutsche Nomen bleiben groß: "In 2 Kilometern Ausfahrt nehmen".
+  const germanNoun = language === 'de' && GERMAN_NOUN_START.test(instruction)
+  if (language !== 'ar' && !germanNoun) instruction = instruction.charAt(0).toLowerCase() + instruction.slice(1)
   return t('nav.inDistance', { distance: distanceText, instruction })
 }

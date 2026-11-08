@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "generate-pwa-assets": "pwa-assets-generator"
+    "generate-pwa-assets": "pwa-assets-generator",
+    "fetch-osm-data": "node scripts/fetch-osm-data.mjs"
   },
   "dependencies": {
     "i18next": "^27.0.1",

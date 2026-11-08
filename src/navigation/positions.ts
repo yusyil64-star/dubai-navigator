@@ -5,6 +5,7 @@ import { cumulativeDistances, pointAlong } from './geo'
 export type Fix = {
   position: LonLat
   accuracy: number // Genauigkeit in Metern
+  speed: number | null // Geschwindigkeit in m/s (falls das Gerät sie kennt)
 }
 
 // Echtes GPS. Gibt eine Funktion zum Beenden zurück.
@@ -14,7 +15,12 @@ export function watchRealPosition(onFix: (fix: Fix) => void, onError: (code: num
     return () => {}
   }
   const id = navigator.geolocation.watchPosition(
-    (pos) => onFix({ position: [pos.coords.longitude, pos.coords.latitude], accuracy: pos.coords.accuracy }),
+    (pos) =>
+      onFix({
+        position: [pos.coords.longitude, pos.coords.latitude],
+        accuracy: pos.coords.accuracy,
+        speed: pos.coords.speed,
+      }),
     (err) => onError(err.code),
     { enableHighAccuracy: true, maximumAge: 1000, timeout: 20000 },
   )
@@ -29,7 +35,8 @@ export function simulatePosition(coords: LonLat[], onFix: (fix: Fix) => void) {
   const cum = cumulativeDistances(coords)
   const total = cum[cum.length - 1]
   let along = 0
-  const emit = () => onFix({ position: pointAlong(coords, cum, along).point, accuracy: 5 })
+  const emit = () =>
+    onFix({ position: pointAlong(coords, cum, along).point, accuracy: 5, speed: along < total ? DEMO_SPEED : 0 })
   emit()
   const timer = setInterval(() => {
     along = Math.min(total, along + (DEMO_SPEED * DEMO_TICK_MS) / 1000)

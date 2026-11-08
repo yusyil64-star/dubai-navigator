@@ -4,21 +4,13 @@ import { Marker, type Map as MapLibreMap } from 'maplibre-gl'
 import { instructionText, maneuverIcon } from '../navigation/instructions'
 import { useNavigation } from '../navigation/useNavigation'
 import type { Route } from '../services/routing'
+import { updateSettings, useSettings } from '../settings'
 import { formatClock, formatDistance, formatDuration } from '../utils/format'
 import { ManeuverArrow } from './ManeuverArrow'
 import { RouteLine } from './RouteLine'
 import './NavigationView.css'
 
-const VOICE_KEY = 'dubai-navigator.voice'
 const LOCATION_ERRORS: Record<number, string> = { 1: 'location.denied', 3: 'location.timeout' }
-
-function loadVoicePreference() {
-  try {
-    return localStorage.getItem(VOICE_KEY) !== 'off'
-  } catch {
-    return true
-  }
-}
 
 type NavigationViewProps = {
   map: MapLibreMap
@@ -32,24 +24,16 @@ type NavigationViewProps = {
 export function NavigationView({ map, route: initialRoute, simulate, onExit, onNotice }: NavigationViewProps) {
   const { t, i18n } = useTranslation()
   const language = i18n.resolvedLanguage ?? 'en'
-  const [voiceEnabled, setVoiceEnabled] = useState(loadVoicePreference)
+  const settings = useSettings()
   const [following, setFollowing] = useState(true)
   const { route, progress, status } = useNavigation(initialRoute, {
     simulate,
-    voiceEnabled,
+    voiceEnabled: settings.voice,
+    cameraWarnings: settings.speedCameras,
     onLocationError: (code) => onNotice(LOCATION_ERRORS[code] ?? 'location.unavailable'),
   })
 
-  function toggleVoice() {
-    setVoiceEnabled((on) => {
-      try {
-        localStorage.setItem(VOICE_KEY, on ? 'off' : 'on')
-      } catch {
-        // Speicher nicht verfügbar – Einstellung gilt nur bis zum Neuladen
-      }
-      return !on
-    })
-  }
+  const toggleVoice = () => updateSettings({ voice: !settings.voice })
 
   // Während der Navigation die normalen Kartenknöpfe ausblenden
   useEffect(() => {
@@ -113,6 +97,40 @@ export function NavigationView({ map, route: initialRoute, simulate, onExit, onN
         </div>
       </div>
 
+      {status === 'active' && progress?.camera && (
+        <div className="nav-camera" role="alert">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h11l3-2v10l-3-2H4zM7 13v5h3v-5" />
+          </svg>
+          <span>
+            {t('nav.camera')} · {formatDistance(progress.camera.distance, language)}
+            {progress.camera.speed && ` · ${progress.camera.speed} km/h`}
+          </span>
+        </div>
+      )}
+
+      {progress && (progress.speedLimit || progress.speed !== null) && status !== 'arrived' && (
+        <div className="nav-speed">
+          {progress.speedLimit && (
+            <div className="nav-speed__limit" aria-label={t('nav.speedLimit', { speed: progress.speedLimit })}>
+              {progress.speedLimit}
+            </div>
+          )}
+          {progress.speed !== null && (
+            <div
+              className={
+                progress.speedLimit && progress.speed > progress.speedLimit
+                  ? 'nav-speed__current nav-speed__current--over'
+                  : 'nav-speed__current'
+              }
+            >
+              <strong>{progress.speed}</strong>
+              <span>km/h</span>
+            </div>
+          )}
+        </div>
+      )}
+
       {!following && (
         <button type="button" className="nav-recenter" onClick={() => setFollowing(true)}>
           {t('nav.recenter')}
@@ -136,12 +154,12 @@ export function NavigationView({ map, route: initialRoute, simulate, onExit, onN
           type="button"
           className="nav-footer__icon"
           onClick={toggleVoice}
-          aria-pressed={voiceEnabled}
-          aria-label={t(voiceEnabled ? 'nav.mute' : 'nav.unmute')}
+          aria-pressed={settings.voice}
+          aria-label={t(settings.voice ? 'nav.mute' : 'nav.unmute')}
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M4 9v6h4l5 4V5L8 9z" />
-            {voiceEnabled ? (
+            {settings.voice ? (
               <path d="M16 8.5a4.5 4.5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12" className="stroke" />
             ) : (
               <path d="M16 9l5 6M21 9l-5 6" className="stroke" />

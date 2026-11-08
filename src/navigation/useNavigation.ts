@@ -4,7 +4,16 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getRoute, type LonLat, type Route, type RouteStep } from '../services/routing'
 import { bearing, cumulativeDistances, projectOnLine } from './geo'
-import { announcementText, instructionText } from './instructions'
+import { announcementText, instructionText, spokenDistance } from './instructions'
+import {
+  camerasOnRoute,
+  loadSpeedCameras,
+  loadSpeedLimits,
+  speedLimitAt,
+  type Camera,
+  type CameraOnRoute,
+  type SpeedLimitIndex,
+} from './roadData'
 import { simulatePosition, watchRealPosition, type Fix } from './positions'
 import { speak, stopSpeaking } from './voice'
 
@@ -13,6 +22,8 @@ const OFF_ROUTE_METERS = 40 // weiter weg von der Route = abgekommen
 const OFF_ROUTE_FIXES = 3 // so viele Positionen hintereinander, bevor neu berechnet wird
 const REROUTE_PAUSE_MS = 10000 // höchstens alle 10 s neu berechnen (Fair-Use des Routendienstes)
 const ARRIVED_METERS = 25
+const CAMERA_SHOW_METERS = 600 // Blitzer-Hinweis ab dieser Entfernung anzeigen
+const CAMERA_SAY_METERS = 400 // … und einmal ansagen
 
 export type NavProgress = {
   position: LonLat // Position, auf die Route "eingerastet", wenn nah genug
@@ -22,6 +33,9 @@ export type NavProgress = {
   remainingDistance: number
   remainingDuration: number
   arrivalTime: number // geschätzte Ankunft (Zeitstempel)
+  speed: number | null // aktuelle Geschwindigkeit in km/h
+  speedLimit: number | null // Tempolimit in km/h (falls in OpenStreetMap bekannt)
+  camera: { distance: number; speed: number | null } | null // nächster Blitzer voraus
 }
 
 export type NavStatus = 'active' | 'rerouting' | 'arrived'
@@ -29,10 +43,14 @@ export type NavStatus = 'active' | 'rerouting' | 'arrived'
 type Options = {
   simulate: boolean
   voiceEnabled: boolean
+  cameraWarnings: boolean
   onLocationError: (code: number) => void
 }
 
-export function useNavigation(initialRoute: Route, { simulate, voiceEnabled, onLocationError }: Options) {
+export function useNavigation(
+  initialRoute: Route,
+  { simulate, voiceEnabled, cameraWarnings, onLocationError }: Options,
+) {
   const { t, i18n } = useTranslation()
   const language = i18n.resolvedLanguage ?? 'en'
   const [route, setRoute] = useState(initialRoute)
@@ -40,9 +58,9 @@ export function useNavigation(initialRoute: Route, { simulate, voiceEnabled, onL
   const [status, setStatus] = useState<NavStatus>('active')
 
   // Immer die aktuellen Einstellungen verwenden (z. B. Ton aus, Sprache gewechselt)
-  const settings = useRef({ voiceEnabled, language, t, onLocationError })
+  const settings = useRef({ voiceEnabled, cameraWarnings, language, t, onLocationError })
   useEffect(() => {
-    settings.current = { voiceEnabled, language, t, onLocationError }
+    settings.current = { voiceEnabled, cameraWarnings, language, t, onLocationError }
     if (!voiceEnabled) stopSpeaking()
   })
 
@@ -58,6 +76,23 @@ export function useNavigation(initialRoute: Route, { simulate, voiceEnabled, onL
       arrived: false,
       started: false,
       announced: new Map<number, number>(), // Schritt → kleinste bereits angesagte Stufe
+      allCameras: [] as Camera[],
+      cameras: [] as CameraOnRoute[], // Blitzer an der aktuellen Route
+      camerasSaid: new Set<number>(),
+      limits: null as SpeedLimitIndex | null,
+    }
+
+    // Blitzer und Tempolimits gibt es nur fürs Auto
+    if (initialRoute.profile === 'car') {
+      loadSpeedCameras()
+        .then((cameras) => {
+          nav.allCameras = cameras
+          nav.cameras = camerasOnRoute(cameras, nav.route.coordinates, nav.cum)
+        })
+        .catch(() => {})
+      loadSpeedLimits()
+        .then((index) => (nav.limits = index))
+        .catch(() => {})
     }
     const controller = new AbortController()
 
@@ -77,6 +112,8 @@ export function useNavigation(initialRoute: Route, { simulate, voiceEnabled, onL
           nav.hint = 0
           nav.announced = new Map()
           nav.started = false
+          nav.cameras = camerasOnRoute(nav.allCameras, newRoute.coordinates, nav.cum)
+          nav.camerasSaid = new Set()
           setRoute(newRoute)
         })
         .catch(() => {}) // nächster Versuch nach der Pause
@@ -125,9 +162,29 @@ export function useNavigation(initialRoute: Route, { simulate, voiceEnabled, onL
 
       const nextIndex = Math.min(proj.index + 1, r.coordinates.length - 1)
       const remainingDuration = total > 0 ? (r.durationSeconds * remainingDistance) / total : 0
+      const heading = bearing(r.coordinates[proj.index], r.coordinates[nextIndex])
+      const position = onRoute ? proj.point : fix.position
+
+      // Nächster Blitzer voraus (falls eingeschaltet)
+      const cameraAhead = settings.current.cameraWarnings
+        ? nav.cameras.find((c) => c.along > proj.along - 5 && c.along - proj.along <= CAMERA_SHOW_METERS)
+        : undefined
+      const camera = cameraAhead
+        ? { distance: Math.max(0, cameraAhead.along - proj.along), speed: cameraAhead.speed }
+        : null
+      // Jeden Blitzer nur einmal ansagen
+      if (cameraAhead && camera && camera.distance <= CAMERA_SAY_METERS && !nav.camerasSaid.has(cameraAhead.along)) {
+        nav.camerasSaid.add(cameraAhead.along)
+        const { t: tr, language: lang } = settings.current
+        say(tr('nav.cameraAhead', { distance: spokenDistance(camera.distance, tr, lang) }))
+      }
+
       setProgress({
-        position: onRoute ? proj.point : fix.position,
-        heading: bearing(r.coordinates[proj.index], r.coordinates[nextIndex]),
+        position,
+        heading,
+        speed: fix.speed === null ? null : Math.round(fix.speed * 3.6),
+        speedLimit: nav.limits ? speedLimitAt(nav.limits, position, heading) : null,
+        camera,
         nextStep,
         distanceToNext,
         remainingDistance,

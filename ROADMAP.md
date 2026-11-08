@@ -33,11 +33,12 @@ Legende: ✅ fertig · 🔨 in Arbeit · ⬜ geplant · 💰 braucht Geld/Konto/
 - ✅ Zwischenstopps hinzufügen und entfernen
 - ✅ Zu Fuß und mit dem Fahrrad
 
-## Schritt 3 – Blitzer und Tempolimit
+## Schritt 3 – Blitzer und Tempolimit ✅
 
-- ⬜ Feste Blitzer aus OpenStreetMap (einmal geladen, in der App gespeichert)
-- ⬜ Warnung vor Blitzern während der Navigation (abschaltbar)
-- ⬜ Tempolimit anzeigen, wo in OpenStreetMap vorhanden
+- ✅ Feste Blitzer aus OpenStreetMap (659 Stück, einmal geladen, in der App gespeichert)
+- ✅ Warnung vor Blitzern während der Navigation (Anzeige + Ansage)
+- ✅ Tempolimit anzeigen, wo in OpenStreetMap vorhanden, plus eigene Geschwindigkeit (rot bei zu schnell)
+- Daten aktualisieren: npm run fetch-osm-data
 - Hinweis: In Deutschland ist das Nutzen von Blitzer-Warnern während der Fahrt verboten.
 
 ## Schritt 4 – Persönliches und Einstellungen

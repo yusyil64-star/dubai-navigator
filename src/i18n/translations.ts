@@ -71,6 +71,9 @@ export const translations = {
         simulation: 'Simulation',
         arrived: 'Du hast dein Ziel erreicht.',
         waitingForGps: 'Warte auf GPS-Signal …',
+        camera: 'Blitzer',
+        cameraAhead: 'Achtung, Blitzer in {{distance}}',
+        speedLimit: 'Tempolimit {{speed}} km/h',
       },
       location: {
         denied: 'Standort nicht erlaubt. Bitte in den Browser-Einstellungen freigeben.',
@@ -153,6 +156,9 @@ export const translations = {
         simulation: 'Simulation',
         arrived: 'You have arrived at your destination.',
         waitingForGps: 'Waiting for GPS signal …',
+        camera: 'Speed camera',
+        cameraAhead: 'Speed camera in {{distance}}',
+        speedLimit: 'Speed limit {{speed}} km/h',
       },
       location: {
         denied: 'Location access denied. Please allow it in your browser settings.',
@@ -235,6 +241,9 @@ export const translations = {
         simulation: 'محاكاة',
         arrived: 'لقد وصلت إلى وجهتك.',
         waitingForGps: 'في انتظار إشارة GPS …',
+        camera: 'كاميرا سرعة',
+        cameraAhead: 'انتبه، كاميرا سرعة بعد {{distance}}',
+        speedLimit: 'الحد الأقصى للسرعة {{speed}} كم/س',
       },
       location: {
         denied: 'تم رفض الوصول إلى الموقع. يرجى السماح به في إعدادات المتصفح.',
