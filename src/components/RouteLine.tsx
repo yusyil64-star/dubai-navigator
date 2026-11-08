@@ -13,7 +13,10 @@ function fitPadding() {
 }
 
 // Zeichnet die Route als Linie (mit weißem Rand) und einen Punkt am Start.
-export function RouteLine({ map, coordinates }: { map: MapLibreMap; coordinates: LonLat[] }) {
+// fit = ganze Route ins Bild holen (während der Navigation aus, dort folgt die Karte der Position).
+type RouteLineProps = { map: MapLibreMap; coordinates: LonLat[]; fit?: boolean }
+
+export function RouteLine({ map, coordinates, fit = true }: RouteLineProps) {
   useEffect(() => {
     const data = {
       type: 'Feature' as const,
@@ -45,11 +48,13 @@ export function RouteLine({ map, coordinates }: { map: MapLibreMap; coordinates:
     const startMarker = new Marker({ element: startDot }).setLngLat(coordinates[0]).addTo(map)
 
     // Ganze Route ins Bild holen
-    const bounds = coordinates.reduce(
-      (b, point) => b.extend(point),
-      new LngLatBounds(coordinates[0], coordinates[0]),
-    )
-    map.fitBounds(bounds, { padding: fitPadding(), maxZoom: 16 })
+    if (fit) {
+      const bounds = coordinates.reduce(
+        (b, point) => b.extend(point),
+        new LngLatBounds(coordinates[0], coordinates[0]),
+      )
+      map.fitBounds(bounds, { padding: fitPadding(), maxZoom: 16 })
+    }
 
     return () => {
       startMarker.remove()
@@ -57,7 +62,7 @@ export function RouteLine({ map, coordinates }: { map: MapLibreMap; coordinates:
       if (map.getLayer('route-casing')) map.removeLayer('route-casing')
       if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID)
     }
-  }, [map, coordinates])
+  }, [map, coordinates, fit])
 
   return null
 }

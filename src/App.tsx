@@ -5,13 +5,14 @@ import { BottomSheet } from './components/BottomSheet'
 import { BrandBadge } from './components/BrandBadge'
 import { LanguageSwitcher } from './components/LanguageSwitcher'
 import { MapView } from './components/MapView'
+import { NavigationView } from './components/NavigationView'
 import { PlaceCard } from './components/PlaceCard'
 import { PlaceMarker } from './components/PlaceMarker'
 import { RoutePanel } from './components/RoutePanel'
 import { SearchBox } from './components/SearchBox'
 import { Toast } from './components/Toast'
 import type { Place } from './services/geocoding'
-import type { LonLat } from './services/routing'
+import type { LonLat, Route } from './services/routing'
 
 function App() {
   // t('schlüssel') liefert den Text in der aktuellen Sprache
@@ -27,6 +28,8 @@ function App() {
   const [routing, setRouting] = useState(false)
   // Eigener GPS-Standort, sobald bekannt
   const [userLocation, setUserLocation] = useState<LonLat | null>(null)
+  // Laufende Navigation (simulate = Demo-Fahrt) oder null
+  const [navigation, setNavigation] = useState<{ route: Route; simulate: boolean } | null>(null)
 
   function closePlace() {
     setPlace(null)
@@ -39,7 +42,13 @@ function App() {
     sheetContent = <SearchBox onSelect={setPlace} />
   } else if (routing && map) {
     sheetContent = (
-      <RoutePanel map={map} destination={place} userLocation={userLocation} onClose={() => setRouting(false)} />
+      <RoutePanel
+        map={map}
+        destination={place}
+        userLocation={userLocation}
+        onClose={() => setRouting(false)}
+        onNavigate={(route, simulate) => setNavigation({ route, simulate })}
+      />
     )
   } else {
     sheetContent = <PlaceCard place={place} onClose={closePlace} onRoute={() => setRouting(true)} />
@@ -49,10 +58,22 @@ function App() {
     <>
       <MapView onNotice={setNotice} onMapReady={setMap} onLocation={setUserLocation} />
       {map && place && <PlaceMarker map={map} place={place} />}
-      <BrandBadge />
-      <LanguageSwitcher />
+      {map && navigation ? (
+        <NavigationView
+          map={map}
+          route={navigation.route}
+          simulate={navigation.simulate}
+          onExit={() => setNavigation(null)}
+          onNotice={setNotice}
+        />
+      ) : (
+        <>
+          <BrandBadge />
+          <LanguageSwitcher />
+          <BottomSheet>{sheetContent}</BottomSheet>
+        </>
+      )}
       {notice && <Toast message={t(notice)} onClose={closeNotice} />}
-      <BottomSheet>{sheetContent}</BottomSheet>
     </>
   )
 }

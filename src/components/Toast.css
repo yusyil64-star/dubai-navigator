@@ -32,3 +32,8 @@
     transform: translateY(-8px);
   }
 }
+
+/* Während der Navigation unter dem Abbiege-Banner */
+.is-navigating .toast {
+  top: calc(max(var(--space), env(safe-area-inset-top)) + 92px);
+}

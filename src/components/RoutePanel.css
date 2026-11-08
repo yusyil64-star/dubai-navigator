@@ -79,3 +79,29 @@
   background: #2b7a8c;
   box-shadow: var(--shadow);
 }
+
+.route-panel__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.route-panel__actions button {
+  flex: 1;
+  height: 48px;
+  border: 0;
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.route-panel__start {
+  background: var(--color-text);
+  color: var(--color-surface);
+}
+
+.route-panel__demo {
+  background: var(--color-field);
+  color: var(--color-text);
+}
