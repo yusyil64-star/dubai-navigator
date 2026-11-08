@@ -1,0 +1,34 @@
+/* Oben mittig – unten liegen Bedienfeld, Kartenknöpfe und Quellenangabe.
+   Auf dem Handy unter der Kopfzeile (Namensschild + Sprachumschalter). */
+.toast {
+  position: absolute;
+  z-index: 10; /* über den Kartenknöpfen */
+  top: calc(max(var(--space), env(safe-area-inset-top)) + 52px);
+  inset-inline: var(--space);
+  margin-inline: auto;
+  width: fit-content;
+  max-width: 420px;
+  padding: 12px 18px;
+  background: var(--color-text);
+  color: var(--color-surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  font-size: 14px;
+  text-align: center;
+  animation: toast-in 0.2s ease-out;
+}
+
+/* Große Bildschirme: in der Kopfzeile zwischen Namensschild und Sprachumschalter */
+@media (min-width: 768px) {
+  .toast {
+    top: max(var(--space), env(safe-area-inset-top));
+  }
+}
+
+/* Nur Hineingleiten, ohne Ausblenden – so bleibt die Meldung immer lesbar,
+   auch wenn ein Gerät Animationen auslässt */
+@keyframes toast-in {
+  from {
+    transform: translateY(-8px);
+  }
+}
