@@ -4,6 +4,9 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Unterordner, unter dem die App liegt. Lokal "/", auf GitHub Pages "/dubai-navigator/"
+  // (wird im Veröffentlichungs-Workflow .github/workflows/deploy.yml gesetzt).
+  base: process.env.BASE_PATH ?? '/',
   plugins: [
     react(),
     // Macht die App installierbar (PWA) und lässt die Oberfläche auch offline starten
@@ -17,7 +20,7 @@ export default defineConfig({
         theme_color: '#f4f1ea',
         background_color: '#f4f1ea',
         display: 'standalone', // ohne Browserleiste, wie eine echte App
-        start_url: '/',
+        // start_url und scope setzt das Plugin automatisch passend zum Unterordner (base)
         icons: [
           { src: 'pwa-64x64.png', sizes: '64x64', type: 'image/png' },
           { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
