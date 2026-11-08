@@ -22,8 +22,8 @@
 /* Große Bildschirme (Tablet/Computer): schwebende Karte links unten statt voller Breite */
 @media (min-width: 768px) {
   .bottom-sheet {
-    left: var(--space);
-    right: auto;
+    inset-inline-start: var(--space);
+    inset-inline-end: auto;
     bottom: var(--space);
     width: 400px;
     height: auto;

@@ -18,7 +18,7 @@
 /* Knöpfe und Quellenangabe sitzen über dem Bedienfeld, nicht dahinter */
 .map-view .maplibregl-ctrl-bottom-right {
   bottom: calc(var(--sheet-height) + env(safe-area-inset-bottom));
-  margin-right: max(var(--space), env(safe-area-inset-right));
+  margin-inline-end: var(--space);
   margin-bottom: 8px;
 }
 
@@ -28,4 +28,15 @@
     bottom: 0;
     margin-bottom: var(--space);
   }
+}
+
+/* Arabisch (rechts→links): Knöpfe auf die linke Seite spiegeln */
+[dir='rtl'] .map-view .maplibregl-ctrl-bottom-right {
+  right: auto;
+  left: 0;
+}
+
+[dir='rtl'] .map-view .maplibregl-ctrl-bottom-right .maplibregl-ctrl {
+  float: left;
+  margin: 0 0 10px 10px;
 }

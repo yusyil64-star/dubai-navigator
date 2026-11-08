@@ -1,11 +1,12 @@
 .brand-badge {
   position: absolute;
   top: max(var(--space), env(safe-area-inset-top));
-  left: max(var(--space), env(safe-area-inset-left));
+  inset-inline-start: var(--space); /* links, bei Arabisch automatisch rechts */
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 14px 8px 10px;
+  padding-block: 8px;
+  padding-inline: 10px 14px;
   background: var(--color-surface);
   border-radius: 999px;
   box-shadow: var(--shadow);
