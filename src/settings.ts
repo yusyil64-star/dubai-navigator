@@ -41,3 +41,19 @@ export function useSettings() {
     () => current,
   )
 }
+
+// Tatsächliches Erscheinungsbild: bei "auto" wie das Gerät (heller oder dunkler Modus)
+const darkQuery = typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: dark)') : null
+
+export function useResolvedTheme(): 'light' | 'dark' {
+  const { theme } = useSettings()
+  const systemDark = useSyncExternalStore(
+    (listener) => {
+      darkQuery?.addEventListener('change', listener)
+      return () => darkQuery?.removeEventListener('change', listener)
+    },
+    () => darkQuery?.matches ?? false,
+  )
+  if (theme === 'auto') return systemDark ? 'dark' : 'light'
+  return theme
+}

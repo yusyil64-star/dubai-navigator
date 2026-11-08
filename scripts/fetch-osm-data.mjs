@@ -31,6 +31,7 @@ async function overpass(query) {
           method: 'POST',
           body: new URLSearchParams({ data: query }),
           headers: { 'User-Agent': 'DubaiNavigator/0.1 (github.com/yusyil64-star/dubai-navigator)' },
+          signal: AbortSignal.timeout(150000), // nicht ewig auf einen hängenden Server warten
         })
         if (res.ok) {
           await sleep(5000) // kurze Pause vor der nächsten Abfrage (Fair-Use)
@@ -80,27 +81,67 @@ async function save(name, data) {
 
 await mkdir(OUT_DIR, { recursive: true })
 
-// 1) Blitzer: [Längengrad, Breitengrad, Tempolimit oder 0]
-const cameras = await overpass(`[out:json][timeout:90];node[highway=speed_camera](${BBOX});out;`)
-await save('speed-cameras.json', {
-  cameras: cameras.map((n) => [round(n.lon), round(n.lat), parseSpeed(n.tags?.maxspeed) ?? 0]),
-})
+// Mit --nur-orte werden nur die Kategorien (Abschnitt 4) neu geladen,
+// mit --nur-orte=metro,cafe nur diese Kategorien
+const placesArg = process.argv.find((a) => a.startsWith('--nur-orte'))
+const onlyPlaces = Boolean(placesArg)
+const selectedCategories = placesArg?.includes('=') ? placesArg.split('=')[1].split(',') : null
+if (!onlyPlaces) {
+  // 1) Blitzer: [Längengrad, Breitengrad, Tempolimit oder 0]
+  const cameras = await overpass(`[out:json][timeout:90];node[highway=speed_camera](${BBOX});out;`)
+  await save('speed-cameras.json', {
+    cameras: cameras.map((n) => [round(n.lon), round(n.lat), parseSpeed(n.tags?.maxspeed) ?? 0]),
+  })
 
-// 2) Salik-Mautbrücken: [Längengrad, Breitengrad, Name]
-const gates = await overpass(`[out:json][timeout:90];node[highway=toll_gantry](${BBOX});out;`)
-await save('toll-gates.json', {
-  gates: gates.map((n) => [round(n.lon), round(n.lat), n.tags?.['name:en'] ?? n.tags?.name ?? '']),
-})
+  // 2) Salik-Mautbrücken: [Längengrad, Breitengrad, Name]
+  const gates = await overpass(`[out:json][timeout:90];node[highway=toll_gantry](${BBOX});out;`)
+  await save('toll-gates.json', {
+    gates: gates.map((n) => [round(n.lon), round(n.lat), n.tags?.['name:en'] ?? n.tags?.name ?? '']),
+  })
 
-// 3) Tempolimits: nach km/h gruppiert, jede Straße als flache Liste [lon, lat, lon, lat, …]
-const ways = await overpass(`[out:json][timeout:180];way[highway~"^(${ROADS})$"][maxspeed](${BBOX});out geom;`)
-const limits = {}
-for (const way of ways) {
-  const speed = parseSpeed(way.tags.maxspeed)
-  if (!speed || !way.geometry) continue
-  const line = simplify(way.geometry.map((g) => [g.lon, g.lat])).flatMap(([lon, lat]) => [round(lon), round(lat)])
-  ;(limits[speed] ??= []).push(line)
+  // 3) Tempolimits: nach km/h gruppiert, jede Straße als flache Liste [lon, lat, lon, lat, …]
+  const ways = await overpass(`[out:json][timeout:180];way[highway~"^(${ROADS})$"][maxspeed](${BBOX});out geom;`)
+  const limits = {}
+  for (const way of ways) {
+    const speed = parseSpeed(way.tags.maxspeed)
+    if (!speed || !way.geometry) continue
+    const line = simplify(way.geometry.map((g) => [g.lon, g.lat])).flatMap(([lon, lat]) => [round(lon), round(lat)])
+    ;(limits[speed] ??= []).push(line)
+  }
+  await save('speed-limits.json', { limits })
+
+  console.log(`Fertig: ${cameras.length} Blitzer, ${gates.length} Mautbrücken, ${ways.length} Straßen mit Tempolimit.`)
 }
-await save('speed-limits.json', { limits })
 
-console.log(`Fertig: ${cameras.length} Blitzer, ${gates.length} Mautbrücken, ${ways.length} Straßen mit Tempolimit.`)
+// 4) Orte nach Kategorie: je Kategorie eine Datei mit [Längengrad, Breitengrad, englischer Name, arabischer Name]
+const CATEGORIES = {
+  fuel: 'nwr[amenity=fuel]',
+  charging: 'nwr[amenity=charging_station]',
+  parking: 'nwr[amenity=parking][access!=private]',
+  pharmacy: 'nwr[amenity=pharmacy]',
+  hospital: 'nwr[amenity=hospital]',
+  atm: 'nwr[amenity=atm]',
+  supermarket: 'nwr[shop=supermarket]',
+  mosque: 'nwr[amenity=place_of_worship][religion=muslim]',
+  restaurant: 'nwr[amenity=restaurant]',
+  cafe: 'nwr[amenity=cafe]',
+  metro: 'nwr[railway=station][station~"^(subway|light_rail)$"];nwr[railway=tram_stop]',
+}
+const ARABIC = /[؀-ۿ]/
+for (const [category, filter] of Object.entries(CATEGORIES)) {
+  if (selectedCategories && !selectedCategories.includes(category)) continue
+  // Mehrere Filter (durch ; getrennt) werden zusammengefasst
+  const parts = filter.split(';').map((part) => `${part}(${BBOX});`).join('')
+  const elements = await overpass(`[out:json][timeout:120];(${parts});out center tags;`)
+  const pois = elements
+    .map((e) => {
+      const lon = e.lon ?? e.center?.lon
+      const lat = e.lat ?? e.center?.lat
+      const tags = e.tags ?? {}
+      const latinName = tags['name:en'] ?? (tags.name && !ARABIC.test(tags.name) ? tags.name : '') ?? ''
+      const arabicName = tags['name:ar'] ?? (tags.name && ARABIC.test(tags.name) ? tags.name : '') ?? ''
+      return lon && lat ? [round(lon), round(lat), latinName || tags.brand || '', arabicName] : null
+    })
+    .filter(Boolean)
+  await save(`pois-${category}.json`, { pois })
+}

@@ -1,12 +1,15 @@
 import { useTranslation } from 'react-i18next'
+import { toggleFavorite, toggleHome, toggleWork, useSavedPlaces } from '../places'
 import type { Place } from '../services/geocoding'
 import './PlaceCard.css'
 
 type PlaceCardProps = { place: Place; onClose: () => void; onRoute: () => void }
 
-// Zeigt den gewählten Ort im Bedienfeld an, mit Knopf für die Route.
+// Zeigt den gewählten Ort im Bedienfeld an: Merken (Favorit/Zuhause/Arbeit) und Route.
 export function PlaceCard({ place, onClose, onRoute }: PlaceCardProps) {
   const { t } = useTranslation()
+  const saved = useSavedPlaces()
+  const favorite = saved.favorites.some((p) => p.id === place.id)
 
   return (
     <>
@@ -21,6 +24,19 @@ export function PlaceCard({ place, onClose, onRoute }: PlaceCardProps) {
           </svg>
         </button>
       </div>
+
+      <div className="place-card__save">
+        <button type="button" aria-pressed={favorite} onClick={() => toggleFavorite(place)}>
+          {favorite ? '★' : '☆'} {t('saved.favorite')}
+        </button>
+        <button type="button" aria-pressed={saved.home?.id === place.id} onClick={() => toggleHome(place)}>
+          {t('saved.home')}
+        </button>
+        <button type="button" aria-pressed={saved.work?.id === place.id} onClick={() => toggleWork(place)}>
+          {t('saved.work')}
+        </button>
+      </div>
+
       <button type="button" className="place-card__route" onClick={onRoute}>
         {t('route.button')}
       </button>

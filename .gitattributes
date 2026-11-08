@@ -1,0 +1,4 @@
+# Einheitliche Zeilenenden (LF) für alle Textdateien – verhindert CRLF-Warnungen unter Windows
+* text=auto eol=lf
+*.png binary
+*.ico binary

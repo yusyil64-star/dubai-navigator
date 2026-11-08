@@ -5,6 +5,7 @@ import { unlockSpeech } from '../navigation/voice'
 import type { Place } from '../services/geocoding'
 import { getRoute, type LonLat, type Profile, type Route } from '../services/routing'
 import { formatDistance, formatDuration } from '../utils/format'
+import { RouteExtras } from './RouteExtras'
 import { RouteLine } from './RouteLine'
 import { SearchBox } from './SearchBox'
 import './RoutePanel.css'
@@ -157,6 +158,7 @@ export function RoutePanel({ map, destination, userLocation, onClose, onNavigate
             <span>{formatDistance(current.route.distanceMeters, language)}</span>
           </p>
           <p className="route-panel__hint">{t(`route.note.${profile}`)}</p>
+          <RouteExtras route={current.route} />
           <div className="route-panel__actions">
             {/* Echte Navigation nur, wenn vom eigenen Standort aus gestartet wird */}
             {start?.name === null && (

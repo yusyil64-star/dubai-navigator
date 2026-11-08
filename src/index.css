@@ -23,6 +23,20 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* Nachtmodus: dieselben Namen, dunkle Werte (gesetzt über data-theme="dark" am <html>) */
+:root[data-theme='dark'] {
+  --color-bg: #1a1917;
+  --color-surface: #242320;
+  --color-field: #2e2c28;
+  --color-border: #3b3833;
+  --color-text: #f2efe9;
+  --color-text-muted: #a8a299;
+  --color-accent: #c9a46a;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  --shadow-up: 0 -6px 24px rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
+}
+
 *,
 *::before,
 *::after {

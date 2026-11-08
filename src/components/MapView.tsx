@@ -13,7 +13,9 @@ import {
   DUBAI_BOUNDS,
   DUBAI_CENTER,
   MAP_COLOR_OVERRIDES,
+  MAP_COLOR_OVERRIDES_DARK,
   MAP_STYLE_URL,
+  MAP_STYLE_URL_DARK,
   MAX_ZOOM,
   MIN_ZOOM,
   START_ZOOM,
@@ -30,7 +32,16 @@ const LOCATION_ERRORS: Record<number, string> = {
   3: 'location.timeout', // Zeitüberschreitung
 }
 
+// Eigene Ebenen der App, die beim Wechsel Hell/Dunkel erhalten bleiben sollen
+const APP_SOURCES = ['route', 'speed-cameras', 'category-places']
+
+type Theme = 'light' | 'dark'
+const STYLES: Record<Theme, string> = { light: MAP_STYLE_URL, dark: MAP_STYLE_URL_DARK }
+const OVERRIDES = { light: MAP_COLOR_OVERRIDES, dark: MAP_COLOR_OVERRIDES_DARK }
+
 type MapViewProps = {
+  // Hell oder dunkel (Nachtmodus)
+  theme: Theme
   // Meldet einen Hinweis (Übersetzungsschlüssel), z. B. wenn der Standort nicht erlaubt ist
   onNotice: (key: string) => void
   // Gibt die fertige Karte nach außen, damit andere Teile (Suche, Route) sie nutzen können
@@ -40,11 +51,13 @@ type MapViewProps = {
 }
 
 // Zeigt die Vollbild-Karte von Dubai.
-export function MapView({ onNotice, onMapReady, onLocation }: MapViewProps) {
+export function MapView({ theme, onNotice, onMapReady, onLocation }: MapViewProps) {
   // Das HTML-Element, in das MapLibre die Karte zeichnet
   const containerRef = useRef<HTMLDivElement>(null)
   // Immer die aktuellen Funktionen verwenden, ohne die Karte neu zu erstellen
   const callbacks = useRef({ onNotice, onMapReady, onLocation })
+  const mapRef = useRef<MapLibreMap | null>(null)
+  const themeRef = useRef(theme) // Thema, mit dem die Karte erstellt wurde bzw. zuletzt gewechselt hat
   useEffect(() => {
     callbacks.current = { onNotice, onMapReady, onLocation }
   })
@@ -54,7 +67,7 @@ export function MapView({ onNotice, onMapReady, onLocation }: MapViewProps) {
 
     const map = new MapLibreMap({
       container: containerRef.current,
-      style: MAP_STYLE_URL,
+      style: STYLES[themeRef.current],
       center: DUBAI_CENTER,
       zoom: START_ZOOM,
       minZoom: MIN_ZOOM,
@@ -64,7 +77,7 @@ export function MapView({ onNotice, onMapReady, onLocation }: MapViewProps) {
 
     // Sobald der Kartenstil geladen ist: unsere eigenen Farben anwenden
     map.on('style.load', () => {
-      for (const [layerId, paint] of Object.entries(MAP_COLOR_OVERRIDES)) {
+      for (const [layerId, paint] of Object.entries(OVERRIDES[themeRef.current])) {
         if (!map.getLayer(layerId)) continue // Ebene existiert nicht (mehr) – überspringen
         for (const [property, color] of Object.entries(paint)) {
           map.setPaintProperty(layerId, property as PaintProperty, color)
@@ -92,10 +105,30 @@ export function MapView({ onNotice, onMapReady, onLocation }: MapViewProps) {
     map.addControl(new NavigationControl(), 'bottom-right')
 
     map.once('load', () => callbacks.current.onMapReady(map))
+    mapRef.current = map
 
     // Aufräumen, wenn die Komponente verschwindet
-    return () => map.remove()
+    return () => {
+      mapRef.current = null
+      map.remove()
+    }
   }, [])
+
+  // Hell/Dunkel gewechselt: neuen Kartenstil laden und die eigenen Ebenen mitnehmen
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || themeRef.current === theme) return
+    themeRef.current = theme
+    map.setStyle(STYLES[theme], {
+      transformStyle: (previous, next) => {
+        if (!previous) return next
+        const sources = { ...next.sources }
+        for (const id of APP_SOURCES) if (previous.sources[id]) sources[id] = previous.sources[id]
+        const appLayers = previous.layers.filter((l) => 'source' in l && APP_SOURCES.includes(l.source))
+        return { ...next, sources, layers: [...next.layers, ...appLayers] }
+      },
+    })
+  }, [theme])
 
   return <div ref={containerRef} className="map-view" />
 }

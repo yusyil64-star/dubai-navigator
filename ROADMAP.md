@@ -41,22 +41,24 @@ Legende: ✅ fertig · 🔨 in Arbeit · ⬜ geplant · 💰 braucht Geld/Konto/
 - Daten aktualisieren: npm run fetch-osm-data
 - Hinweis: In Deutschland ist das Nutzen von Blitzer-Warnern während der Fahrt verboten.
 
-## Schritt 4 – Persönliches und Einstellungen
+## Schritt 4 – Persönliches und Einstellungen ✅
 
-- ⬜ Zuhause, Arbeit, Favoriten
-- ⬜ Zuletzt gesuchte Orte
-- ⬜ Nachtmodus (dunkle Karte)
-- ⬜ Einstellungen: Sprache, Sprachansage, Blitzer, Nachtmodus, Fortbewegungsart
-- ⬜ Orte nach Kategorie (Tankstelle, Parkplatz, Restaurant, Apotheke …)
+- ✅ Zuhause, Arbeit, Favoriten (nur auf diesem Gerät gespeichert)
+- ✅ Zuletzt gesuchte Orte
+- ✅ Nachtmodus (dunkle Karte, automatisch nach Geräte-Einstellung oder fest)
+- ✅ Einstellungen: Sprache, Erscheinungsbild, Sprachansage, Blitzer, Daten löschen, Datenschutz, Datenquellen
+- ✅ Orte nach Kategorie: Tankstelle, E-Ladestation, Parkplatz, Apotheke, Krankenhaus, Geldautomat, Supermarkt, Moschee, Restaurant, Café, Metro & Tram (vorab aus OpenStreetMap)
 
 ## Schritt 5 – Dubai-Extras
 
-- ⬜ Salik-Mautstellen auf der Route und geschätzte Kosten (nur mit geprüfter Tarif-Quelle)
-- ⬜ Moscheen in der Nähe und Gebetszeiten (berechnet)
-- ⬜ Parkzonen (nur falls offene RTA-Daten verfügbar)
-- ⬜ Metro und Tram (nur falls offene Fahrplandaten verfügbar)
-- ⬜ Hitze-Hinweis für Fußwege
-- ⬜ Ramadan-Modus
+- ✅ Salik-Mautstellen auf der Route und geschätzte Kosten (Tarif ab 1. 6. 2026 laut The National, Gulf News, Khaleej Times)
+- ✅ Moscheen in der Nähe und Gebetszeiten (berechnet mit adhan, Methode „Dubai“)
+- ✅ Ramadan-Modus: Iftar-Zeit wird im Ramadan automatisch angezeigt (islamischer Kalender des Browsers)
+- ✅ Hitze-Hinweis für Fuß- und Fahrradwege (aktuelle Temperatur von Open-Meteo)
+- ✅ Metro- und Tram-Stationen als Kategorie
+- ⬜ Fahrplanauskunft Metro/Tram – offene GTFS-Daten der RTA vorhanden (Dubai Pulse), Umsetzung später
+- ⬜ Parkzonen und Parkgebühren – noch keine geprüfte offene Datenquelle gefunden
+- Hinweis: Route ohne Maut ist mit dem kostenlosen Routendienst nicht möglich (siehe Schritt 6)
 
 ## Schritt 6 – Große Ausbaustufen
 
@@ -65,7 +67,7 @@ Legende: ✅ fertig · 🔨 in Arbeit · ⬜ geplant · 💰 braucht Geld/Konto/
 - 💰 Ankunftszeit teilen, Konten, Synchronisieren zwischen Geräten
 - 💰 Eigener Such- und Routendienst (Pflicht bei vielen Nutzern; Route ohne Maut möglich)
 - 📱 Echte Handy-App (App Store / Play Store), Navigation im Hintergrund, Offline-Karten
-- ⬜ Datenschutzhinweis (vor einer echten Veröffentlichung Pflicht)
+- 🔨 Datenschutzhinweis: Kurzfassung in den Einstellungen vorhanden; vor einer echten Veröffentlichung rechtlich prüfen lassen
 
 ## Bekannte Grenzen der kostenlosen Dienste
 

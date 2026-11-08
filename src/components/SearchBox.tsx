@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSavedPlaces } from '../places'
+import { CATEGORIES, type Category } from '../services/categories'
 import { searchPlaces, type Place } from '../services/geocoding'
 import './SearchBox.css'
 
@@ -8,9 +10,20 @@ const DEBOUNCE_MS = 300 // erst suchen, wenn kurz nicht getippt wurde
 
 type Status = 'idle' | 'loading' | 'done' | 'error'
 
-// Suchfeld mit Vorschlagsliste. Meldet den gewählten Ort über onSelect.
-export function SearchBox({ onSelect }: { onSelect: (place: Place) => void }) {
+type SearchBoxProps = {
+  onSelect: (place: Place) => void
+  // Falls gesetzt: Kategorie-Knöpfe (Tankstelle, Apotheke, …) anzeigen
+  onCategory?: (category: Category) => void
+}
+
+// Suchfeld mit Vorschlagsliste. Ohne Eingabe: Kategorien, Zuhause/Arbeit, Favoriten, Verlauf.
+export function SearchBox({ onSelect, onCategory }: SearchBoxProps) {
   const { t, i18n } = useTranslation()
+  const saved = useSavedPlaces()
+  const homeAndWork = [
+    { place: saved.home, label: t('saved.home') },
+    { place: saved.work, label: t('saved.work') },
+  ].filter((entry): entry is { place: Place; label: string } => entry.place !== null)
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<Place[]>([])
   const [status, setStatus] = useState<Status>('idle')
@@ -77,6 +90,28 @@ export function SearchBox({ onSelect }: { onSelect: (place: Place) => void }) {
         <p className="search-box__status">{t('search.noResults')}</p>
       )}
 
+      {query.trim().length < MIN_CHARS && (
+        <>
+          {onCategory && (
+            <div className="search-box__categories" role="group" aria-label={t('categories.label')}>
+              {CATEGORIES.map((category) => (
+                <button key={category} type="button" onClick={() => onCategory(category)}>
+                  {t(`categories.${category}`)}
+                </button>
+              ))}
+            </div>
+          )}
+          <QuickList
+            title={null}
+            places={homeAndWork.map((entry) => entry.place)}
+            labels={homeAndWork.map((entry) => entry.label)}
+            onSelect={select}
+          />
+          <QuickList title={t('saved.favorites')} places={saved.favorites} onSelect={select} />
+          <QuickList title={t('saved.recents')} places={saved.recents} onSelect={select} />
+        </>
+      )}
+
       {results.length > 0 && (
         <ul className="search-box__results">
           {results.map((place) => (
@@ -90,5 +125,32 @@ export function SearchBox({ onSelect }: { onSelect: (place: Place) => void }) {
         </ul>
       )}
     </div>
+  )
+}
+
+type QuickListProps = {
+  title: string | null
+  places: Place[]
+  labels?: string[] // optionale Beschriftung je Ort, z. B. "Zuhause"
+  onSelect: (place: Place) => void
+}
+
+// Kurze Liste gespeicherter Orte (Zuhause/Arbeit, Favoriten, zuletzt gesucht)
+function QuickList({ title, places, labels, onSelect }: QuickListProps) {
+  if (places.length === 0) return null
+  return (
+    <>
+      {title && <h3 className="search-box__heading">{title}</h3>}
+      <ul className="search-box__results">
+        {places.map((place, i) => (
+          <li key={`${place.id}-${i}`}>
+            <button type="button" onClick={() => onSelect(place)}>
+              <span className="search-box__name">{labels?.[i] ?? place.name}</span>
+              <span className="search-box__detail">{labels?.[i] ? place.name : place.detail}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </>
   )
 }

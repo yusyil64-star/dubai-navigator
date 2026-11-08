@@ -13,8 +13,9 @@ export function formatDuration(seconds: number, language: string) {
 
 // "15,5 km" bzw. "800 m"
 export function formatDistance(meters: number, language: string) {
-  if (meters < 1000) {
-    const rounded = meters < 100 ? Math.round(meters / 5) * 5 : Math.round(meters / 10) * 10
+  const rounded = meters < 100 ? Math.round(meters / 5) * 5 : Math.round(meters / 10) * 10
+  // erst nach dem Runden entscheiden: 995 m → "1 km" statt "1.000 m"
+  if (rounded < 1000) {
     return new Intl.NumberFormat(language, { style: 'unit', unit: 'meter' }).format(rounded)
   }
   return new Intl.NumberFormat(language, {

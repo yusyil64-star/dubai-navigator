@@ -1,0 +1,49 @@
+.prayer-times {
+  margin: 10px 0 6px;
+  padding: 12px 14px;
+  background: var(--color-field);
+  border-radius: var(--radius);
+}
+
+.prayer-times ul {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.prayer-times li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px;
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.prayer-times li strong {
+  font-size: 15px;
+  color: var(--color-text);
+}
+
+/* Nächstes Gebet hervorheben */
+.prayer-times .prayer-times__next {
+  background: var(--color-surface);
+  color: var(--color-accent);
+}
+
+.prayer-times__ramadan {
+  margin: 0 0 8px;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.prayer-times__note {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}

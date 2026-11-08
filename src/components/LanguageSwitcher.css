@@ -1,7 +1,7 @@
 .language-switcher {
   position: absolute;
   top: max(var(--space), env(safe-area-inset-top));
-  inset-inline-end: var(--space); /* rechts, bei Arabisch automatisch links */
+  inset-inline-end: calc(var(--space) + 48px); /* neben dem Zahnrad; bei Arabisch automatisch links */
   display: flex;
   padding: 4px;
   background: var(--color-surface);

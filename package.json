@@ -12,6 +12,7 @@
     "fetch-osm-data": "node scripts/fetch-osm-data.mjs"
   },
   "dependencies": {
+    "adhan": "^4.4.6",
     "i18next": "^27.0.1",
     "maplibre-gl": "^6.17.0",
     "react": "^19.3.1",

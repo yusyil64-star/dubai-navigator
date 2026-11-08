@@ -1,0 +1,116 @@
+.settings__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.settings__header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.settings section {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.settings section:last-child {
+  border-bottom: 0;
+}
+
+.settings h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.settings__choice {
+  display: flex;
+  gap: 6px;
+}
+
+.settings__choice button {
+  flex: 1;
+  height: 38px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.settings__choice button[aria-pressed='true'] {
+  border-color: var(--color-text);
+  background: var(--color-text);
+  color: var(--color-surface);
+  font-weight: 600;
+}
+
+.settings__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.settings__toggle input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--color-accent);
+}
+
+.settings__note {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+}
+
+.settings__danger {
+  margin-top: 10px;
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid #b3261e;
+  border-radius: var(--radius);
+  background: transparent;
+  color: #b3261e;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.settings__danger--confirm {
+  background: #b3261e;
+  color: #ffffff;
+}
+
+/* Zahnrad-Knopf oben (neben dem Sprachumschalter) */
+.settings-button {
+  position: absolute;
+  top: max(var(--space), env(safe-area-inset-top));
+  inset-inline-end: var(--space);
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+
+.settings-button svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
