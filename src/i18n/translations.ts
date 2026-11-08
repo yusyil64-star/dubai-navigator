@@ -5,7 +5,12 @@ export const translations = {
     translation: {
       search: {
         placeholder: 'Wohin möchtest du?',
-        comingSoon: 'Die Suche folgt in einer späteren Phase.',
+        loading: 'Suche läuft …',
+        noResults: 'Keine Orte in Dubai gefunden.',
+        error: 'Suche gerade nicht möglich. Bitte Internetverbindung prüfen.',
+      },
+      place: {
+        close: 'Schließen',
       },
       location: {
         denied: 'Standort nicht erlaubt. Bitte in den Browser-Einstellungen freigeben.',
@@ -22,7 +27,12 @@ export const translations = {
     translation: {
       search: {
         placeholder: 'Where to?',
-        comingSoon: 'Search is coming in a later phase.',
+        loading: 'Searching …',
+        noResults: 'No places found in Dubai.',
+        error: 'Search is not available right now. Please check your internet connection.',
+      },
+      place: {
+        close: 'Close',
       },
       location: {
         denied: 'Location access denied. Please allow it in your browser settings.',
@@ -39,7 +49,12 @@ export const translations = {
     translation: {
       search: {
         placeholder: 'إلى أين تريد الذهاب؟',
-        comingSoon: 'ستتوفر ميزة البحث في مرحلة لاحقة.',
+        loading: 'جارٍ البحث …',
+        noResults: 'لم يتم العثور على أماكن في دبي.',
+        error: 'البحث غير متاح حاليًا. يرجى التحقق من اتصال الإنترنت.',
+      },
+      place: {
+        close: 'إغلاق',
       },
       location: {
         denied: 'تم رفض الوصول إلى الموقع. يرجى السماح به في إعدادات المتصفح.',

@@ -1,0 +1,44 @@
+.place-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.place-card__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.place-card__name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.place-card__detail {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.place-card__close {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-field);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.place-card__close svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
