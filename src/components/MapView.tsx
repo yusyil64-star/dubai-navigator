@@ -7,10 +7,12 @@ import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url'
 import {
   DUBAI_BOUNDS,
   DUBAI_CENTER,
+  MAP_COLOR_OVERRIDES,
   MAP_STYLE_URL,
   MAX_ZOOM,
   MIN_ZOOM,
   START_ZOOM,
+  type PaintProperty,
 } from '../config/map'
 import './MapView.css'
 
@@ -32,6 +34,16 @@ export function MapView() {
       minZoom: MIN_ZOOM,
       maxZoom: MAX_ZOOM,
       maxBounds: DUBAI_BOUNDS,
+    })
+
+    // Sobald der Kartenstil geladen ist: unsere eigenen Farben anwenden
+    map.on('style.load', () => {
+      for (const [layerId, paint] of Object.entries(MAP_COLOR_OVERRIDES)) {
+        if (!map.getLayer(layerId)) continue // Ebene existiert nicht (mehr) – überspringen
+        for (const [property, color] of Object.entries(paint)) {
+          map.setPaintProperty(layerId, property as PaintProperty, color)
+        }
+      }
     })
 
     // Zoom-Knöpfe und Kompass (zum Zurückdrehen nach Norden)

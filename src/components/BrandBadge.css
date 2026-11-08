@@ -1,0 +1,25 @@
+.brand-badge {
+  position: absolute;
+  top: max(var(--space), env(safe-area-inset-top));
+  left: max(var(--space), env(safe-area-inset-left));
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px 8px 10px;
+  background: var(--color-surface);
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  pointer-events: none; /* Karte darunter bleibt bedienbar */
+}
+
+.brand-badge__logo {
+  width: 20px;
+  height: 20px;
+  fill: var(--color-accent);
+}
+
+.brand-badge__name {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}

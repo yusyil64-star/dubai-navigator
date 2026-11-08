@@ -15,8 +15,17 @@
   height: 44px;
 }
 
-/* Abstand zum Rand, auch bei Handys mit Aussparung/Home-Leiste */
+/* Knöpfe und Quellenangabe sitzen über dem Bedienfeld, nicht dahinter */
 .map-view .maplibregl-ctrl-bottom-right {
+  bottom: calc(var(--sheet-height) + env(safe-area-inset-bottom));
   margin-right: max(var(--space), env(safe-area-inset-right));
-  margin-bottom: max(var(--space), env(safe-area-inset-bottom));
+  margin-bottom: 8px;
+}
+
+/* Große Bildschirme: Bedienfeld schwebt links, also Knöpfe wieder ganz nach unten */
+@media (min-width: 768px) {
+  .map-view .maplibregl-ctrl-bottom-right {
+    bottom: 0;
+    margin-bottom: var(--space);
+  }
 }

@@ -1,0 +1,38 @@
+.bottom-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--sheet-height) + env(safe-area-inset-bottom));
+  padding: 10px var(--space) calc(var(--space) + env(safe-area-inset-bottom));
+  background: var(--color-surface);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: var(--shadow-up);
+}
+
+/* Der kleine Griff-Strich oben – typisches Zeichen für ein Bedienfeld */
+.bottom-sheet__handle {
+  width: 36px;
+  height: 4px;
+  margin: 0 auto 14px;
+  border-radius: 2px;
+  background: var(--color-border);
+}
+
+/* Große Bildschirme (Tablet/Computer): schwebende Karte links unten statt voller Breite */
+@media (min-width: 768px) {
+  .bottom-sheet {
+    left: var(--space);
+    right: auto;
+    bottom: var(--space);
+    width: 400px;
+    height: auto;
+    padding-bottom: var(--space);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+  }
+
+  .bottom-sheet__handle {
+    display: none;
+  }
+}
