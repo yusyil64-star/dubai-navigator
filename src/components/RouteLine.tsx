@@ -14,9 +14,21 @@ function fitPadding() {
 
 // Zeichnet die Route als Linie (mit weißem Rand) und einen Punkt am Start.
 // fit = ganze Route ins Bild holen (während der Navigation aus, dort folgt die Karte der Position).
-type RouteLineProps = { map: MapLibreMap; coordinates: LonLat[]; fit?: boolean }
+type RouteLineProps = { map: MapLibreMap; coordinates: LonLat[]; fit?: boolean; stops?: LonLat[] }
 
-export function RouteLine({ map, coordinates, fit = true }: RouteLineProps) {
+export function RouteLine({ map, coordinates, fit = true, stops = [] }: RouteLineProps) {
+  // Zwischenstopps als nummerierte Punkte (Text-Schlüssel, damit nur bei echten Änderungen neu gezeichnet wird)
+  const stopsKey = JSON.stringify(stops)
+  useEffect(() => {
+    const markers = (JSON.parse(stopsKey) as LonLat[]).map((point, i) => {
+      const element = document.createElement('div')
+      element.className = 'route-stop-dot'
+      element.textContent = String(i + 1)
+      return new Marker({ element }).setLngLat(point).addTo(map)
+    })
+    return () => markers.forEach((m) => m.remove())
+  }, [map, stopsKey])
+
   useEffect(() => {
     const data = {
       type: 'Feature' as const,

@@ -28,10 +28,10 @@ Legende: ✅ fertig · 🔨 in Arbeit · ⬜ geplant · 💰 braucht Geld/Konto/
 - ✅ Bildschirm bleibt während der Navigation an
 - ✅ Demo-Fahrt (Simulation) zum Ausprobieren ohne vor Ort zu sein
 
-## Schritt 2 – Mehr Routen-Möglichkeiten
+## Schritt 2 – Mehr Routen-Möglichkeiten ✅
 
-- ⬜ Zwischenstopps hinzufügen und entfernen
-- ⬜ Zu Fuß und mit dem Fahrrad
+- ✅ Zwischenstopps hinzufügen und entfernen
+- ✅ Zu Fuß und mit dem Fahrrad
 
 ## Schritt 3 – Blitzer und Tempolimit
 

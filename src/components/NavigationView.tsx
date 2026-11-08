@@ -100,7 +100,7 @@ export function NavigationView({ map, route: initialRoute, simulate, onExit, onN
 
   return (
     <>
-      <RouteLine map={map} coordinates={route.coordinates} fit={false} />
+      <RouteLine map={map} coordinates={route.coordinates} fit={false} stops={route.waypoints.slice(1, -1)} />
 
       <div className="nav-banner" role="status">
         {status === 'active' && next && <ManeuverArrow icon={maneuverIcon(next)} />}
