@@ -35,16 +35,18 @@ type MapViewProps = {
   onNotice: (key: string) => void
   // Gibt die fertige Karte nach außen, damit andere Teile (Suche, Route) sie nutzen können
   onMapReady: (map: MapLibreMap) => void
+  // Meldet den eigenen GPS-Standort [Längengrad, Breitengrad], sobald er bekannt ist
+  onLocation: (position: [number, number]) => void
 }
 
 // Zeigt die Vollbild-Karte von Dubai.
-export function MapView({ onNotice, onMapReady }: MapViewProps) {
+export function MapView({ onNotice, onMapReady, onLocation }: MapViewProps) {
   // Das HTML-Element, in das MapLibre die Karte zeichnet
   const containerRef = useRef<HTMLDivElement>(null)
   // Immer die aktuellen Funktionen verwenden, ohne die Karte neu zu erstellen
-  const callbacks = useRef({ onNotice, onMapReady })
+  const callbacks = useRef({ onNotice, onMapReady, onLocation })
   useEffect(() => {
-    callbacks.current = { onNotice, onMapReady }
+    callbacks.current = { onNotice, onMapReady, onLocation }
   })
 
   useEffect(() => {
@@ -77,6 +79,9 @@ export function MapView({ onNotice, onMapReady }: MapViewProps) {
     })
     geolocate.on('error', (e) => {
       callbacks.current.onNotice(LOCATION_ERRORS[e.code] ?? 'location.unavailable')
+    })
+    geolocate.on('geolocate', (e) => {
+      callbacks.current.onLocation([e.coords.longitude, e.coords.latitude])
     })
     geolocate.on('outofmaxbounds', () => {
       callbacks.current.onNotice('location.outsideDubai')

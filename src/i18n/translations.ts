@@ -12,6 +12,18 @@ export const translations = {
       place: {
         close: 'Schließen',
       },
+      route: {
+        button: 'Route hierher',
+        from: 'Von',
+        to: 'Nach',
+        myLocation: 'Mein Standort',
+        chooseStart: 'Startpunkt wählen',
+        needStart: 'Dein Standort ist nicht bekannt. Suche einen Startpunkt:',
+        loading: 'Route wird berechnet …',
+        error: 'Route konnte nicht berechnet werden. Bitte später erneut versuchen.',
+        noTraffic: 'Mit dem Auto · Fahrzeit ohne aktuelle Verkehrslage',
+        close: 'Route beenden',
+      },
       location: {
         denied: 'Standort nicht erlaubt. Bitte in den Browser-Einstellungen freigeben.',
         unavailable: 'Standort konnte nicht ermittelt werden.',
@@ -34,6 +46,18 @@ export const translations = {
       place: {
         close: 'Close',
       },
+      route: {
+        button: 'Directions',
+        from: 'From',
+        to: 'To',
+        myLocation: 'My location',
+        chooseStart: 'Choose a starting point',
+        needStart: 'Your location is unknown. Search for a starting point:',
+        loading: 'Calculating route …',
+        error: 'The route could not be calculated. Please try again later.',
+        noTraffic: 'By car · travel time without live traffic',
+        close: 'End route',
+      },
       location: {
         denied: 'Location access denied. Please allow it in your browser settings.',
         unavailable: 'Your location could not be determined.',
@@ -55,6 +79,18 @@ export const translations = {
       },
       place: {
         close: 'إغلاق',
+      },
+      route: {
+        button: 'الاتجاهات',
+        from: 'من',
+        to: 'إلى',
+        myLocation: 'موقعي',
+        chooseStart: 'اختر نقطة البداية',
+        needStart: 'موقعك غير معروف. ابحث عن نقطة البداية:',
+        loading: 'جارٍ حساب المسار …',
+        error: 'تعذّر حساب المسار. يرجى المحاولة لاحقًا.',
+        noTraffic: 'بالسيارة · مدة الرحلة بدون حركة المرور الحالية',
+        close: 'إنهاء المسار',
       },
       location: {
         denied: 'تم رفض الوصول إلى الموقع. يرجى السماح به في إعدادات المتصفح.',

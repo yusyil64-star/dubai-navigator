@@ -1,0 +1,81 @@
+.route-panel__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.route-panel__points {
+  flex: 1;
+  min-width: 0;
+}
+
+.route-panel__points p {
+  margin: 0 0 4px;
+  font-size: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.route-panel__label {
+  display: inline-block;
+  min-width: 44px;
+  margin-inline-end: 6px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.route-panel__close {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-field);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.route-panel__close svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.route-panel__summary {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 12px 0 0;
+}
+
+.route-panel__summary strong {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.route-panel__summary span {
+  font-size: 16px;
+  color: var(--color-text-muted);
+}
+
+.route-panel__hint {
+  margin: 8px 0 10px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+/* Startpunkt der Route auf der Karte (wird als Kartenmarkierung eingefügt) */
+.route-start-dot {
+  width: 16px;
+  height: 16px;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  background: #2b7a8c;
+  box-shadow: var(--shadow);
+}
