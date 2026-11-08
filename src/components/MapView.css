@@ -1,0 +1,22 @@
+.map-view {
+  position: absolute;
+  inset: 0;
+}
+
+/* Zoom-Knöpfe im Stil der App: weiß, abgerundet, weicher Schatten */
+.map-view .maplibregl-ctrl-group {
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.map-view .maplibregl-ctrl-group button {
+  width: 44px; /* gut mit dem Finger treffbar */
+  height: 44px;
+}
+
+/* Abstand zum Rand, auch bei Handys mit Aussparung/Home-Leiste */
+.map-view .maplibregl-ctrl-bottom-right {
+  margin-right: max(var(--space), env(safe-area-inset-right));
+  margin-bottom: max(var(--space), env(safe-area-inset-bottom));
+}
