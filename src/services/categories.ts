@@ -66,5 +66,13 @@ export async function findNearby(
       }
     })
     .sort((a, b) => a.distance - b.distance)
+    .slice(0, limit * 3) // Vorrat, falls unten Doppelte wegfallen
+    .reduce<NearbyPlace[]>((kept, place) => {
+      // Gleichnamige Orte dicht beieinander (z. B. zwei Bahnsteige einer Station) nur einmal zeigen
+      const duplicate = kept.some(
+        (k) => k.name === place.name && distance([k.lon, k.lat], [place.lon, place.lat]) < 150,
+      )
+      return duplicate ? kept : [...kept, place]
+    }, [])
     .slice(0, limit)
 }
