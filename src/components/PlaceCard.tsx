@@ -1,13 +1,19 @@
 import { useTranslation } from 'react-i18next'
 import { toggleFavorite, toggleHome, toggleWork, useSavedPlaces } from '../places'
 import type { Place } from '../services/geocoding'
+import { sharePlace } from '../utils/share'
 import { TransitDepartures } from './TransitDepartures'
 import './PlaceCard.css'
 
-type PlaceCardProps = { place: Place; onClose: () => void; onRoute: () => void }
+type PlaceCardProps = {
+  place: Place
+  onClose: () => void
+  onRoute: () => void
+  onNotice: (key: string) => void // kurze Meldung, z. B. "Link kopiert"
+}
 
 // Zeigt den gewählten Ort im Bedienfeld an: Merken (Favorit/Zuhause/Arbeit) und Route.
-export function PlaceCard({ place, onClose, onRoute }: PlaceCardProps) {
+export function PlaceCard({ place, onClose, onRoute, onNotice }: PlaceCardProps) {
   const { t } = useTranslation()
   const saved = useSavedPlaces()
   const favorite = saved.favorites.some((p) => p.id === place.id)
@@ -35,6 +41,15 @@ export function PlaceCard({ place, onClose, onRoute }: PlaceCardProps) {
         </button>
         <button type="button" aria-pressed={saved.work?.id === place.id} onClick={() => toggleWork(place)}>
           {t('saved.work')}
+        </button>
+        <button
+          type="button"
+          onClick={async () => {
+            const result = await sharePlace(place)
+            if (result === 'copied' || result === 'failed') onNotice(`share.${result}`)
+          }}
+        >
+          {t('share.button')}
         </button>
       </div>
 

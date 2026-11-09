@@ -19,6 +19,7 @@ import type { Category } from './services/categories'
 import type { Place } from './services/geocoding'
 import type { LonLat, Route } from './services/routing'
 import { useResolvedTheme, useSettings } from './settings'
+import { placeFromUrl } from './utils/share'
 
 const THEME_COLORS = { light: '#f4f1ea', dark: '#1a1917' }
 
@@ -33,7 +34,8 @@ function App() {
   const [notice, setNotice] = useState<string | null>(null)
   const closeNotice = useCallback(() => setNotice(null), [])
   // Der gesuchte und ausgewählte Ort (Ziel)
-  const [place, setPlace] = useState<Place | null>(null)
+  // (beim Öffnen eines geteilten Links ist er schon gesetzt)
+  const [place, setPlace] = useState<Place | null>(placeFromUrl)
   // Ob gerade eine Route zum Ziel angezeigt wird
   const [routing, setRouting] = useState(false)
   // Eigener GPS-Standort, sobald bekannt
@@ -49,6 +51,11 @@ function App() {
     document.documentElement.dataset.theme = theme
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_COLORS[theme])
   }, [theme])
+
+  // Geteilten Ort aus der Adresszeile entfernen, damit Neuladen nicht wieder dorthin springt
+  useEffect(() => {
+    if (location.search) history.replaceState(null, '', location.pathname)
+  }, [])
 
   function selectPlace(selected: Place) {
     if (selected.id !== PARKED_ID) addRecent(selected) // das eigene Auto nicht im Verlauf
@@ -82,7 +89,9 @@ function App() {
       />
     )
   } else if (place) {
-    sheetContent = <PlaceCard place={place} onClose={closePlace} onRoute={() => setRouting(true)} />
+    sheetContent = (
+      <PlaceCard place={place} onClose={closePlace} onRoute={() => setRouting(true)} onNotice={setNotice} />
+    )
   } else if (category && map) {
     sheetContent = (
       <CategoryResults

@@ -66,6 +66,7 @@
 /* Merken: Favorit / Zuhause / Arbeit */
 .place-card__save {
   display: flex;
+  flex-wrap: wrap; /* auf schmalen Handys in die nächste Zeile */
   gap: 8px;
   margin-top: 12px;
 }

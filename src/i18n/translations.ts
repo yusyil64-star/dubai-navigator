@@ -34,6 +34,11 @@ export const translations = {
         favorites: 'Favoriten',
         recents: 'Zuletzt gesucht',
       },
+      share: {
+        button: 'Teilen',
+        copied: 'Link zum Ort kopiert.',
+        failed: 'Teilen ist auf diesem Gerät nicht möglich.',
+      },
       parking: {
         car: 'Mein Auto',
         since: 'Geparkt um {{time}}',
@@ -203,6 +208,11 @@ export const translations = {
         favorites: 'Favorites',
         recents: 'Recent searches',
       },
+      share: {
+        button: 'Share',
+        copied: 'Link to this place copied.',
+        failed: 'Sharing is not available on this device.',
+      },
       parking: {
         car: 'My car',
         since: 'Parked at {{time}}',
@@ -371,6 +381,11 @@ export const translations = {
         favorite: 'مفضلة',
         favorites: 'المفضلة',
         recents: 'عمليات البحث الأخيرة',
+      },
+      share: {
+        button: 'مشاركة',
+        copied: 'تم نسخ رابط المكان.',
+        failed: 'المشاركة غير متاحة على هذا الجهاز.',
       },
       parking: {
         car: 'سيارتي',
