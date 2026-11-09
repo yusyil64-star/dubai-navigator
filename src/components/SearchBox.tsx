@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useSavedPlaces } from '../places'
+import { PARKED_ID, setParked, useSavedPlaces, type ParkedCar } from '../places'
 import { CATEGORIES, type Category } from '../services/categories'
 import { searchPlaces, type Place } from '../services/geocoding'
+import type { LonLat } from '../services/routing'
+import { formatClock } from '../utils/format'
 import './SearchBox.css'
 
 const MIN_CHARS = 2
@@ -14,10 +16,12 @@ type SearchBoxProps = {
   onSelect: (place: Place) => void
   // Falls gesetzt: Kategorie-Knöpfe (Tankstelle, Apotheke, …) anzeigen
   onCategory?: (category: Category) => void
+  // Falls gesetzt: "Parkplatz hier merken" mit diesem Standort anbieten
+  userLocation?: LonLat | null
 }
 
 // Suchfeld mit Vorschlagsliste. Ohne Eingabe: Kategorien, Zuhause/Arbeit, Favoriten, Verlauf.
-export function SearchBox({ onSelect, onCategory }: SearchBoxProps) {
+export function SearchBox({ onSelect, onCategory, userLocation }: SearchBoxProps) {
   const { t, i18n } = useTranslation()
   const saved = useSavedPlaces()
   const homeAndWork = [
@@ -101,6 +105,14 @@ export function SearchBox({ onSelect, onCategory }: SearchBoxProps) {
               ))}
             </div>
           )}
+          {onCategory && (
+            <ParkingEntry
+              parked={saved.parked}
+              userLocation={userLocation ?? null}
+              language={i18n.resolvedLanguage ?? 'en'}
+              onSelect={select}
+            />
+          )}
           <QuickList
             title={null}
             places={homeAndWork.map((entry) => entry.place)}
@@ -152,5 +164,50 @@ function QuickList({ title, places, labels, onSelect }: QuickListProps) {
         ))}
       </ul>
     </>
+  )
+}
+
+type ParkingEntryProps = {
+  parked: ParkedCar | null
+  userLocation: LonLat | null
+  language: string
+  onSelect: (place: Place) => void
+}
+
+// "Mein Auto" (wenn ein Parkplatz gemerkt ist) oder "Parkplatz hier merken" (wenn der Standort bekannt ist)
+function ParkingEntry({ parked, userLocation, language, onSelect }: ParkingEntryProps) {
+  const { t } = useTranslation()
+  if (parked) {
+    const place: Place = {
+      id: PARKED_ID,
+      name: t('parking.car'),
+      detail: t('parking.since', { time: formatClock(new Date(parked.savedAt), language) }),
+      lon: parked.lon,
+      lat: parked.lat,
+    }
+    return (
+      <ul className="search-box__results">
+        <li className="search-box__parking">
+          <button type="button" onClick={() => onSelect(place)}>
+            <span className="search-box__name">{place.name}</span>
+            <span className="search-box__detail">{place.detail}</span>
+          </button>
+          <button
+            type="button"
+            className="search-box__forget"
+            onClick={() => setParked(null)}
+            aria-label={t('parking.forget')}
+          >
+            ×
+          </button>
+        </li>
+      </ul>
+    )
+  }
+  if (!userLocation) return null
+  return (
+    <button type="button" className="search-box__park" onClick={() => setParked(userLocation)}>
+      + {t('parking.saveHere')}
+    </button>
   )
 }

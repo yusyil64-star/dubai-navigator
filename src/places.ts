@@ -1,17 +1,23 @@
-// Persönliche Orte: Zuhause, Arbeit, Favoriten, zuletzt gesucht.
+// Persönliche Orte: Zuhause, Arbeit, Favoriten, zuletzt gesucht, geparktes Auto.
 // Gespeichert nur im Browser dieses Geräts (kein Konto, kein Server).
 import { useSyncExternalStore } from 'react'
 import type { Place } from './services/geocoding'
+import type { LonLat } from './services/routing'
+
+// Wo das Auto steht und seit wann (Zeitstempel in ms)
+export type ParkedCar = { lon: number; lat: number; savedAt: number }
 
 export type SavedPlaces = {
   home: Place | null
   work: Place | null
   favorites: Place[]
   recents: Place[]
+  parked: ParkedCar | null
 }
 
-const EMPTY: SavedPlaces = { home: null, work: null, favorites: [], recents: [] }
+const EMPTY: SavedPlaces = { home: null, work: null, favorites: [], recents: [], parked: null }
 const STORAGE_KEY = 'dubai-navigator.places'
+export const PARKED_ID = 'parked-car' // Kennung des Orts "Mein Auto"
 const MAX_RECENTS = 8
 
 function load(): SavedPlaces {
@@ -58,6 +64,11 @@ export function toggleWork(place: Place) {
 
 export function addRecent(place: Place) {
   update({ recents: [place, ...current.recents.filter((p) => !samePlace(p, place))].slice(0, MAX_RECENTS) })
+}
+
+// Parkplatz merken (null = vergessen)
+export function setParked(position: LonLat | null) {
+  update({ parked: position && { lon: position[0], lat: position[1], savedAt: Date.now() } })
 }
 
 export function clearPersonalData() {

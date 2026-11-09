@@ -34,6 +34,13 @@ export const translations = {
         favorites: 'Favoriten',
         recents: 'Zuletzt gesucht',
       },
+      parking: {
+        car: 'Mein Auto',
+        since: 'Geparkt um {{time}}',
+        saveHere: 'Parkplatz hier merken',
+        saved: 'Parkplatz gemerkt',
+        forget: 'Parkplatz vergessen',
+      },
       salik: {
         title_one: '{{count}} Salik-Tor',
         title_other: '{{count}} Salik-Tore',
@@ -196,6 +203,13 @@ export const translations = {
         favorites: 'Favorites',
         recents: 'Recent searches',
       },
+      parking: {
+        car: 'My car',
+        since: 'Parked at {{time}}',
+        saveHere: 'Remember parking spot here',
+        saved: 'Parking spot saved',
+        forget: 'Forget parking spot',
+      },
       salik: {
         title_one: '{{count}} Salik gate',
         title_other: '{{count}} Salik gates',
@@ -357,6 +371,13 @@ export const translations = {
         favorite: 'مفضلة',
         favorites: 'المفضلة',
         recents: 'عمليات البحث الأخيرة',
+      },
+      parking: {
+        car: 'سيارتي',
+        since: 'مركونة منذ {{time}}',
+        saveHere: 'حفظ موقف السيارة هنا',
+        saved: 'تم حفظ موقف السيارة',
+        forget: 'حذف موقف السيارة',
       },
       salik: {
         // Arabisch hat eigene Formen für 1, 2, 3–10 und 11+

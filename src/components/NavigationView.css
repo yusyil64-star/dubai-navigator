@@ -292,3 +292,22 @@
   width: 22px;
   height: 22px;
 }
+
+/* Nach der Ankunft: Parkplatz merken */
+.nav-footer__park {
+  align-self: flex-start;
+  padding: 8px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.nav-footer__park:disabled {
+  color: var(--color-accent);
+  cursor: default;
+}

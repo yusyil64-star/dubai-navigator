@@ -64,7 +64,7 @@ Legende: ✅ fertig · 🔨 in Arbeit · ⬜ geplant · 💰 braucht Geld/Konto/
 
 - ✅ Alternativrouten: bis zu 3 Routen zur Auswahl (Zeit, Strecke, „über E11“), andere grau auf der Karte, Salik je Route – der Routendienst liefert sie nur ohne Zwischenstopps und nicht für jede Strecke
 - ✅ Spurempfehlung im Navigations-Banner: passende Fahrspuren hell, andere gedämpft – nur an Abzweigungen, an denen die Spuren in OpenStreetMap erfasst sind
-- ⬜ „Wo habe ich geparkt?“ – Parkplatz merken und wiederfinden
+- ✅ „Wo habe ich geparkt?“ – Parkplatz merken (über die Suche oder nach der Ankunft mit dem Auto), als „Mein Auto“ wiederfinden und hinführen lassen
 - ⬜ Ziel teilen (Link zum Ort über die Teilen-Funktion des Handys)
 - ⬜ Parkzonen: keine offene Quelle mit Koordinaten gefunden (Portal blockiert automatischen Zugriff) – zurückgestellt
 

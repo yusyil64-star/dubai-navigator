@@ -14,7 +14,7 @@ import { SearchBox } from './components/SearchBox'
 import { SettingsPanel } from './components/SettingsPanel'
 import { SpeedCameraLayer } from './components/SpeedCameraLayer'
 import { Toast } from './components/Toast'
-import { addRecent } from './places'
+import { addRecent, PARKED_ID } from './places'
 import type { Category } from './services/categories'
 import type { Place } from './services/geocoding'
 import type { LonLat, Route } from './services/routing'
@@ -51,7 +51,7 @@ function App() {
   }, [theme])
 
   function selectPlace(selected: Place) {
-    addRecent(selected)
+    if (selected.id !== PARKED_ID) addRecent(selected) // das eigene Auto nicht im Verlauf
     setPlace(selected)
     setCategory(null)
   }
@@ -94,7 +94,7 @@ function App() {
       />
     )
   } else {
-    sheetContent = <SearchBox onSelect={selectPlace} onCategory={openCategory} />
+    sheetContent = <SearchBox onSelect={selectPlace} onCategory={openCategory} userLocation={userLocation} />
   }
 
   return (

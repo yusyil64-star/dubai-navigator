@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Marker, type Map as MapLibreMap } from 'maplibre-gl'
 import { instructionText, maneuverIcon } from '../navigation/instructions'
 import { useNavigation } from '../navigation/useNavigation'
+import { setParked } from '../places'
 import type { Route } from '../services/routing'
 import { updateSettings, useSettings } from '../settings'
 import { formatClock, formatDistance, formatDuration } from '../utils/format'
@@ -27,6 +28,7 @@ export function NavigationView({ map, route: initialRoute, simulate, onExit, onN
   const language = i18n.resolvedLanguage ?? 'en'
   const settings = useSettings()
   const [following, setFollowing] = useState(true)
+  const [parkedHere, setParkedHere] = useState(false)
   const { route, progress, status } = useNavigation(initialRoute, {
     simulate,
     voiceEnabled: settings.voice,
@@ -149,6 +151,20 @@ export function NavigationView({ map, route: initialRoute, simulate, onExit, onN
                 {` · ${t('nav.arrival', { time: formatClock(new Date(progress.arrivalTime), language) })}`}
               </span>
             </>
+          )}
+          {/* Mit dem Auto angekommen: Parkplatz merken anbieten */}
+          {status === 'arrived' && route.profile === 'car' && progress && (
+            <button
+              type="button"
+              className="nav-footer__park"
+              disabled={parkedHere}
+              onClick={() => {
+                setParked(progress.position)
+                setParkedHere(true)
+              }}
+            >
+              {parkedHere ? `✓ ${t('parking.saved')}` : t('parking.saveHere')}
+            </button>
           )}
           {simulate && <span className="nav-footer__badge">{t('nav.simulation')}</span>}
         </div>

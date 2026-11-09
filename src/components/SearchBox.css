@@ -112,3 +112,33 @@
   text-transform: uppercase;
   color: var(--color-text-muted);
 }
+
+/* Geparktes Auto: Eintrag mit Knopf zum Vergessen */
+.search-box__parking {
+  display: flex;
+  align-items: center;
+}
+
+.search-box__parking > button:first-child {
+  flex: 1;
+}
+
+.search-box__results .search-box__forget {
+  flex: 0 0 auto;
+  width: 44px;
+  align-items: center;
+  font-size: 22px;
+  color: var(--color-text-muted);
+}
+
+.search-box__park {
+  margin-top: 8px;
+  padding: 6px 0;
+  border: 0;
+  background: none;
+  color: var(--color-accent);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
