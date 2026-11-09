@@ -117,6 +117,16 @@ export function spokenDistance(meters: number, t: TFunction, language: string) {
   return t('nav.kilometers', { count: km })
 }
 
+// Gesprochene Dauer, ausgeschrieben: "4 Minuten" (statt "4 Min.")
+export function spokenDuration(seconds: number, language: string) {
+  const minutes = Math.max(1, Math.round(seconds / 60))
+  const unit = (value: number, unit: 'hour' | 'minute') =>
+    new Intl.NumberFormat(language, { style: 'unit', unit, unitDisplay: 'long' }).format(value)
+  if (minutes < 60) return unit(minutes, 'minute')
+  const rest = minutes % 60
+  return rest === 0 ? unit(Math.floor(minutes / 60), 'hour') : `${unit(Math.floor(minutes / 60), 'hour')} ${unit(rest, 'minute')}`
+}
+
 // Ansage mit Entfernung, z. B. "In 300 Metern rechts abbiegen auf D71"
 export function announcementText(step: RouteStep, meters: number, t: TFunction, language: string) {
   const distanceText = spokenDistance(meters, t, language)

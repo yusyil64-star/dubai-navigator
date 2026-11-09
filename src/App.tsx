@@ -28,6 +28,7 @@ import { hasReports } from './services/reports'
 import type { Category } from './services/categories'
 import { describeLocation, type Place } from './services/geocoding'
 import type { LonLat, Route } from './services/routing'
+import { setBusy } from './pwa'
 import { useResolvedTheme, useSettings } from './settings'
 import { placeFromUrl } from './utils/share'
 
@@ -67,6 +68,11 @@ function App() {
     document.documentElement.dataset.theme = theme
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_COLORS[theme])
   }, [theme])
+
+  // Während einer Fahrt kein Update einspielen (die Seite würde neu laden)
+  useEffect(() => {
+    setBusy(Boolean(navigation) || driving)
+  }, [navigation, driving])
 
   // Navigation beendet: Live-Standort-Teilen ebenfalls beenden
   useEffect(() => {

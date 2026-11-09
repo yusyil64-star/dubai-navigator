@@ -2,7 +2,7 @@
 // Die Antwort wird in dasselbe Format wie die OSRM-Routen übersetzt, damit Navigation,
 // Ansagen und Anzeige unverändert funktionieren.
 import { TRAFFIC_PROXY } from '../config/tomtom'
-import type { LonLat, Route, RouteStep } from './routing'
+import type { LonLat, Route, RouteStep, TrafficSection } from './routing'
 
 type Instruction = {
   routeOffsetInMeters: number
@@ -16,7 +16,18 @@ type Instruction = {
   turnAngleInDecimalDegrees?: number
 }
 
+type TomTomSection = {
+  startPointIndex: number
+  endPointIndex: number
+  sectionType: string
+  simpleCategory?: string
+  delayInSeconds?: number
+  eventId?: string
+  tec?: { causes?: { mainCauseCode: number }[] }
+}
+
 type TomTomRoute = {
+  sections?: TomTomSection[]
   summary: { lengthInMeters: number; travelTimeInSeconds: number; trafficDelayInSeconds: number }
   legs: { points: { latitude: number; longitude: number }[] }[]
   guidance: { instructions: Instruction[] }
@@ -118,6 +129,23 @@ function toRoute(route: TomTomRoute, waypoints: LonLat[]): Route {
     waypoints,
     profile: 'car',
     trafficDelaySeconds: route.summary.trafficDelayInSeconds,
+    trafficSections: (route.sections ?? []).flatMap(toTrafficSection),
     provider: 'tomtom',
   }
+}
+
+// TomTom-Verkehrsabschnitt → Art des Ereignisses (TEC-Ursache 2 = Unfall laut TomTom-Dokumentation)
+function toTrafficSection(section: TomTomSection): TrafficSection[] {
+  if (section.sectionType !== 'TRAFFIC') return []
+  const accident = section.tec?.causes?.some((cause) => cause.mainCauseCode === 2)
+  const kinds: Record<string, TrafficSection['kind']> = { JAM: 'jam', ROAD_WORK: 'roadworks', ROAD_CLOSURE: 'closed' }
+  return [
+    {
+      kind: accident ? 'accident' : (kinds[section.simpleCategory ?? ''] ?? 'other'),
+      startIndex: section.startPointIndex,
+      endIndex: section.endPointIndex,
+      delaySeconds: section.delayInSeconds ?? 0,
+      id: section.eventId ?? `${section.startPointIndex}-${section.endPointIndex}`,
+    },
+  ]
 }

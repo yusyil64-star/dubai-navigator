@@ -138,11 +138,7 @@
   color: #1c1c1e;
 }
 
-/* Liegt schon ein Blitzer-Hinweis dort, die Meldung darunter */
-.nav-camera.nav-report--below {
-  top: calc(max(var(--space), env(safe-area-inset-top)) + 86px + 46px);
-}
 
-.nav-camera.nav-camera--top.nav-report--below {
-  top: calc(max(var(--space), env(safe-area-inset-top)) + 46px);
+.report-marker--camera {
+  background: #d32f2f;
 }

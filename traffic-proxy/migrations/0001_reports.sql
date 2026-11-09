@@ -2,7 +2,7 @@
 -- Art, Ort, Fahrtrichtung, Zeit und Bestätigungen. Keine Namen, keine Konten.
 CREATE TABLE reports (
   id TEXT PRIMARY KEY,
-  kind TEXT NOT NULL,          -- accident, police, hazard, jam, roadworks, closed
+  kind TEXT NOT NULL,          -- accident, police, camera, hazard, jam, roadworks, closed
   lon REAL NOT NULL,
   lat REAL NOT NULL,
   heading REAL,                -- Fahrtrichtung beim Melden (Grad), für "liegt vor mir?"

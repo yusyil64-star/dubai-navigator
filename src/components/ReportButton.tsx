@@ -41,7 +41,8 @@ export function ReportButton({ position, heading, onNotice }: ReportButtonProps)
         disabled={!position}
       >
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M3 10v4h3l7 4V6L6 10zM16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11" />
+          <path d="M12 3.5l9 16H3z" />
+          <path d="M12 10v4.5M12 17.2v.3" />
         </svg>
       </button>
       {open && (

@@ -5,6 +5,7 @@ import { LANGUAGES, setLanguage } from '../i18n'
 import { clearPersonalData } from '../places'
 import { hasReports } from '../services/reports'
 import { updateSettings, useSettings, type Settings } from '../settings'
+import { InstallSection } from './InstallSection'
 import { VoicePicker } from './VoicePicker'
 import './SettingsPanel.css'
 
@@ -79,6 +80,11 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
           ))}
         </div>
         {settings.sound !== 'off' && <VoicePicker />}
+      </section>
+
+      {/* Warnungen wie bei Waze: Blitzer, Meldungen anderer Fahrer, Stau/Unfall, zu schnell */}
+      <section>
+        <h3>{t('settings.alerts')}</h3>
         <label className="settings__toggle">
           <span>{t('settings.speedCameras')}</span>
           <input
@@ -88,22 +94,6 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
           />
         </label>
         <p className="settings__note">{t('settings.speedCamerasNote')}</p>
-      </section>
-
-      <section>
-        <h3>{t('settings.mapView')}</h3>
-        <div className="settings__choice">
-          {MAP_VIEWS.map((view) => (
-            <button
-              key={view}
-              type="button"
-              aria-pressed={settings.mapView === view}
-              onClick={() => updateSettings({ mapView: view })}
-            >
-              {t(`settings.mapViews.${view}`)}
-            </button>
-          ))}
-        </div>
         {hasReports && (
           <label className="settings__toggle">
             <span>{t('settings.communityReports')}</span>
@@ -124,26 +114,7 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
             />
           </label>
         )}
-        <label className="settings__toggle">
-          <span>{t('settings.transitLayer')}</span>
-          <input
-            type="checkbox"
-            checked={settings.transitLayer}
-            onChange={(e) => updateSettings({ transitLayer: e.target.checked })}
-          />
-        </label>
-        <label className="settings__toggle">
-          <span>{t('settings.autoZoom')}</span>
-          <input
-            type="checkbox"
-            checked={settings.autoZoom}
-            onChange={(e) => updateSettings({ autoZoom: e.target.checked })}
-          />
-        </label>
-      </section>
-
-      <section>
-        <h3>{t('settings.speedWarning')}</h3>
+        <h4>{t('settings.speedWarning')}</h4>
         <div className="settings__choice">
           {SPEED_WARNINGS.map((value) => (
             <button
@@ -158,6 +129,40 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
         </div>
         <p className="settings__note">{t('settings.speedWarningNote')}</p>
       </section>
+
+      <section>
+        <h3>{t('settings.mapView')}</h3>
+        <div className="settings__choice">
+          {MAP_VIEWS.map((view) => (
+            <button
+              key={view}
+              type="button"
+              aria-pressed={settings.mapView === view}
+              onClick={() => updateSettings({ mapView: view })}
+            >
+              {t(`settings.mapViews.${view}`)}
+            </button>
+          ))}
+        </div>
+        <label className="settings__toggle">
+          <span>{t('settings.autoZoom')}</span>
+          <input
+            type="checkbox"
+            checked={settings.autoZoom}
+            onChange={(e) => updateSettings({ autoZoom: e.target.checked })}
+          />
+        </label>
+        <label className="settings__toggle">
+          <span>{t('settings.transitLayer')}</span>
+          <input
+            type="checkbox"
+            checked={settings.transitLayer}
+            onChange={(e) => updateSettings({ transitLayer: e.target.checked })}
+          />
+        </label>
+      </section>
+
+      <InstallSection />
 
       <section>
         <h3>{t('settings.personal')}</h3>

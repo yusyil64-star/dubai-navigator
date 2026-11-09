@@ -1,4 +1,4 @@
-// Meldungen von Nutzern (wie bei Waze): Unfall, Polizei, Gefahr, Stau, Baustelle, Sperrung.
+// Meldungen von Nutzern (wie bei Waze): Unfall, Polizei, mobiles Radar, Gefahr, Stau, Baustelle, Sperrung.
 // Keine Konten: Abstimmungen laufen über eine zufällige Geräte-Kennung, Missbrauchsschutz über eine
 // Prüfsumme aus IP-Adresse und Tag (die IP-Adresse selbst wird nicht gespeichert).
 //
@@ -11,6 +11,7 @@ const MINUTE = 60_000
 const LIFETIME = {
   accident: 60 * MINUTE,
   police: 60 * MINUTE,
+  camera: 60 * MINUTE, // mobiles Radar
   hazard: 60 * MINUTE,
   jam: 30 * MINUTE,
   roadworks: 6 * 60 * MINUTE,

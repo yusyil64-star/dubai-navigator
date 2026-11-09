@@ -11,7 +11,9 @@ export default defineConfig({
     react(),
     // Macht die App installierbar (PWA) und lässt die Oberfläche auch offline starten
     VitePWA({
-      registerType: 'autoUpdate', // neue Versionen werden automatisch übernommen
+      // neue Versionen werden automatisch übernommen – aber nie mitten in einer Fahrt (siehe src/pwa.ts)
+      registerType: 'prompt',
+      injectRegister: false, // Registrierung macht src/pwa.ts selbst
       manifest: {
         name: 'Dubai Navigator',
         short_name: 'Dubai Nav',

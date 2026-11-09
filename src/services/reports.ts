@@ -5,12 +5,13 @@ import { useSyncExternalStore } from 'react'
 import { TRAFFIC_PROXY } from '../config/tomtom'
 import type { LonLat } from './routing'
 
-export const REPORT_KINDS = ['accident', 'police', 'hazard', 'jam', 'roadworks', 'closed'] as const
+export const REPORT_KINDS = ['accident', 'police', 'camera', 'hazard', 'jam', 'roadworks', 'closed'] as const
 export type ReportKind = (typeof REPORT_KINDS)[number]
 
 export const REPORT_ICONS: Record<ReportKind, string> = {
   accident: '💥',
   police: '👮',
+  camera: '📸',
   hazard: '⚠️',
   jam: '🚗',
   roadworks: '🚧',

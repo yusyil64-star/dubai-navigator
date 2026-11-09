@@ -14,14 +14,20 @@ export function watchRealPosition(onFix: (fix: Fix) => void, onError: (code: num
     onError(2)
     return () => {}
   }
+  let hadFix = false
   const id = navigator.geolocation.watchPosition(
-    (pos) =>
+    (pos) => {
+      hadFix = true
       onFix({
         position: [pos.coords.longitude, pos.coords.latitude],
         accuracy: pos.coords.accuracy,
         speed: pos.coords.speed,
-      }),
-    (err) => onError(err.code),
+      })
+    },
+    // Kurze Aussetzer (z. B. im Tunnel) nicht melden, wenn schon Positionen kamen – nur "verboten" immer
+    (err) => {
+      if (err.code === err.PERMISSION_DENIED || !hadFix) onError(err.code)
+    },
     { enableHighAccuracy: true, maximumAge: 1000, timeout: 20000 },
   )
   return () => navigator.geolocation.clearWatch(id)

@@ -96,6 +96,7 @@ const trips = new Map(
     .map((t) => [t.trip_id, { route: routes.get(t.route_id), routeId: t.route_id, shape: t.shape_id, service: t.service_id, stops: [] }]),
 )
 console.log(`${trips.size} Fahrten von Metro und Tram`)
+if (trips.size < 1000) throw new Error(`Nur ${trips.size} Fahrten – unplausibel, Abbruch (alte Daten bleiben).`)
 
 // 2) Haltezeiten nur dieser Fahrten
 for (const s of readTable(text('stop_times.txt'), (f, c) => trips.has(f[c.trip_id]))) {

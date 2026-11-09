@@ -312,10 +312,6 @@
   cursor: default;
 }
 
-/* Fahrmodus: kein Banner, Blitzer-Hinweis ganz oben */
-.nav-camera.nav-camera--top {
-  top: max(var(--space), env(safe-area-inset-top));
-}
 
 /* Unterwegs suchen: Feld über der Fußleiste */
 .nav-search {
@@ -403,5 +399,138 @@
 @keyframes live-blink {
   50% {
     opacity: 0.3;
+  }
+}
+
+/* "Schnellere Route gefunden" (im Hinweis-Stapel unter dem Banner) */
+.nav-faster {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px 8px 14px;
+  border-radius: var(--radius);
+  background: #1e7d4f;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: var(--shadow);
+  animation: nav-pop 220ms ease-out;
+}
+
+.nav-faster span {
+  flex: 1;
+}
+
+.nav-faster button {
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #1e7d4f;
+  font: inherit;
+  cursor: pointer;
+}
+
+.nav-faster .nav-faster__close {
+  padding: 6px 9px;
+  background: transparent;
+  color: #ffffff;
+}
+
+/* Hinweis-Stapel unter dem Banner (bzw. oben im Fahrmodus): nichts überdeckt sich */
+.nav-alerts {
+  position: absolute;
+  z-index: 6;
+  top: calc(max(var(--space), env(safe-area-inset-top)) + 86px);
+  inset-inline: var(--space);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none; /* die Karte darunter bleibt bedienbar */
+}
+
+.nav-alerts--top {
+  top: max(var(--space), env(safe-area-inset-top));
+}
+
+.nav-alerts > * {
+  pointer-events: auto;
+}
+
+.nav-alerts .nav-camera {
+  position: static;
+  margin: 0;
+}
+
+/* Knöpfe in der Fußleiste (Suchen, Teilen, Ton) */
+.nav-footer__tools {
+  display: flex;
+  gap: 8px;
+}
+
+/* Handy: oben Zeit/Entfernung + Beenden, darunter die Knöpfe */
+@media (max-width: 767px) {
+  .nav-footer {
+    flex-wrap: wrap;
+  }
+
+  .nav-footer__info {
+    order: 0;
+  }
+
+  .nav-footer__exit {
+    order: 1;
+  }
+
+  .nav-footer__tools {
+    order: 2;
+    flex-basis: 100%;
+  }
+
+  .nav-footer__tools:empty {
+    display: none;
+  }
+}
+
+/* Alles, was über der Fußleiste schwebt, sitzt direkt über ihr – egal wie hoch sie ist */
+.nav-footer > .nav-speed,
+.nav-footer > .report-button,
+.nav-footer > .nav-recenter {
+  position: absolute;
+  bottom: calc(100% + 12px);
+}
+
+.nav-footer > .nav-speed {
+  inset-inline-start: var(--space);
+}
+
+.nav-footer > .report-button {
+  inset-inline-end: var(--space);
+}
+
+.nav-footer > .nav-recenter {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.nav-footer > .nav-search,
+.nav-footer > .report-sheet {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  inset-inline: var(--space);
+}
+
+/* Zentrieren-Knopf ist mittig verschoben – die Einblend-Animation muss das berücksichtigen */
+.nav-footer > .nav-recenter {
+  animation-name: nav-pop-centered;
+}
+
+@keyframes nav-pop-centered {
+  from {
+    transform: translateX(-50%) scale(0.94);
+    opacity: 0.5;
   }
 }

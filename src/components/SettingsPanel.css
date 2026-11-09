@@ -154,3 +154,10 @@
   font-weight: 600;
   cursor: pointer;
 }
+
+.settings h4 {
+  margin: 14px 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}

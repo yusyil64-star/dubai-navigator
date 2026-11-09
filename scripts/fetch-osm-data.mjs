@@ -89,6 +89,8 @@ const selectedCategories = placesArg?.includes('=') ? placesArg.split('=')[1].sp
 if (!onlyPlaces) {
   // 1) Blitzer: [Längengrad, Breitengrad, Tempolimit oder 0]
   const cameras = await overpass(`[out:json][timeout:90];node[highway=speed_camera](${BBOX});out;`)
+  // Schutz: eine fast leere Antwort ist ein Fehler des Dienstes, dann alte Daten behalten
+  if (cameras.length < 100) throw new Error(`Nur ${cameras.length} Blitzer – unplausibel, Abbruch.`)
   await save('speed-cameras.json', {
     cameras: cameras.map((n) => [round(n.lon), round(n.lat), parseSpeed(n.tags?.maxspeed) ?? 0]),
   })
@@ -101,6 +103,7 @@ if (!onlyPlaces) {
 
   // 3) Tempolimits: nach km/h gruppiert, jede Straße als flache Liste [lon, lat, lon, lat, …]
   const ways = await overpass(`[out:json][timeout:180];way[highway~"^(${ROADS})$"][maxspeed](${BBOX});out geom;`)
+  if (ways.length < 1000) throw new Error(`Nur ${ways.length} Straßen mit Tempolimit – unplausibel, Abbruch.`)
   const limits = {}
   for (const way of ways) {
     const speed = parseSpeed(way.tags.maxspeed)
@@ -143,5 +146,9 @@ for (const [category, filter] of Object.entries(CATEGORIES)) {
       return lon && lat ? [round(lon), round(lat), latinName || tags.brand || '', arabicName] : null
     })
     .filter(Boolean)
+  if (pois.length === 0) {
+    console.warn(`${category}: keine Orte erhalten – alte Datei bleibt`)
+    continue
+  }
   await save(`pois-${category}.json`, { pois })
 }

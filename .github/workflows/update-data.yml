@@ -1,0 +1,43 @@
+# Hält die Daten der App aktuell: Blitzer, Tempolimits, Orte (OpenStreetMap) und Metro/Tram-Fahrplan (RTA).
+# Läuft jeden Montag früh automatisch (oder per Hand auf github.com unter "Actions").
+# Geänderte Daten werden gespeichert und die App danach neu veröffentlicht.
+name: Update map data
+
+on:
+  schedule:
+    - cron: '0 1 * * 1' # montags 01:00 UTC (05:00 in Dubai)
+  workflow_dispatch:
+
+permissions:
+  contents: write # geänderte Daten speichern
+  actions: write # danach die Veröffentlichung starten
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+          cache: npm
+      - run: npm ci
+      # Schlägt ein Dienst fehl, bleiben die alten Daten (die Skripte brechen vor dem Schreiben ab)
+      - run: npm run fetch-osm-data
+        continue-on-error: true
+      - run: npm run fetch-transit-data
+        continue-on-error: true
+      - name: Speichern und veröffentlichen, wenn sich etwas geändert hat
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data
+          if git diff --cached --quiet; then
+            echo "Keine neuen Daten."
+            exit 0
+          fi
+          git commit -m "Daten aktualisiert (OpenStreetMap, RTA-Fahrplan)"
+          git push
+          gh workflow run deploy.yml

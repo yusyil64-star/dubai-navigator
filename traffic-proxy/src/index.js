@@ -99,6 +99,7 @@ function buildTarget(url, key) {
       travelMode: 'car',
       routeType: 'fastest',
       instructionsType: 'coded',
+      sectionType: 'traffic', // Stau, Unfall, Baustelle auf der Route (für Warnungen in der App)
     })
     if (url.searchParams.get('alternatives') === '1') params.set('maxAlternatives', '2')
     if (url.searchParams.get('avoidTolls') === '1') params.set('avoid', 'tollRoads')

@@ -46,6 +46,16 @@ export type Route = {
   profile: Profile
   provider?: 'osrm' | 'tomtom' // woher die Route kommt
   trafficDelaySeconds?: number // Verzögerung durch Verkehr (nur TomTom)
+  trafficSections?: TrafficSection[] // Stau, Unfall, Baustelle auf der Route (nur TomTom)
+}
+
+// Ein Verkehrsereignis auf der Route, von Punkt startIndex bis endIndex der Linie
+export type TrafficSection = {
+  kind: 'jam' | 'accident' | 'roadworks' | 'closed' | 'other'
+  startIndex: number
+  endIndex: number
+  delaySeconds: number
+  id: string // gleiche Kennung bei neuer Route = dasselbe Ereignis (nur einmal ansagen)
 }
 
 type OsrmStep = {

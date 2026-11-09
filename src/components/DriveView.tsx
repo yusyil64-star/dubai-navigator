@@ -5,14 +5,15 @@ import { bearing, distance } from '../navigation/geo'
 import { spokenDistance } from '../navigation/instructions'
 import { watchRealPosition } from '../navigation/positions'
 import { loadSpeedCameras, loadSpeedLimits, speedLimitAt, type Camera, type SpeedLimitIndex } from '../navigation/roadData'
+import { reportAlert } from '../navigation/alerts'
 import { reportAheadByHeading } from '../navigation/reportsAhead'
 import { useSmoothFollow, type SmoothInput } from '../navigation/useSmoothFollow'
 import { speak, stopSpeaking } from '../navigation/voice'
 import { hasReports, useReports } from '../services/reports'
 import { useSettings } from '../settings'
 import { formatDistance } from '../utils/format'
+import { AlertWarning } from './AlertWarning'
 import { ReportButton } from './ReportButton'
-import { ReportWarning } from './ReportWarning'
 import { SpeedDisplay } from './SpeedDisplay'
 import './NavigationView.css'
 
@@ -136,30 +137,34 @@ export function DriveView({ map, onExit, onNotice }: DriveViewProps) {
 
   return (
     <>
-      {state?.camera && (
-        <div className="nav-camera nav-camera--top" role="alert">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M4 7h11l3-2v10l-3-2H4zM7 13v5h3v-5" />
-          </svg>
-          <span>
-            {t('nav.camera')} · {formatDistance(state.camera.distance, language)}
-            {state.camera.speed && ` · ${state.camera.speed} km/h`}
-          </span>
-        </div>
-      )}
+      {/* Hinweise oben, untereinander: Blitzer und Warnung voraus */}
+      <div className="nav-alerts nav-alerts--top">
+        {state?.camera && (
+          <div className="nav-camera" role="alert">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h11l3-2v10l-3-2H4zM7 13v5h3v-5" />
+            </svg>
+            <span>
+              {t('nav.camera')} · {formatDistance(state.camera.distance, language)}
+              {state.camera.speed && ` · ${state.camera.speed} km/h`}
+            </span>
+          </div>
+        )}
 
-      <ReportWarning ahead={reportAhead} className={state?.camera ? 'nav-camera--top nav-report--below' : 'nav-camera--top'} />
-      {hasReports && <ReportButton position={state?.position ?? null} heading={state?.heading ?? null} onNotice={onNotice} />}
+        <AlertWarning alert={reportAlert(reportAhead)} />
+      </div>
 
-      {state && <SpeedDisplay speed={state.speed} limit={state.limit} />}
 
-      {!following && (
-        <button type="button" className="nav-recenter" onClick={() => setFollowing(true)}>
-          {t('nav.recenter')}
-        </button>
-      )}
 
       <div className="nav-footer">
+        {/* Über der Fußleiste – passt sich ihrer Höhe an */}
+        {hasReports && <ReportButton position={state?.position ?? null} heading={state?.heading ?? null} onNotice={onNotice} />}
+        {state && <SpeedDisplay speed={state.speed} limit={state.limit} />}
+        {!following && (
+          <button type="button" className="nav-recenter" onClick={() => setFollowing(true)}>
+            {t('nav.recenter')}
+          </button>
+        )}
         <div className="nav-footer__info">
           <strong>{t('drive.title')}</strong>
           <span>{state ? t('drive.note') : t('nav.waitingForGps')}</span>

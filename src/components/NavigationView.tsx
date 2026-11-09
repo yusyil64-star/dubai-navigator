@@ -1,14 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Marker, type Map as MapLibreMap } from 'maplibre-gl'
-import { instructionText, maneuverIcon } from '../navigation/instructions'
+import { instructionText, maneuverIcon, spokenDuration } from '../navigation/instructions'
 import { cumulativeDistances } from '../navigation/geo'
+import { nearestAlert, reportAlert, trafficAlert } from '../navigation/alerts'
 import { reportAheadOnRoute } from '../navigation/reportsAhead'
+import { useFasterRoute } from '../navigation/useFasterRoute'
 import { useNavigation } from '../navigation/useNavigation'
 import { useSmoothFollow } from '../navigation/useSmoothFollow'
 import { setParked } from '../places'
 import type { Place } from '../services/geocoding'
 import { hasReports, useReports } from '../services/reports'
+import { hasLiveTraffic } from '../config/tomtom'
+import { speak } from '../navigation/voice'
 import { getRoute, type LonLat, type Route } from '../services/routing'
 import { updateSettings, useSettings } from '../settings'
 import { formatClock, formatDistance, formatDuration } from '../utils/format'
@@ -17,8 +21,8 @@ import { canShareLive, currentShareId, endShare, followLink, startShare, updateS
 import { AlongRouteSearch } from './AlongRouteSearch'
 import { LaneGuide } from './LaneGuide'
 import { ManeuverArrow } from './ManeuverArrow'
+import { AlertWarning } from './AlertWarning'
 import { ReportButton } from './ReportButton'
-import { ReportWarning } from './ReportWarning'
 import { RouteLine } from './RouteLine'
 import { SpeedDisplay } from './SpeedDisplay'
 import './NavigationView.css'
@@ -78,10 +82,23 @@ export function NavigationView({
   // Meldungen anderer Nutzer auf der Route voraus
   const reports = useReports(hasReports && settings.communityReports)
   const cum = useMemo(() => cumulativeDistances(route.coordinates), [route])
-  const reportAhead =
-    status === 'active' && progress?.along != null
-      ? reportAheadOnRoute(reports, route.coordinates, cum, progress.along, progress.position)
-      : null
+  // Schnellere Route mit aktuellem Verkehr anbieten (nur mit TomTom)
+  const faster = useFasterRoute(route, progress, status, hasLiveTraffic && settings.liveTraffic && route.profile === 'car')
+  const fasterOffer = faster.offer
+  useEffect(() => {
+    if (fasterOffer && settings.sound === 'all') {
+      speak(t('nav.fasterSpoken', { time: spokenDuration(fasterOffer.savingSeconds, language) }), language)
+    }
+  }, [fasterOffer, settings.sound, t, language])
+
+  // Was liegt voraus? Meldungen anderer Fahrer und Stau/Unfall/Baustelle von TomTom – das nähere zählt
+  const onRoute = status === 'active' && progress?.along != null
+  const roadAlert = onRoute
+    ? nearestAlert(
+        reportAlert(reportAheadOnRoute(reports, route.coordinates, cum, progress.along!, progress.position)),
+        settings.liveTraffic ? trafficAlert(route.trafficSections, cum, progress.along!) : null,
+      )
+    : null
 
   const toggleVoice = () => updateSettings({ sound: nextSound[settings.sound] })
 
@@ -200,36 +217,47 @@ export function NavigationView({
         </div>
       </div>
 
-      {status === 'active' && progress?.camera && (
-        <div className="nav-camera" role="alert">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M4 7h11l3-2v10l-3-2H4zM7 13v5h3v-5" />
-          </svg>
-          <span>
-            {t('nav.camera')} · {formatDistance(progress.camera.distance, language)}
-            {progress.camera.speed && ` · ${progress.camera.speed} km/h`}
-          </span>
-        </div>
-      )}
+      {/* Hinweise unter dem Banner, untereinander gestapelt: Blitzer, schnellere Route, Warnung voraus */}
+      <div className="nav-alerts">
+        {status === 'active' && progress?.camera && (
+          <div className="nav-camera" role="alert">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h11l3-2v10l-3-2H4zM7 13v5h3v-5" />
+            </svg>
+            <span>
+              {t('nav.camera')} · {formatDistance(progress.camera.distance, language)}
+              {progress.camera.speed && ` · ${progress.camera.speed} km/h`}
+            </span>
+          </div>
+        )}
 
-      <ReportWarning ahead={reportAhead} className={progress?.camera ? 'nav-report--below' : ''} />
-      {hasReports && status !== 'arrived' && (
-        <ReportButton position={progress?.position ?? null} heading={progress?.heading ?? null} onNotice={onNotice} />
-      )}
-
-      {progress && status !== 'arrived' && <SpeedDisplay speed={progress.speed} limit={progress.speedLimit} />}
-
-      {!following && (
-        <button type="button" className="nav-recenter" onClick={() => setFollowing(true)}>
-          {t('nav.recenter')}
-        </button>
-      )}
-
-      {searching && progress?.along != null && (
-        <AlongRouteSearch route={route} along={progress.along} onPick={addStop} onClose={() => setSearching(false)} />
-      )}
-
+        {fasterOffer && status === 'active' && (
+          <div className="nav-faster" role="alert">
+            <span>⚡ {t('nav.faster', { time: formatDuration(fasterOffer.savingSeconds, language) })}</span>
+            <button type="button" onClick={() => onReroute(fasterOffer.route)}>
+              {t('nav.fasterTake')}
+            </button>
+            <button type="button" className="nav-faster__close" onClick={faster.dismiss} aria-label={t('place.close')}>
+              ✕
+            </button>
+          </div>
+        )}
+        <AlertWarning alert={roadAlert} />
+      </div>
       <div className="nav-footer">
+        {/* Über der Fußleiste – passt sich ihrer Höhe an */}
+        {hasReports && status !== 'arrived' && (
+          <ReportButton position={progress?.position ?? null} heading={progress?.heading ?? null} onNotice={onNotice} />
+        )}
+        {progress && status !== 'arrived' && <SpeedDisplay speed={progress.speed} limit={progress.speedLimit} />}
+        {!following && (
+          <button type="button" className="nav-recenter" onClick={() => setFollowing(true)}>
+            {t('nav.recenter')}
+          </button>
+        )}
+        {searching && progress?.along != null && (
+          <AlongRouteSearch route={route} along={progress.along} onPick={addStop} onClose={() => setSearching(false)} />
+        )}
         <div className="nav-footer__info">
           {progress && status !== 'arrived' && (
             <>
@@ -278,41 +306,43 @@ export function NavigationView({
           )}
           {simulate && <span className="nav-footer__badge">{t('nav.simulation')}</span>}
         </div>
-        {status === 'active' && progress?.along != null && (
+        <div className="nav-footer__tools">
+          {status === 'active' && progress?.along != null && (
+            <button
+              type="button"
+              className="nav-footer__icon"
+              onClick={() => setSearching((open) => !open)}
+              aria-pressed={searching}
+              aria-label={t('along.title')}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="6" className="stroke" />
+                <path d="M16 16l4 4" className="stroke" />
+              </svg>
+            </button>
+          )}
+          {destination && status !== 'arrived' && (
+            <button type="button" className="nav-footer__icon" onClick={shareArrival} aria-label={t('share.etaButton')}>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M14 5l6 6-6 6M20 11H10a6 6 0 0 0-6 6v2" className="stroke" />
+              </svg>
+            </button>
+          )}
           <button
             type="button"
             className="nav-footer__icon"
-            onClick={() => setSearching((open) => !open)}
-            aria-pressed={searching}
-            aria-label={t('along.title')}
+            onClick={toggleVoice}
+            aria-label={t('nav.sound', { mode: t(`settings.sounds.${settings.sound}`) })}
+            title={t(`settings.sounds.${settings.sound}`)}
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="11" cy="11" r="6" className="stroke" />
-              <path d="M16 16l4 4" className="stroke" />
+              <path d="M4 9v6h4l5 4V5L8 9z" />
+              {settings.sound === 'all' && <path d="M16 8.5a4.5 4.5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12" className="stroke" />}
+              {settings.sound === 'alerts' && <path d="M18 7v6M18 16.5v.5" className="stroke" />}
+              {settings.sound === 'off' && <path d="M16 9l5 6M21 9l-5 6" className="stroke" />}
             </svg>
           </button>
-        )}
-        {destination && status !== 'arrived' && (
-          <button type="button" className="nav-footer__icon" onClick={shareArrival} aria-label={t('share.etaButton')}>
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M14 5l6 6-6 6M20 11H10a6 6 0 0 0-6 6v2" className="stroke" />
-            </svg>
-          </button>
-        )}
-        <button
-          type="button"
-          className="nav-footer__icon"
-          onClick={toggleVoice}
-          aria-label={t('nav.sound', { mode: t(`settings.sounds.${settings.sound}`) })}
-          title={t(`settings.sounds.${settings.sound}`)}
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M4 9v6h4l5 4V5L8 9z" />
-            {settings.sound === 'all' && <path d="M16 8.5a4.5 4.5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12" className="stroke" />}
-            {settings.sound === 'alerts' && <path d="M18 7v6M18 16.5v.5" className="stroke" />}
-            {settings.sound === 'off' && <path d="M16 9l5 6M21 9l-5 6" className="stroke" />}
-          </svg>
-        </button>
+        </div>
         <button type="button" className="nav-footer__exit" onClick={onExit}>
           {t('nav.exit')}
         </button>
