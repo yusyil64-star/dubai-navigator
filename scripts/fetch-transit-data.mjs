@@ -10,7 +10,7 @@ import { unzipSync, strFromU8 } from 'fflate'
 const GTFS_URL = 'https://www.gitlab.com/Lach-anonym/dubai-gtfs/-/jobs/artifacts/main/raw/gtfs.zip?job=download-republish-gtfs'
 const OUT_DIR = new URL('../public/data/transit/', import.meta.url)
 const NOTE = 'Fahrplan: Roads and Transport Authority (RTA), Dubai Pulse Open Data'
-const FILES = ['routes.txt', 'trips.txt', 'stops.txt', 'stop_times.txt', 'calendar.txt', 'translations.txt']
+const FILES = ['routes.txt', 'trips.txt', 'stops.txt', 'stop_times.txt', 'calendar.txt', 'translations.txt', 'shapes.txt']
 const WEEKDAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
 
 // Eine CSV-Zeile in Felder zerlegen (Felder können in "…" stehen)
@@ -93,7 +93,7 @@ const routes = new Map(
 const trips = new Map(
   readTable(text('trips.txt'))
     .filter((t) => routes.has(t.route_id))
-    .map((t) => [t.trip_id, { route: routes.get(t.route_id), service: t.service_id, stops: [] }]),
+    .map((t) => [t.trip_id, { route: routes.get(t.route_id), routeId: t.route_id, shape: t.shape_id, service: t.service_id, stops: [] }]),
 )
 console.log(`${trips.size} Fahrten von Metro und Tram`)
 
@@ -170,4 +170,46 @@ for (const station of stations.values()) {
   bytes += json.length
   await writeFile(new URL(`${station.id}.json`, OUT_DIR), json)
 }
+// 6) Linienverlauf für die Karte: je Linie und Richtung der längste Verlauf (deckt alle Abschnitte ab)
+const shapeIds = new Set([...trips.values()].map((t) => t.shape))
+const shapePoints = new Map()
+for (const p of readTable(text('shapes.txt'), (f, c) => shapeIds.has(f[c.shape_id]))) {
+  if (!shapePoints.has(p.shape_id)) shapePoints.set(p.shape_id, [])
+  shapePoints.get(p.shape_id).push([Number(p.shape_pt_sequence), Number(p.shape_pt_lon), Number(p.shape_pt_lat)])
+}
+const longest = new Map() // Linien-ID|Endstation → längster Verlauf
+for (const trip of trips.values()) {
+  const points = shapePoints.get(trip.shape)
+  if (!points) continue
+  const key = `${trip.routeId}|${trip.stops.at(-1)?.[1]}`
+  if (!longest.has(key) || longest.get(key).points.length < points.length) longest.set(key, { trip, points })
+}
+const features = [...longest.values()].map(({ trip, points }) => ({
+  type: 'Feature',
+  properties: { line: trip.route.line, color: trip.route.color },
+  geometry: {
+    type: 'LineString',
+    coordinates: simplify(points.sort((a, b) => a[0] - b[0]).map((p) => [p[1], p[2]])).map(([x, y]) => [round(x), round(y)]),
+  },
+}))
+await writeFile(new URL('lines.json', OUT_DIR), JSON.stringify({ type: 'FeatureCollection', note: NOTE, features }))
+console.log(`Linienverlauf: ${features.length} Linien/Richtungen`)
+
 console.log(`Fertig: ${stations.size} Stationen, ${(bytes / 1024).toFixed(0)} KB, Fahrplan gültig ${validFrom}–${validUntil}.`)
+
+function simplify(points, tolerance = 0.00003) {
+  if (points.length <= 2) return points
+  const [a, b] = [points[0], points[points.length - 1]]
+  let maxDist = 0
+  let index = 0
+  for (let i = 1; i < points.length - 1; i++) {
+    const p = points[i]
+    const dx = b[0] - a[0]
+    const dy = b[1] - a[1]
+    const len = Math.hypot(dx, dy) || 1e-12
+    const dist = Math.abs(dy * p[0] - dx * p[1] + b[0] * a[1] - b[1] * a[0]) / len
+    if (dist > maxDist) [maxDist, index] = [dist, i]
+  }
+  if (maxDist <= tolerance) return [a, b]
+  return [...simplify(points.slice(0, index + 1), tolerance).slice(0, -1), ...simplify(points.slice(index), tolerance)]
+}

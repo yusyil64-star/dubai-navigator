@@ -82,6 +82,11 @@ Legende: ✅ fertig · 🔨 in Arbeit · ⬜ geplant · 💰 braucht Geld/Konto/
 - ✅ Sprachsuche: Ziel einsprechen (Mikrofon im Suchfeld; Chrome nutzt dafür Google, Safari Apple – steht im Datenschutz-Hinweis)
 - ✅ Auto-Zoom (je nach Tempo, vor Abbiegungen heran) und Kartenansicht 3D / 2D / Norden oben (Einstellungen)
 - ✅ Routenplanung bleibt nach einer (Demo-)Fahrt erhalten (Start und Zwischenstopps)
+- ✅ Weiche Übergänge: Bedienfeld gleitet herein, Inhalte blenden über, Ort fliegt sichtbar über das Bedienfeld
+- ✅ Ton wie bei Waze: alle Ansagen / nur Warnungen / stumm (auch in der Fußleiste umschaltbar)
+- ✅ Nachtmodus nach Tageszeit (Sonnenauf- und -untergang in Dubai)
+- ✅ „Parkplätze am Ziel“ kurz vor der Ankunft
+- ✅ Kartenebene Metro- und Tram-Linien in ihren Farben (aus dem RTA-Fahrplan)
 - Nicht möglich mit dem kostenlosen Routendienst: Autobahn/Maut/Fähre meiden (getestet: wird abgelehnt)
 
 ## Schritt 6 – Große Ausbaustufen

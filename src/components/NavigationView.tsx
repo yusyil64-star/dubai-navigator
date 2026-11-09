@@ -6,7 +6,7 @@ import { useNavigation } from '../navigation/useNavigation'
 import { useSmoothFollow } from '../navigation/useSmoothFollow'
 import { setParked } from '../places'
 import type { Place } from '../services/geocoding'
-import { getRoute, type Route } from '../services/routing'
+import { getRoute, type LonLat, type Route } from '../services/routing'
 import { updateSettings, useSettings } from '../settings'
 import { formatClock, formatDistance, formatDuration } from '../utils/format'
 import { placeLink, share } from '../utils/share'
@@ -18,6 +18,7 @@ import { SpeedDisplay } from './SpeedDisplay'
 import './NavigationView.css'
 
 const LOCATION_ERRORS: Record<number, string> = { 1: 'location.denied', 3: 'location.timeout' }
+const PARKING_HINT_METERS = 1500 // ab dieser Restentfernung "Parkplätze in der Nähe" anbieten
 
 type NavigationViewProps = {
   map: MapLibreMap
@@ -27,6 +28,7 @@ type NavigationViewProps = {
   onNotice: (key: string) => void
   destination: Place | null // für "Ankunftszeit teilen"
   onReroute: (route: Route) => void // neue Route (z. B. mit Zwischenstopp unterwegs)
+  onFindParking: (around: LonLat) => void // Parkplätze beim Ziel zeigen (beendet die Navigation)
 }
 
 // Navigations-Ansicht: Banner mit nächstem Manöver, Restzeit, Karte folgt der Position.
@@ -38,6 +40,7 @@ export function NavigationView({
   onNotice,
   destination,
   onReroute,
+  onFindParking,
 }: NavigationViewProps) {
   const { t, i18n } = useTranslation()
   const language = i18n.resolvedLanguage ?? 'en'
@@ -47,12 +50,14 @@ export function NavigationView({
   const [searching, setSearching] = useState(false)
   const { route, progress, status } = useNavigation(initialRoute, {
     simulate,
-    voiceEnabled: settings.voice,
+    sound: settings.sound,
     cameraWarnings: settings.speedCameras,
     onLocationError: (code) => onNotice(LOCATION_ERRORS[code] ?? 'location.unavailable'),
   })
 
-  const toggleVoice = () => updateSettings({ voice: !settings.voice })
+  // Ton umschalten wie bei Waze: alle Ansagen → nur Warnungen → stumm → …
+  const nextSound = { all: 'alerts', alerts: 'off', off: 'all' } as const
+  const toggleVoice = () => updateSettings({ sound: nextSound[settings.sound] })
 
   // Unterwegs gefundenen Ort als nächsten Zwischenstopp einfügen
   async function addStop(place: Place) {
@@ -178,6 +183,12 @@ export function NavigationView({
               {parkedHere ? `✓ ${t('parking.saved')}` : t('parking.saveHere')}
             </button>
           )}
+          {/* Kurz vor dem Ziel (oder dort): Parkplätze in der Nähe zeigen, wie bei Waze */}
+          {route.profile === 'car' && progress && (status === 'arrived' || progress.remainingDistance < PARKING_HINT_METERS) && (
+            <button type="button" className="nav-footer__park" onClick={() => onFindParking(route.waypoints[route.waypoints.length - 1])}>
+              {t('parking.nearby')}
+            </button>
+          )}
           {simulate && <span className="nav-footer__badge">{t('nav.simulation')}</span>}
         </div>
         {status === 'active' && progress?.along != null && (
@@ -205,16 +216,14 @@ export function NavigationView({
           type="button"
           className="nav-footer__icon"
           onClick={toggleVoice}
-          aria-pressed={settings.voice}
-          aria-label={t(settings.voice ? 'nav.mute' : 'nav.unmute')}
+          aria-label={t('nav.sound', { mode: t(`settings.sounds.${settings.sound}`) })}
+          title={t(`settings.sounds.${settings.sound}`)}
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M4 9v6h4l5 4V5L8 9z" />
-            {settings.voice ? (
-              <path d="M16 8.5a4.5 4.5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12" className="stroke" />
-            ) : (
-              <path d="M16 9l5 6M21 9l-5 6" className="stroke" />
-            )}
+            {settings.sound === 'all' && <path d="M16 8.5a4.5 4.5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12" className="stroke" />}
+            {settings.sound === 'alerts' && <path d="M18 7v6M18 16.5v.5" className="stroke" />}
+            {settings.sound === 'off' && <path d="M16 9l5 6M21 9l-5 6" className="stroke" />}
           </svg>
         </button>
         <button type="button" className="nav-footer__exit" onClick={onExit}>

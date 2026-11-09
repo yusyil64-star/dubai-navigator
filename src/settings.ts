@@ -1,22 +1,37 @@
 // Einstellungen der App, gespeichert im Browser (nur auf diesem Gerät).
 import { useSyncExternalStore } from 'react'
+import { CalculationMethod, Coordinates, PrayerTimes } from 'adhan'
 
 export type Settings = {
-  voice: boolean // Sprachansagen
+  sound: 'all' | 'alerts' | 'off' // Ton: alle Ansagen, nur Warnungen (Blitzer, zu schnell) oder stumm
   speedCameras: boolean // Blitzer auf der Karte und Warnungen
-  theme: 'auto' | 'light' | 'dark' // Nachtmodus
+  theme: 'auto' | 'sun' | 'light' | 'dark' // Nachtmodus: wie das Gerät, nach Sonnenstand in Dubai, fest
   voiceNames: Record<string, string> // gewählte Stimme je Sprache (fehlt = automatisch die beste)
   speedWarning: number | null // Warnton ab so vielen km/h über dem Limit (null = aus)
   mapView: '3d' | '2d' | 'north' // Kartenansicht beim Fahren: schräg, flach in Fahrtrichtung, Norden oben
   autoZoom: boolean // beim Fahren automatisch zoomen (Tempo, Abbiegungen)
+  transitLayer: boolean // Metro- und Tram-Linien auf der Karte
 }
 
-const DEFAULTS: Settings = { voice: true, speedCameras: true, theme: 'auto', voiceNames: {}, speedWarning: 5, mapView: '3d', autoZoom: true }
+const DEFAULTS: Settings = {
+  sound: 'all',
+  speedCameras: true,
+  theme: 'auto',
+  voiceNames: {},
+  speedWarning: 5,
+  mapView: '3d',
+  autoZoom: true,
+  transitLayer: false,
+}
 const STORAGE_KEY = 'dubai-navigator.settings'
 
 function load(): Settings {
   try {
-    return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}') }
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}')
+    // frühere Einstellung "Sprachansagen aus" übernehmen
+    if (stored.voice === false && !stored.sound) stored.sound = 'off'
+    delete stored.voice
+    return { ...DEFAULTS, ...stored }
   } catch {
     return DEFAULTS
   }
@@ -61,6 +76,22 @@ export function useResolvedTheme(): 'light' | 'dark' {
     },
     () => darkQuery?.matches ?? false,
   )
+  const night = useSyncExternalStore(
+    (listener) => {
+      const timer = setInterval(listener, 60_000) // jede Minute prüfen
+      return () => clearInterval(timer)
+    },
+    isNightInDubai,
+  )
   if (theme === 'auto') return systemDark ? 'dark' : 'light'
+  if (theme === 'sun') return night ? 'dark' : 'light'
   return theme
+}
+
+// Ist es in Dubai gerade dunkel? (zwischen Sonnenuntergang und Sonnenaufgang, berechnet mit adhan)
+const DUBAI = new Coordinates(25.2048, 55.2708)
+function isNightInDubai() {
+  const now = new Date()
+  const times = new PrayerTimes(DUBAI, now, CalculationMethod.Dubai())
+  return now < times.sunrise || now >= times.maghrib // Maghrib = Sonnenuntergang
 }

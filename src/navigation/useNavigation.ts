@@ -14,6 +14,7 @@ import {
   type CameraOnRoute,
   type SpeedLimitIndex,
 } from './roadData'
+import type { Settings } from '../settings'
 import { simulatePosition, watchRealPosition, type Fix } from './positions'
 import { speak, stopSpeaking } from './voice'
 
@@ -45,14 +46,14 @@ export type NavStatus = 'active' | 'rerouting' | 'arrived'
 
 type Options = {
   simulate: boolean
-  voiceEnabled: boolean
+  sound: Settings['sound']
   cameraWarnings: boolean
   onLocationError: (code: number) => void
 }
 
 export function useNavigation(
   initialRoute: Route,
-  { simulate, voiceEnabled, cameraWarnings, onLocationError }: Options,
+  { simulate, sound, cameraWarnings, onLocationError }: Options,
 ) {
   const { t, i18n } = useTranslation()
   const language = i18n.resolvedLanguage ?? 'en'
@@ -61,10 +62,10 @@ export function useNavigation(
   const [status, setStatus] = useState<NavStatus>('active')
 
   // Immer die aktuellen Einstellungen verwenden (z. B. Ton aus, Sprache gewechselt)
-  const settings = useRef({ voiceEnabled, cameraWarnings, language, t, onLocationError })
+  const settings = useRef({ sound, cameraWarnings, language, t, onLocationError })
   useEffect(() => {
-    settings.current = { voiceEnabled, cameraWarnings, language, t, onLocationError }
-    if (!voiceEnabled) stopSpeaking()
+    settings.current = { sound, cameraWarnings, language, t, onLocationError }
+    if (sound === 'off') stopSpeaking()
   })
 
   useEffect(() => {
@@ -100,8 +101,10 @@ export function useNavigation(
     }
     const controller = new AbortController()
 
-    const say = (text: string) => {
-      if (settings.current.voiceEnabled) speak(text, settings.current.language)
+    // Abbiege-Ansagen nur bei "alle Ansagen", Warnungen (Blitzer) auch bei "nur Warnungen"
+    const say = (text: string, alert = false) => {
+      const mode = settings.current.sound
+      if (mode === 'all' || (alert && mode === 'alerts')) speak(text, settings.current.language)
     }
 
     function reroute(from: LonLat, legIndex: number) {
@@ -187,7 +190,7 @@ export function useNavigation(
       if (cameraAhead && camera && camera.distance <= CAMERA_SAY_METERS && !nav.camerasSaid.has(cameraAhead.along)) {
         nav.camerasSaid.add(cameraAhead.along)
         const { t: tr, language: lang } = settings.current
-        say(tr('nav.cameraAhead', { distance: spokenDistance(camera.distance, tr, lang) }))
+        say(tr('nav.cameraAhead', { distance: spokenDistance(camera.distance, tr, lang) }), true)
       }
 
       setProgress({

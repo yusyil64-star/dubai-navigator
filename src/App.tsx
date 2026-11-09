@@ -16,6 +16,7 @@ import { SearchBox } from './components/SearchBox'
 import { SettingsPanel } from './components/SettingsPanel'
 import { SpeedCameraLayer } from './components/SpeedCameraLayer'
 import { Toast } from './components/Toast'
+import { TransitLayer } from './components/TransitLayer'
 import { unlockSpeech } from './navigation/voice'
 import { addRecent, PARKED_ID } from './places'
 import type { Category } from './services/categories'
@@ -151,6 +152,7 @@ function App() {
       <MapView theme={theme} onNotice={setNotice} onMapReady={setMap} onLocation={setUserLocation} />
       {map && place && <PlaceMarker map={map} place={place} />}
       {map && !navigation && !driving && <MapLongPress map={map} onPick={pickOnMap} />}
+      {map && settings.transitLayer && <TransitLayer map={map} />}
       {map && settings.speedCameras && <SpeedCameraLayer map={map} />}
       {map && driving && !navigation ? (
         <DriveView map={map} onExit={() => setDriving(false)} onNotice={setNotice} />
@@ -165,6 +167,12 @@ function App() {
           onNotice={setNotice}
           destination={place}
           onReroute={(newRoute) => setNavigation((current) => current && { ...current, route: newRoute })}
+          onFindParking={(around) => {
+            setNavigation(null)
+            setPlace(null)
+            setRouting(false)
+            setCategory({ category: 'parking', around })
+          }}
         />
       ) : (
         <>

@@ -9,9 +9,9 @@ type SpeedDisplayProps = { speed: number | null; limit: number | null } // beide
 // das Limit um mehr als die eingestellte Toleranz überschreitet – einmal, bis man wieder langsamer ist.
 export function SpeedDisplay({ speed, limit }: SpeedDisplayProps) {
   const { t } = useTranslation()
-  const { speedWarning } = useSettings()
+  const { speedWarning, sound } = useSettings()
   const tooFast = speed !== null && limit !== null && speed > limit
-  const warn = speedWarning !== null && speed !== null && limit !== null && speed > limit + speedWarning
+  const warn = speedWarning !== null && sound !== 'off' && speed !== null && limit !== null && speed > limit + speedWarning
 
   const warned = useRef(false)
   useEffect(() => {

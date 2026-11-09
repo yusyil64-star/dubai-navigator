@@ -13,9 +13,10 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
   const [confirmClear, setConfirmClear] = useState(false)
   const [cleared, setCleared] = useState(false)
 
-  const themes: Settings['theme'][] = ['auto', 'light', 'dark']
+  const themes: Settings['theme'][] = ['auto', 'sun', 'light', 'dark']
   const SPEED_WARNINGS: Settings['speedWarning'][] = [null, 0, 5, 10]
   const MAP_VIEWS: Settings['mapView'][] = ['3d', '2d', 'north']
+  const SOUNDS: Settings['sound'][] = ['all', 'alerts', 'off']
 
   return (
     <div className="settings">
@@ -62,15 +63,20 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
       </section>
 
       <section>
-        <label className="settings__toggle">
-          <span>{t('settings.voice')}</span>
-          <input
-            type="checkbox"
-            checked={settings.voice}
-            onChange={(e) => updateSettings({ voice: e.target.checked })}
-          />
-        </label>
-        {settings.voice && <VoicePicker />}
+        <h3>{t('settings.voice')}</h3>
+        <div className="settings__choice">
+          {SOUNDS.map((sound) => (
+            <button
+              key={sound}
+              type="button"
+              aria-pressed={settings.sound === sound}
+              onClick={() => updateSettings({ sound })}
+            >
+              {t(`settings.sounds.${sound}`)}
+            </button>
+          ))}
+        </div>
+        {settings.sound !== 'off' && <VoicePicker />}
         <label className="settings__toggle">
           <span>{t('settings.speedCameras')}</span>
           <input
@@ -96,6 +102,14 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
             </button>
           ))}
         </div>
+        <label className="settings__toggle">
+          <span>{t('settings.transitLayer')}</span>
+          <input
+            type="checkbox"
+            checked={settings.transitLayer}
+            onChange={(e) => updateSettings({ transitLayer: e.target.checked })}
+          />
+        </label>
         <label className="settings__toggle">
           <span>{t('settings.autoZoom')}</span>
           <input

@@ -86,7 +86,7 @@ export function DriveView({ map, onExit, onNotice }: DriveViewProps) {
           // jeden Blitzer nur einmal ansagen
           if (nearest && nearest.distance <= CAMERA_SAY_METERS && !said.has(nearest.camera)) {
             said.add(nearest.camera)
-            if (s.voice) speak(tr('nav.cameraAhead', { distance: spokenDistance(nearest.distance, tr, lang) }), lang)
+            if (s.sound !== 'off') speak(tr('nav.cameraAhead', { distance: spokenDistance(nearest.distance, tr, lang) }), lang)
           }
         }
         const camera = nearest && { distance: nearest.distance, speed: nearest.camera.speed }
