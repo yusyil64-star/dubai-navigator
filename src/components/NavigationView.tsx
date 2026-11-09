@@ -5,9 +5,11 @@ import { instructionText, maneuverIcon } from '../navigation/instructions'
 import { useNavigation } from '../navigation/useNavigation'
 import { useSmoothFollow } from '../navigation/useSmoothFollow'
 import { setParked } from '../places'
+import type { Place } from '../services/geocoding'
 import type { Route } from '../services/routing'
 import { updateSettings, useSettings } from '../settings'
 import { formatClock, formatDistance, formatDuration } from '../utils/format'
+import { placeLink, share } from '../utils/share'
 import { LaneGuide } from './LaneGuide'
 import { ManeuverArrow } from './ManeuverArrow'
 import { RouteLine } from './RouteLine'
@@ -22,10 +24,11 @@ type NavigationViewProps = {
   simulate: boolean
   onExit: () => void
   onNotice: (key: string) => void
+  destination: Place | null // für "Ankunftszeit teilen"
 }
 
 // Navigations-Ansicht: Banner mit nächstem Manöver, Restzeit, Karte folgt der Position.
-export function NavigationView({ map, route: initialRoute, simulate, onExit, onNotice }: NavigationViewProps) {
+export function NavigationView({ map, route: initialRoute, simulate, onExit, onNotice, destination }: NavigationViewProps) {
   const { t, i18n } = useTranslation()
   const language = i18n.resolvedLanguage ?? 'en'
   const settings = useSettings()
@@ -39,6 +42,17 @@ export function NavigationView({ map, route: initialRoute, simulate, onExit, onN
   })
 
   const toggleVoice = () => updateSettings({ voice: !settings.voice })
+
+  // Ankunftszeit teilen, z. B. per WhatsApp: "Ich bin um 14:32 bei Dubai Mall." (ohne Live-Verfolgung)
+  async function shareArrival() {
+    if (!progress || !destination) return
+    const time = formatClock(new Date(progress.arrivalTime), language)
+    const result = await share({
+      text: t('share.eta', { time, place: destination.name }),
+      url: placeLink(destination),
+    })
+    if (result === 'copied' || result === 'failed') onNotice(`share.${result}`)
+  }
 
   // Während der Navigation die normalen Kartenknöpfe ausblenden
   useEffect(() => {
@@ -137,6 +151,13 @@ export function NavigationView({ map, route: initialRoute, simulate, onExit, onN
           )}
           {simulate && <span className="nav-footer__badge">{t('nav.simulation')}</span>}
         </div>
+        {destination && status !== 'arrived' && (
+          <button type="button" className="nav-footer__icon" onClick={shareArrival} aria-label={t('share.etaButton')}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M14 5l6 6-6 6M20 11H10a6 6 0 0 0-6 6v2" className="stroke" />
+            </svg>
+          </button>
+        )}
         <button
           type="button"
           className="nav-footer__icon"

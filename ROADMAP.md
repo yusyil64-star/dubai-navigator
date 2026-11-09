@@ -75,9 +75,9 @@ Legende: ✅ fertig · 🔨 in Arbeit · ⬜ geplant · 💰 braucht Geld/Konto/
 - ✅ Lange auf die Karte drücken (oder Rechtsklick): Punkt als Ort wählen, mit Adresse in der Nähe
 - ✅ Fahrmodus ohne Ziel: Karte folgt, Tempo, Tempolimit, Blitzer voraus (Anzeige + Ansage)
 - ✅ Warnton bei zu schnell (aus / ab Limit / +5 / +10 km/h)
-- ⬜ Liste aller Abbiegungen der Route
-- ⬜ Ziel liegt links/rechts (bei der Ankunft)
-- ⬜ Ankunftszeit teilen („Ich bin um 14:32 da“, ohne Live-Verfolgung)
+- ✅ Wegbeschreibung: Liste aller Abbiegungen der Route
+- ✅ Ziel liegt links/rechts (Ansage und Anzeige bei der Ankunft)
+- ✅ Ankunftszeit teilen während der Navigation („Ich bin voraussichtlich um 14:32 bei …“, ohne Live-Verfolgung)
 - ⬜ Unterwegs suchen: Tankstelle, Café usw. nahe der Route
 - ⬜ Sprachsuche: Ziel einsprechen
 - ⬜ Karte zoomt vor Abbiegungen automatisch heran; Einstellungen für 2D/3D und Norden oben

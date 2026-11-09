@@ -63,8 +63,11 @@ export function instructionText(step: RouteStep, t: TFunction, language: string)
   const keepSide = step.modifier?.includes('left') ? 'left' : step.modifier?.includes('right') ? 'right' : null
 
   switch (step.type) {
-    case 'arrive':
+    case 'arrive': {
+      const side = arrivalSide(step)
+      if (step.isFinal && side) return t(`nav.arriveSide.${side}`)
       return t(step.isFinal ? 'nav.arrive' : 'nav.waypoint')
+    }
     case 'depart':
       text = t('nav.depart')
       break
@@ -98,6 +101,13 @@ export function instructionText(step: RouteStep, t: TFunction, language: string)
   return road ? t('nav.onto', { instruction: text, road }) : text
 }
 
+// Auf welcher Straßenseite das Ziel liegt (laut Routendienst), sonst null
+function arrivalSide(step: RouteStep): 'left' | 'right' | null {
+  if (step.modifier?.includes('left')) return 'left'
+  if (step.modifier?.includes('right')) return 'right'
+  return null
+}
+
 // Gesprochene Entfernung, gerundet: "300 Metern", "1,5 Kilometern"
 export function spokenDistance(meters: number, t: TFunction, language: string) {
   if (meters < 1000) {
@@ -111,6 +121,8 @@ export function spokenDistance(meters: number, t: TFunction, language: string) {
 export function announcementText(step: RouteStep, meters: number, t: TFunction, language: string) {
   const distanceText = spokenDistance(meters, t, language)
   if (step.type === 'arrive') {
+    const side = arrivalSide(step)
+    if (step.isFinal && side) return t(`nav.arriveInSide.${side}`, { distance: distanceText })
     return t(step.isFinal ? 'nav.arriveIn' : 'nav.waypointIn', { distance: distanceText })
   }
   let instruction = instructionText(step, t, language)

@@ -10,6 +10,7 @@ import { AlternativeRoutes } from './AlternativeRoutes'
 import { RouteExtras } from './RouteExtras'
 import { RouteLine } from './RouteLine'
 import { SearchBox } from './SearchBox'
+import { StepList } from './StepList'
 import './RoutePanel.css'
 
 // name = null bedeutet: eigener Standort (Text wird in der aktuellen Sprache angezeigt)
@@ -39,6 +40,7 @@ export function RoutePanel({ map, destination, userLocation, onClose, onNavigate
   )
   const [stops, setStops] = useState<Place[]>([])
   const [addingStop, setAddingStop] = useState(false)
+  const [showSteps, setShowSteps] = useState(false)
   const [profile, setProfile] = useState<Profile>('car')
   const [result, setResult] = useState<Result | null>(null)
   const [selection, setSelection] = useState<{ key: string; index: number } | null>(null)
@@ -204,6 +206,10 @@ export function RoutePanel({ map, destination, userLocation, onClose, onNavigate
           )}
           <p className="route-panel__hint">{t(`route.note.${profile}`)}</p>
           <RouteExtras route={route} />
+          <button type="button" className="route-panel__link" onClick={() => setShowSteps((open) => !open)}>
+            {showSteps ? t('route.hideSteps') : t('route.showSteps', { count: route.steps.length })}
+          </button>
+          {showSteps && <StepList route={route} />}
           <div className="route-panel__actions">
             {/* Echte Navigation nur, wenn vom eigenen Standort aus gestartet wird */}
             {start?.name === null && (

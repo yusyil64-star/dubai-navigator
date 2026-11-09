@@ -210,7 +210,9 @@ export function useNavigation(
       if (remainingDistance <= ARRIVED_METERS) {
         nav.arrived = true
         setStatus('arrived')
-        say(settings.current.t('nav.arrive'))
+        // mit Straßenseite, falls bekannt ("Ziel erreicht – es liegt links")
+        const finalStep = r.steps.at(-1)
+        say(finalStep ? instructionText(finalStep, settings.current.t, settings.current.language) : settings.current.t('nav.arrive'))
         return
       }
 

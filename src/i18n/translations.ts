@@ -47,6 +47,8 @@ export const translations = {
       share: {
         button: 'Teilen',
         copied: 'Link zum Ort kopiert.',
+        eta: 'Ich bin voraussichtlich um {{time}} bei {{place}}.',
+        etaButton: 'Ankunftszeit teilen',
         failed: 'Teilen ist auf diesem Gerät nicht möglich.',
       },
       parking: {
@@ -142,6 +144,8 @@ export const translations = {
         via: 'über {{roads}}',
         cancel: 'Abbrechen',
         close: 'Route beenden',
+        showSteps: 'Wegbeschreibung ({{count}} Schritte)',
+        hideSteps: 'Wegbeschreibung ausblenden',
       },
       nav: {
         direction: {
@@ -168,6 +172,11 @@ export const translations = {
         kilometers: '{{count}} Kilometern',
         inDistance: 'In {{distance}} {{instruction}}',
         arriveIn: 'In {{distance}} erreichst du dein Ziel',
+        arriveSide: { left: 'Ziel erreicht – es liegt links', right: 'Ziel erreicht – es liegt rechts' },
+        arriveInSide: {
+          left: 'In {{distance}} erreichst du dein Ziel, es liegt links',
+          right: 'In {{distance}} erreichst du dein Ziel, es liegt rechts',
+        },
         waypointIn: 'In {{distance}} erreichst du deinen Zwischenstopp',
         start: 'Navigation starten',
         demo: 'Demo-Fahrt',
@@ -241,6 +250,8 @@ export const translations = {
       share: {
         button: 'Share',
         copied: 'Link to this place copied.',
+        eta: 'I expect to arrive at {{place}} at {{time}}.',
+        etaButton: 'Share arrival time',
         failed: 'Sharing is not available on this device.',
       },
       parking: {
@@ -336,6 +347,8 @@ export const translations = {
         via: 'via {{roads}}',
         cancel: 'Cancel',
         close: 'End route',
+        showSteps: 'Directions ({{count}} steps)',
+        hideSteps: 'Hide directions',
       },
       nav: {
         direction: {
@@ -362,6 +375,11 @@ export const translations = {
         kilometers: '{{count}} kilometers',
         inDistance: 'In {{distance}}, {{instruction}}',
         arriveIn: 'In {{distance}}, you will arrive at your destination',
+        arriveSide: { left: 'Your destination is on the left', right: 'Your destination is on the right' },
+        arriveInSide: {
+          left: 'In {{distance}}, your destination is on the left',
+          right: 'In {{distance}}, your destination is on the right',
+        },
         waypointIn: 'In {{distance}}, you will reach your stop',
         start: 'Start navigation',
         demo: 'Demo drive',
@@ -435,6 +453,8 @@ export const translations = {
       share: {
         button: 'مشاركة',
         copied: 'تم نسخ رابط المكان.',
+        eta: 'سأصل إلى {{place}} تقريبًا الساعة {{time}}.',
+        etaButton: 'مشاركة وقت الوصول',
         failed: 'المشاركة غير متاحة على هذا الجهاز.',
       },
       parking: {
@@ -533,6 +553,8 @@ export const translations = {
         via: 'عبر {{roads}}',
         cancel: 'إلغاء',
         close: 'إنهاء المسار',
+        showSteps: 'الاتجاهات ({{count}} خطوة)',
+        hideSteps: 'إخفاء الاتجاهات',
       },
       nav: {
         direction: {
@@ -559,6 +581,11 @@ export const translations = {
         kilometers: '{{count}} كيلومتر',
         inDistance: 'بعد {{distance}}، {{instruction}}',
         arriveIn: 'بعد {{distance}} ستصل إلى وجهتك',
+        arriveSide: { left: 'وجهتك على اليسار', right: 'وجهتك على اليمين' },
+        arriveInSide: {
+          left: 'بعد {{distance}} ستصل إلى وجهتك على اليسار',
+          right: 'بعد {{distance}} ستصل إلى وجهتك على اليمين',
+        },
         waypointIn: 'بعد {{distance}} ستصل إلى محطتك',
         start: 'ابدأ الملاحة',
         demo: 'رحلة تجريبية',

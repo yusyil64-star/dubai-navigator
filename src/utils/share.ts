@@ -23,21 +23,24 @@ export function placeFromUrl(): Place | null {
   return { id: `shared-${lon},${lat}`, name, detail: '', lon, lat }
 }
 
-// Über das Teilen-Menü des Handys, sonst Link in die Zwischenablage
-export async function sharePlace(place: Place): Promise<'shared' | 'copied' | 'cancelled' | 'failed'> {
-  const url = placeLink(place)
+export type ShareResult = 'shared' | 'copied' | 'cancelled' | 'failed'
+
+// Über das Teilen-Menü des Handys, sonst in die Zwischenablage
+export async function share(data: { title?: string; text?: string; url: string }): Promise<ShareResult> {
   if (navigator.share) {
     try {
-      await navigator.share({ title: place.name, url })
+      await navigator.share(data)
       return 'shared'
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') return 'cancelled'
     }
   }
   try {
-    await navigator.clipboard.writeText(url)
+    await navigator.clipboard.writeText(data.text ? `${data.text} ${data.url}` : data.url)
     return 'copied'
   } catch {
     return 'failed'
   }
 }
+
+export const sharePlace = (place: Place) => share({ title: place.name, url: placeLink(place) })

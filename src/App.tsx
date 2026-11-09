@@ -149,6 +149,7 @@ function App() {
           simulate={navigation.simulate}
           onExit={() => setNavigation(null)}
           onNotice={setNotice}
+          destination={place}
         />
       ) : (
         <>
