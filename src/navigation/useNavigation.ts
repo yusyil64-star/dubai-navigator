@@ -28,6 +28,9 @@ const CAMERA_SAY_METERS = 400 // … und einmal ansagen
 export type NavProgress = {
   position: LonLat // Position, auf die Route "eingerastet", wenn nah genug
   heading: number // Fahrtrichtung in Grad
+  along: number | null // Meter vom Routenstart (null = gerade neben der Route)
+  speedMs: number // Geschwindigkeit in m/s (vom Gerät oder aus den letzten Positionen geschätzt)
+  fixTime: number // Zeitpunkt dieser Position (performance.now), für die flüssige Bewegung
   nextStep: RouteStep | null
   distanceToNext: number
   remainingDistance: number
@@ -80,6 +83,7 @@ export function useNavigation(
       cameras: [] as CameraOnRoute[], // Blitzer an der aktuellen Route
       camerasSaid: new Set<number>(),
       limits: null as SpeedLimitIndex | null,
+      lastFix: null as { along: number; time: number } | null, // für die geschätzte Geschwindigkeit
     }
 
     // Blitzer und Tempolimits gibt es nur fürs Auto
@@ -109,6 +113,7 @@ export function useNavigation(
         .then((newRoute) => {
           nav.route = newRoute
           nav.cum = cumulativeDistances(newRoute.coordinates)
+          nav.lastFix = null // neue Route = neue Zählung der Meter
           nav.hint = 0
           nav.announced = new Map()
           nav.started = false
@@ -165,6 +170,12 @@ export function useNavigation(
       const heading = bearing(r.coordinates[proj.index], r.coordinates[nextIndex])
       const position = onRoute ? proj.point : fix.position
 
+      // Geschwindigkeit: vom Gerät, sonst aus dem Weg seit der letzten Position
+      const now = performance.now()
+      const estimated = nav.lastFix ? (proj.along - nav.lastFix.along) / ((now - nav.lastFix.time) / 1000) : 0
+      const speedMs = fix.speed ?? (Number.isFinite(estimated) ? Math.max(0, Math.min(estimated, 60)) : 0)
+      nav.lastFix = { along: proj.along, time: now }
+
       // Nächster Blitzer voraus (falls eingeschaltet)
       const cameraAhead = settings.current.cameraWarnings
         ? nav.cameras.find((c) => c.along > proj.along - 5 && c.along - proj.along <= CAMERA_SHOW_METERS)
@@ -182,6 +193,9 @@ export function useNavigation(
       setProgress({
         position,
         heading,
+        along: onRoute ? proj.along : null,
+        speedMs,
+        fixTime: now,
         speed: fix.speed === null ? null : Math.round(fix.speed * 3.6),
         speedLimit: nav.limits ? speedLimitAt(nav.limits, position, heading) : null,
         camera,

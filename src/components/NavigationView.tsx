@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Marker, type Map as MapLibreMap } from 'maplibre-gl'
 import { instructionText, maneuverIcon } from '../navigation/instructions'
 import { useNavigation } from '../navigation/useNavigation'
+import { useSmoothFollow } from '../navigation/useSmoothFollow'
 import { setParked } from '../places'
 import type { Route } from '../services/routing'
 import { updateSettings, useSettings } from '../settings'
@@ -64,21 +65,8 @@ export function NavigationView({ map, route: initialRoute, simulate, onExit, onN
   })
   useEffect(() => () => void puck.remove(), [puck])
 
-  useEffect(() => {
-    if (!progress) return
-    puck.setLngLat(progress.position).setRotation(progress.heading).addTo(map)
-    if (following) {
-      map.easeTo({
-        center: progress.position,
-        bearing: progress.heading,
-        zoom: 17,
-        pitch: 45,
-        padding: { top: 160, bottom: 180, left: 0, right: 0 },
-        duration: 1000,
-        easing: (x) => x,
-      })
-    }
-  }, [map, puck, progress, following])
+  // Pfeil und Karte flüssig mitbewegen (in jedem Bild, nicht nur bei jeder GPS-Position)
+  useSmoothFollow({ map, puck, route, progress, following })
 
   const next = progress?.nextStep
   let bannerText = next ? instructionText(next, t, language) : ''

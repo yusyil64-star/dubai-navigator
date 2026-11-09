@@ -5,9 +5,10 @@ export type Settings = {
   voice: boolean // Sprachansagen
   speedCameras: boolean // Blitzer auf der Karte und Warnungen
   theme: 'auto' | 'light' | 'dark' // Nachtmodus
+  voiceNames: Record<string, string> // gewählte Stimme je Sprache (fehlt = automatisch die beste)
 }
 
-const DEFAULTS: Settings = { voice: true, speedCameras: true, theme: 'auto' }
+const DEFAULTS: Settings = { voice: true, speedCameras: true, theme: 'auto', voiceNames: {} }
 const STORAGE_KEY = 'dubai-navigator.settings'
 
 function load(): Settings {
@@ -19,6 +20,9 @@ function load(): Settings {
 }
 
 let current = load()
+
+// Aktuelle Einstellungen außerhalb von React (z. B. für die Sprachausgabe)
+export const getSettings = () => current
 const listeners = new Set<() => void>()
 
 export function updateSettings(change: Partial<Settings>) {

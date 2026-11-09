@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { LANGUAGES, setLanguage } from '../i18n'
 import { clearPersonalData } from '../places'
 import { updateSettings, useSettings, type Settings } from '../settings'
+import { VoicePicker } from './VoicePicker'
 import './SettingsPanel.css'
 
 // Einstellungen: Sprache, Ansagen, Blitzer, Erscheinungsbild, persönliche Daten, Datenquellen.
@@ -67,6 +68,7 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
             onChange={(e) => updateSettings({ voice: e.target.checked })}
           />
         </label>
+        {settings.voice && <VoicePicker />}
         <label className="settings__toggle">
           <span>{t('settings.speedCameras')}</span>
           <input

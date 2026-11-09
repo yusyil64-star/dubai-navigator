@@ -68,10 +68,17 @@ function scan(p: LonLat, coords: LonLat[], cum: number[], from: number, to: numb
   return best
 }
 
-// Punkt und Fahrtrichtung nach "along" Metern auf der Route (für die Demo-Fahrt)
+// Punkt und Fahrtrichtung nach "along" Metern auf der Route (Demo-Fahrt, flüssige Bewegung).
+// Binäre Suche, weil das bis zu 60-mal pro Sekunde aufgerufen wird.
 export function pointAlong(coords: LonLat[], cum: number[], along: number) {
-  let i = 0
-  while (i < cum.length - 2 && cum[i + 1] < along) i++
+  let low = 0
+  let high = Math.max(0, cum.length - 2)
+  while (low < high) {
+    const mid = (low + high + 1) >> 1
+    if (cum[mid] < along) low = mid
+    else high = mid - 1
+  }
+  const i = low
   const segment = cum[i + 1] - cum[i]
   const t = segment === 0 ? 0 : Math.min(1, Math.max(0, (along - cum[i]) / segment))
   const point: LonLat = [
