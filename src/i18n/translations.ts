@@ -42,6 +42,15 @@ export const translations = {
         rename: 'Umbenennen',
         save: 'Speichern',
       },
+      follow: {
+        title: 'Live-Standort',
+        to: 'Unterwegs zu {{place}}',
+        arrival: 'Ankunft ca. {{time}}',
+        remaining: 'noch {{time}}',
+        updated: 'Zuletzt aktualisiert vor {{time}}',
+        ended: 'Das Teilen ist beendet.',
+        gone: 'Dieser Link ist abgelaufen oder das Teilen wurde beendet.',
+      },
       reports: {
         button: 'Melden',
         title: 'Was möchtest du melden?',
@@ -97,6 +106,8 @@ export const translations = {
         copied: 'Link zum Ort kopiert.',
         eta: 'Ich bin voraussichtlich um {{time}} bei {{place}}.',
         etaButton: 'Ankunftszeit teilen',
+        live: 'Ich bin unterwegs zu {{place}}, Ankunft ca. {{time}}. Hier siehst du live, wo ich gerade bin:',
+        liveOn: 'Live geteilt',
         failed: 'Teilen ist auf diesem Gerät nicht möglich.',
       },
       parking: {
@@ -172,7 +183,7 @@ export const translations = {
         cleared: 'Gespeicherte Orte wurden gelöscht.',
         privacy: 'Datenschutz',
         privacyText:
-          'Die App hat keinen eigenen Server und kein Konto. Suchbegriffe werden an Photon (komoot) gesendet. Für Routen werden Start, Zwischenstopps und Ziel – bei „Mein Standort“ also deine Position – an den Routendienst des FOSSGIS e.V. gesendet und dort protokolliert. Kartenbilder kommen von OpenFreeMap. Bei der Sprachsuche schickt der Browser die Aufnahme an seinen Anbieter (Chrome: Google, Safari: Apple). Ist Live-Verkehr eingeschaltet, gehen Autorouten (Start, Stopps, Ziel) und der Kartenausschnitt an TomTom – über den eigenen kleinen Server der App (Cloudflare). Meldungen (Unfall, Polizei …) speichert dieser Server mit Ort und Zeit, ohne Namen; zum Schutz vor Missbrauch nur eine Prüfsumme der IP-Adresse für eine Stunde.',
+          'Die App hat keinen eigenen Server und kein Konto. Suchbegriffe werden an Photon (komoot) gesendet. Für Routen werden Start, Zwischenstopps und Ziel – bei „Mein Standort“ also deine Position – an den Routendienst des FOSSGIS e.V. gesendet und dort protokolliert. Kartenbilder kommen von OpenFreeMap. Bei der Sprachsuche schickt der Browser die Aufnahme an seinen Anbieter (Chrome: Google, Safari: Apple). Ist Live-Verkehr eingeschaltet, gehen Autorouten (Start, Stopps, Ziel) und der Kartenausschnitt an TomTom – über den eigenen kleinen Server der App (Cloudflare). Meldungen (Unfall, Polizei …) speichert dieser Server mit Ort und Zeit, ohne Namen; zum Schutz vor Missbrauch nur eine Prüfsumme der IP-Adresse für eine Stunde. Beim Live-Standort-Teilen liegt deine Position nur so lange auf dem Server, wie du teilst; wer den Link hat, kann sie sehen. Nach dem Beenden wird sie nach 10 Minuten gelöscht.',
         sources: 'Datenquellen',
         sourcesText:
           'Kartendaten © OpenStreetMap-Mitwirkende (ODbL). Kartenstil: OpenFreeMap. Suche: Photon (komoot). Routen: OSRM des FOSSGIS e.V., mit Live-Verkehr fürs Auto TomTom. Live-Verkehr und Verkehrsmeldungen: © TomTom. Metro/Tram: RTA (Dubai Pulse). Blitzer, Tempolimits und Orte: vorab aus OpenStreetMap geladen.',
@@ -307,6 +318,15 @@ export const translations = {
         rename: 'Rename',
         save: 'Save',
       },
+      follow: {
+        title: 'Live location',
+        to: 'On the way to {{place}}',
+        arrival: 'Arriving around {{time}}',
+        remaining: '{{time}} left',
+        updated: 'Last updated {{time}} ago',
+        ended: 'Sharing has ended.',
+        gone: 'This link has expired or sharing was stopped.',
+      },
       reports: {
         button: 'Report',
         title: 'What do you want to report?',
@@ -362,6 +382,8 @@ export const translations = {
         copied: 'Link to this place copied.',
         eta: 'I expect to arrive at {{place}} at {{time}}.',
         etaButton: 'Share arrival time',
+        live: 'I am on my way to {{place}}, arriving around {{time}}. See where I am right now:',
+        liveOn: 'Sharing live',
         failed: 'Sharing is not available on this device.',
       },
       parking: {
@@ -437,7 +459,7 @@ export const translations = {
         cleared: 'Saved places have been deleted.',
         privacy: 'Privacy',
         privacyText:
-          'The app has no server and no account. Search terms are sent to Photon (komoot). For routes, start, stops and destination – with “My location” that is your position – are sent to the FOSSGIS e.V. routing service and logged there. Map images come from OpenFreeMap. With voice search, your browser sends the recording to its provider (Chrome: Google, Safari: Apple). With live traffic on, car routes (start, stops, destination) and the visible map area are sent to TomTom via the app’s own small server (Cloudflare). Reports (accident, police …) are stored there with place and time, without names; to prevent abuse only a checksum of the IP address is kept for an hour.',
+          'The app has no server and no account. Search terms are sent to Photon (komoot). For routes, start, stops and destination – with “My location” that is your position – are sent to the FOSSGIS e.V. routing service and logged there. Map images come from OpenFreeMap. With voice search, your browser sends the recording to its provider (Chrome: Google, Safari: Apple). With live traffic on, car routes (start, stops, destination) and the visible map area are sent to TomTom via the app’s own small server (Cloudflare). Reports (accident, police …) are stored there with place and time, without names; to prevent abuse only a checksum of the IP address is kept for an hour. When sharing your live location, your position stays on the server only while you share; anyone with the link can see it. It is deleted 10 minutes after you stop.',
         sources: 'Data sources',
         sourcesText:
           'Map data © OpenStreetMap contributors (ODbL). Map style: OpenFreeMap. Search: Photon (komoot). Routes: OSRM by FOSSGIS e.V.; car routes with live traffic: TomTom. Live traffic and incidents: © TomTom. Metro/tram: RTA (Dubai Pulse). Speed cameras, speed limits and places: pre-loaded from OpenStreetMap.',
@@ -572,6 +594,15 @@ export const translations = {
         rename: 'إعادة التسمية',
         save: 'حفظ',
       },
+      follow: {
+        title: 'الموقع المباشر',
+        to: 'في الطريق إلى {{place}}',
+        arrival: 'الوصول حوالي {{time}}',
+        remaining: 'متبقٍ {{time}}',
+        updated: 'آخر تحديث منذ {{time}}',
+        ended: 'انتهت المشاركة.',
+        gone: 'انتهت صلاحية هذا الرابط أو تم إيقاف المشاركة.',
+      },
       reports: {
         button: 'إبلاغ',
         title: 'ماذا تريد أن تبلغ؟',
@@ -631,6 +662,8 @@ export const translations = {
         copied: 'تم نسخ رابط المكان.',
         eta: 'سأصل إلى {{place}} تقريبًا الساعة {{time}}.',
         etaButton: 'مشاركة وقت الوصول',
+        live: 'أنا في الطريق إلى {{place}}، الوصول حوالي {{time}}. شاهد موقعي الآن مباشرة:',
+        liveOn: 'مشاركة مباشرة',
         failed: 'المشاركة غير متاحة على هذا الجهاز.',
       },
       parking: {
@@ -709,7 +742,7 @@ export const translations = {
         cleared: 'تم حذف الأماكن المحفوظة.',
         privacy: 'الخصوصية',
         privacyText:
-          'لا يملك التطبيق خادمًا ولا حسابًا. تُرسل كلمات البحث إلى Photon (komoot). وللمسارات تُرسل نقطة البداية والمحطات والوجهة – ومع "موقعي" يعني ذلك موقعك – إلى خدمة المسارات لدى FOSSGIS e.V. وتُسجَّل هناك. صور الخريطة من OpenFreeMap. عند البحث الصوتي يرسل المتصفح التسجيل إلى مزوده (Chrome: Google، Safari: Apple). عند تشغيل حركة المرور المباشرة تُرسل مسارات السيارة (البداية والمحطات والوجهة) ومنطقة الخريطة المعروضة إلى TomTom عبر الخادم الصغير الخاص بالتطبيق (Cloudflare). تُحفظ البلاغات (حادث، شرطة …) هناك مع المكان والوقت بدون أسماء، وللحماية من إساءة الاستخدام يُحفظ فقط مجموع تحقق لعنوان IP لمدة ساعة.',
+          'لا يملك التطبيق خادمًا ولا حسابًا. تُرسل كلمات البحث إلى Photon (komoot). وللمسارات تُرسل نقطة البداية والمحطات والوجهة – ومع "موقعي" يعني ذلك موقعك – إلى خدمة المسارات لدى FOSSGIS e.V. وتُسجَّل هناك. صور الخريطة من OpenFreeMap. عند البحث الصوتي يرسل المتصفح التسجيل إلى مزوده (Chrome: Google، Safari: Apple). عند تشغيل حركة المرور المباشرة تُرسل مسارات السيارة (البداية والمحطات والوجهة) ومنطقة الخريطة المعروضة إلى TomTom عبر الخادم الصغير الخاص بالتطبيق (Cloudflare). تُحفظ البلاغات (حادث، شرطة …) هناك مع المكان والوقت بدون أسماء، وللحماية من إساءة الاستخدام يُحفظ فقط مجموع تحقق لعنوان IP لمدة ساعة. عند مشاركة الموقع المباشر يبقى موقعك على الخادم فقط طوال مدة المشاركة، ويمكن لمن لديه الرابط رؤيته. ويُحذف بعد 10 دقائق من الإيقاف.',
         sources: 'مصادر البيانات',
         sourcesText:
           'بيانات الخريطة © المساهمون في OpenStreetMap (ODbL). نمط الخريطة: OpenFreeMap. البحث: Photon (komoot). المسارات: OSRM لدى FOSSGIS e.V.، ومسارات السيارة مع حركة المرور المباشرة: TomTom. حركة المرور والحوادث: © TomTom. المترو والترام: هيئة الطرق والمواصلات (Dubai Pulse). كاميرات السرعة وحدود السرعة والأماكن: محمّلة مسبقًا من OpenStreetMap.',

@@ -380,3 +380,28 @@
     opacity: 0.5;
   }
 }
+
+/* Live-Standort wird geteilt (antippen = beenden) */
+.nav-footer__live {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 3px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: #1e7d4f;
+  color: #ffffff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.nav-footer__live span {
+  animation: live-blink 1.6s ease-in-out infinite;
+}
+
+@keyframes live-blink {
+  50% {
+    opacity: 0.3;
+  }
+}

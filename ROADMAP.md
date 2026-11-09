@@ -102,7 +102,9 @@ Legende: ✅ fertig · 🔨 in Arbeit · ⬜ geplant · 💰 braucht Geld/Konto/
 - ✅ Meldungen von Nutzern wie bei Waze: Unfall, Polizei, Gefahr, Stau, Baustelle, Sperrung – während der Fahrt
   mit dem gelben Knopf melden; andere sehen sie auf der Karte, bestätigen („Noch da“ / „Nicht mehr da“) und werden
   davor gewarnt (Anzeige + Ansage). Ohne Konto; Datenbank Cloudflare D1 (kostenlos), Missbrauchsschutz 10 Meldungen/Stunde
-- 💰 Ankunftszeit teilen, Konten, Synchronisieren zwischen Geräten
+- ✅ Live-Standort teilen: während der Navigation über „Teilen“; der Link zeigt live Position, Ziel und Ankunftszeit
+  (alle 10 s aktualisiert); endet bei Ankunft, beim Beenden der Navigation oder per „Live geteilt ✕“
+- ⬜ Konten und Synchronisieren zwischen Geräten
 - 💰 Eigener Such- und Routendienst (Pflicht bei vielen Nutzern; Route ohne Maut möglich)
 - 📱 Echte Handy-App (App Store / Play Store), Navigation im Hintergrund, Offline-Karten
 - 🔨 Datenschutzhinweis: Kurzfassung in den Einstellungen vorhanden; vor einer echten Veröffentlichung rechtlich prüfen lassen

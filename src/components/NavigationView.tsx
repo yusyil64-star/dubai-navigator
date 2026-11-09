@@ -13,6 +13,7 @@ import { getRoute, type LonLat, type Route } from '../services/routing'
 import { updateSettings, useSettings } from '../settings'
 import { formatClock, formatDistance, formatDuration } from '../utils/format'
 import { placeLink, share } from '../utils/share'
+import { canShareLive, currentShareId, endShare, followLink, startShare, updateShare } from '../services/liveShare'
 import { AlongRouteSearch } from './AlongRouteSearch'
 import { LaneGuide } from './LaneGuide'
 import { ManeuverArrow } from './ManeuverArrow'
@@ -23,6 +24,7 @@ import { SpeedDisplay } from './SpeedDisplay'
 import './NavigationView.css'
 
 const LOCATION_ERRORS: Record<number, string> = { 1: 'location.denied', 3: 'location.timeout' }
+const LIVE_SHARE_MS = 10_000 // so oft die Position beim Live-Teilen schicken
 const PARKING_HINT_METERS = 1500 // ab dieser Restentfernung "Parkplätze in der Nähe" anbieten
 
 type NavigationViewProps = {
@@ -101,12 +103,52 @@ export function NavigationView({
   async function shareArrival() {
     if (!progress || !destination) return
     const time = formatClock(new Date(progress.arrivalTime), language)
-    const result = await share({
-      text: t('share.eta', { time, place: destination.name }),
-      url: placeLink(destination),
-    })
+    let result
+    try {
+      if (!canShareLive) throw new Error('kein Server')
+      // Live-Standort: Link zeigt die Fahrt in Echtzeit
+      const id = await startShare(destination.name, route.waypoints[route.waypoints.length - 1], {
+        position: progress.position,
+        heading: progress.heading,
+        eta: progress.arrivalTime,
+      })
+      setSharingLive(true)
+      result = await share({ text: t('share.live', { time, place: destination.name }), url: followLink(id) })
+    } catch {
+      // ohne Server: nur Ankunftszeit und Ziel teilen
+      result = await share({ text: t('share.eta', { time, place: destination.name }), url: placeLink(destination) })
+    }
     if (result === 'copied' || result === 'failed') onNotice(`share.${result}`)
   }
+
+  function stopSharing() {
+    void endShare()
+    setSharingLive(false)
+  }
+
+  // Live-Standort: alle 10 Sekunden die aktuelle Position schicken; bei der Ankunft beenden
+  const [sharingLive, setSharingLive] = useState(() => currentShareId() !== null)
+  const latestProgress = useRef(progress)
+  useEffect(() => {
+    latestProgress.current = progress
+  }, [progress])
+  useEffect(() => {
+    if (!sharingLive) return
+    const timer = setInterval(() => {
+      const p = latestProgress.current
+      if (p) void updateShare({ position: p.position, heading: p.heading, eta: p.arrivalTime })
+    }, LIVE_SHARE_MS)
+    return () => clearInterval(timer)
+  }, [sharingLive])
+  useEffect(() => {
+    if (status === 'arrived' && sharingLive) {
+      const p = latestProgress.current
+      // letzte Position (am Ziel) noch schicken, dann beenden
+      if (p) void updateShare({ position: p.position, heading: p.heading, eta: Date.now() }).then(endShare)
+      else void endShare()
+      setSharingLive(false)
+    }
+  }, [status, sharingLive])
 
   // Während der Navigation die normalen Kartenknöpfe ausblenden
   useEffect(() => {
@@ -227,6 +269,11 @@ export function NavigationView({
           {route.profile === 'car' && progress && (status === 'arrived' || progress.remainingDistance < PARKING_HINT_METERS) && (
             <button type="button" className="nav-footer__park" onClick={() => onFindParking(route.waypoints[route.waypoints.length - 1])}>
               {t('parking.nearby')}
+            </button>
+          )}
+          {sharingLive && (
+            <button type="button" className="nav-footer__live" onClick={stopSharing}>
+              <span aria-hidden="true">●</span> {t('share.liveOn')} ✕
             </button>
           )}
           {simulate && <span className="nav-footer__badge">{t('nav.simulation')}</span>}

@@ -7,8 +7,10 @@
 //   /incidents?language=de-DE      Verkehrsmeldungen in Dubai
 //   /route/<punkte>?avoidTolls=1&alternatives=1   Autoroute mit Verkehr (punkte: lat,lon:lat,lon:…)
 //   /reports …                     Meldungen von Nutzern (siehe reports.js)
+//   /shares …                      Live-Standort teilen (siehe shares.js)
 
 import { handleReports } from './reports.js'
+import { handleShares } from './shares.js'
 
 const TOMTOM = 'https://api.tomtom.com'
 const DUBAI_BBOX = '54.9,24.75,55.65,25.35' // höchstens 10.000 km² laut TomTom
@@ -36,6 +38,8 @@ export default {
     const url = new URL(request.url)
     // Meldungen von Nutzern (eigene Datenbank, siehe reports.js)
     if (url.pathname.startsWith('/reports')) return handleReports(request, url, env, cors)
+    // Live-Standort teilen (siehe shares.js)
+    if (url.pathname.startsWith('/shares')) return handleShares(request, url, env, cors)
     if (request.method !== 'GET') return new Response('Forbidden', { status: 403, headers: cors })
 
     const target = buildTarget(url, env.TOMTOM_KEY)

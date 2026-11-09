@@ -5,6 +5,7 @@ import { BottomSheet } from './components/BottomSheet'
 import { BrandBadge } from './components/BrandBadge'
 import { CategoryResults } from './components/CategoryResults'
 import { DriveView } from './components/DriveView'
+import { FollowView } from './components/FollowView'
 import { LanguageSwitcher } from './components/LanguageSwitcher'
 import { LiveTrafficLayer } from './components/LiveTrafficLayer'
 import { MapLongPress } from './components/MapLongPress'
@@ -22,6 +23,7 @@ import { TransitLayer } from './components/TransitLayer'
 import { hasLiveTraffic } from './config/tomtom'
 import { unlockSpeech } from './navigation/voice'
 import { addRecent, PARKED_ID } from './places'
+import { endShare, followIdFromUrl } from './services/liveShare'
 import { hasReports } from './services/reports'
 import type { Category } from './services/categories'
 import { describeLocation, type Place } from './services/geocoding'
@@ -44,6 +46,8 @@ function App() {
   // Der gesuchte und ausgewählte Ort (Ziel)
   // (beim Öffnen eines geteilten Links ist er schon gesetzt)
   const [place, setPlace] = useState<Place | null>(placeFromUrl)
+  // Live-Standort einer anderen Person verfolgen (Link mit ?follow=…)
+  const [followId, setFollowId] = useState(followIdFromUrl)
   // Ob gerade eine Route zum Ziel angezeigt wird
   const [routing, setRouting] = useState(false)
   // Eigener GPS-Standort, sobald bekannt
@@ -64,10 +68,17 @@ function App() {
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_COLORS[theme])
   }, [theme])
 
-  // Geteilten Ort aus der Adresszeile entfernen, damit Neuladen nicht wieder dorthin springt
+  // Navigation beendet: Live-Standort-Teilen ebenfalls beenden
   useEffect(() => {
-    if (location.search) history.replaceState(null, '', location.pathname)
-  }, [])
+    if (!navigation) void endShare()
+  }, [navigation])
+
+  // Geteilten Ort aus der Adresszeile entfernen, damit Neuladen nicht wieder dorthin springt.
+  // Ein Live-Standort-Link bleibt stehen, solange man ihn verfolgt (Neuladen zeigt ihn wieder).
+  useEffect(() => {
+    const wanted = followId ? `?follow=${followId}` : ''
+    if (location.search !== wanted) history.replaceState(null, '', location.pathname + wanted)
+  }, [followId])
 
   function selectPlace(selected: Place) {
     if (selected.id !== PARKED_ID) addRecent(selected) // das eigene Auto nicht im Verlauf
@@ -107,7 +118,10 @@ function App() {
   // (Die Einstellungen legen sich darüber, damit z. B. eine geplante Route erhalten bleibt.)
   let sheetContent
   let sheetView // Name des Inhalts – wechselt er, blendet der neue Inhalt sanft ein
-  if (place && routing && map) {
+  if (followId && map) {
+    sheetView = 'follow'
+    sheetContent = <FollowView map={map} id={followId} onClose={() => setFollowId(null)} />
+  } else if (place && routing && map) {
     sheetView = `route-${place.id}`
     sheetContent = (
       <RoutePanel
