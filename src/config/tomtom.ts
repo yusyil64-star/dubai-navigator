@@ -1,9 +1,10 @@
-// TomTom (Live-Verkehr, Staus, Routen mit Verkehr). Der Schlüssel kommt aus .env.local bzw. beim
-// Veröffentlichen aus den geheimen Einstellungen des GitHub-Projekts. Ohne Schlüssel läuft die App
-// wie bisher, nur ohne Live-Verkehr. Kostenloses Kontingent: 2.500 Abfragen und 50.000 Kartenkacheln pro Tag.
-export const TOMTOM_KEY: string | undefined = import.meta.env.VITE_TOMTOM_KEY || undefined
+// Live-Verkehr von TomTom (Verkehrslage, Meldungen, Routen mit Verkehr).
+// Die App spricht nicht direkt mit TomTom, sondern mit einem kleinen eigenen Server
+// (Ordner traffic-proxy, Cloudflare Worker). Nur dort liegt der TomTom-Schlüssel – so steht er
+// nicht in der öffentlichen App. Ohne Server-Adresse läuft die App wie bisher, nur ohne Live-Verkehr.
+export const TRAFFIC_PROXY: string | undefined = import.meta.env.VITE_TRAFFIC_PROXY?.replace(/\/$/, '') || undefined
 
-export const hasLiveTraffic = Boolean(TOMTOM_KEY)
+export const hasLiveTraffic = Boolean(TRAFFIC_PROXY)
 
 export const TOMTOM_ATTRIBUTION = '© <a href="https://www.tomtom.com" target="_blank" rel="noopener">TomTom</a>'
 

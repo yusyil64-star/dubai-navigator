@@ -1,6 +1,6 @@
 // Aktuelle Verkehrsmeldungen von TomTom: Unfälle, Sperrungen, Baustellen, Gefahren.
 // Staus selbst zeigt die farbige Verkehrslage (LiveTrafficLayer), deshalb hier nicht.
-import { TOMTOM_KEY, TOMTOM_LANGUAGES } from '../config/tomtom'
+import { TOMTOM_LANGUAGES, TRAFFIC_PROXY } from '../config/tomtom'
 import type { LonLat } from './routing'
 
 // Kategorien von TomTom, die wir zeigen (Nummern laut TomTom-Dokumentation)
@@ -24,10 +24,6 @@ export type Incident = {
   line: LonLat[]
 }
 
-// Fläche um Dubai (TomTom erlaubt höchstens 10.000 km² pro Abfrage)
-const BBOX = '54.9,24.75,55.65,25.35'
-const FIELDS = '{incidents{geometry{type,coordinates},properties{iconCategory,events{description},from,to,delay}}}'
-
 type TomTomIncident = {
   geometry: { type: string; coordinates: LonLat[] | LonLat }
   properties: {
@@ -40,16 +36,10 @@ type TomTomIncident = {
 }
 
 export async function loadIncidents(language: string, signal: AbortSignal): Promise<Incident[]> {
-  if (!TOMTOM_KEY) return []
-  const params = new URLSearchParams({
-    bbox: BBOX,
-    fields: FIELDS,
-    language: TOMTOM_LANGUAGES[language] ?? 'en-GB',
-    categoryFilter: Object.keys(INCIDENT_CATEGORIES).join(','),
-    timeValidityFilter: 'present',
-    key: TOMTOM_KEY,
-  })
-  const response = await fetch(`https://api.tomtom.com/traffic/services/5/incidentDetails?${params}`, { signal })
+  if (!TRAFFIC_PROXY) return []
+  // Gebiet (Dubai) und Kategorien legt der Server fest (traffic-proxy)
+  const params = new URLSearchParams({ language: TOMTOM_LANGUAGES[language] ?? 'en-GB' })
+  const response = await fetch(`${TRAFFIC_PROXY}/incidents?${params}`, { signal })
   if (!response.ok) throw new Error(`TomTom: ${response.status}`)
   const data: { incidents: TomTomIncident[] } = await response.json()
   return data.incidents.flatMap((incident): Incident[] => {

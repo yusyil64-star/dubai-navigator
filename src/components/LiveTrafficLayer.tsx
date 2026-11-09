@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Popup, type GeoJSONSource, type Map as MapLibreMap, type MapLayerMouseEvent } from 'maplibre-gl'
 import { routeLayerAnchor } from '../config/map'
-import { TOMTOM_ATTRIBUTION, TOMTOM_KEY } from '../config/tomtom'
+import { TOMTOM_ATTRIBUTION, TRAFFIC_PROXY } from '../config/tomtom'
 import { loadIncidents, type Incident } from '../services/incidents'
 import { formatDuration } from '../utils/format'
 
@@ -27,11 +27,11 @@ export function LiveTrafficLayer({ map, theme }: { map: MapLibreMap; theme: 'lig
 
   // Verkehrslage (Kartenkacheln, je nach Hell/Dunkel)
   useEffect(() => {
-    if (!TOMTOM_KEY) return
+    if (!TRAFFIC_PROXY) return
     const style = theme === 'dark' ? 'relative0-dark' : 'relative0'
     map.addSource(FLOW, {
       type: 'raster',
-      tiles: [`https://api.tomtom.com/traffic/map/4/tile/flow/${style}/{z}/{x}/{y}.png?key=${TOMTOM_KEY}`],
+      tiles: [`${TRAFFIC_PROXY}/tile/${style}/{z}/{x}/{y}.png`],
       tileSize: 256,
       minzoom: 10, // weiter herausgezoomt keine Kacheln laden (spart das Tageskontingent)
       maxzoom: 18,
@@ -48,7 +48,7 @@ export function LiveTrafficLayer({ map, theme }: { map: MapLibreMap; theme: 'lig
 
   // Meldungen: Unfälle, Sperrungen, Baustellen …
   useEffect(() => {
-    if (!TOMTOM_KEY) return
+    if (!TRAFFIC_PROXY) return
     map.addSource(INCIDENTS, { type: 'geojson', data: { type: 'FeatureCollection', features: [] }, attribution: TOMTOM_ATTRIBUTION })
     map.addLayer({
       id: `${INCIDENTS}-line`,

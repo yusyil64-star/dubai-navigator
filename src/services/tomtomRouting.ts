@@ -1,7 +1,7 @@
 // Routen fürs Auto von TomTom: mit aktuellem Verkehr und auf Wunsch ohne Maut.
 // Die Antwort wird in dasselbe Format wie die OSRM-Routen übersetzt, damit Navigation,
 // Ansagen und Anzeige unverändert funktionieren.
-import { TOMTOM_KEY } from '../config/tomtom'
+import { TRAFFIC_PROXY } from '../config/tomtom'
 import type { LonLat, Route, RouteStep } from './routing'
 
 type Instruction = {
@@ -73,18 +73,13 @@ export async function getTomTomRoutes(
   signal: AbortSignal,
   alternatives = true,
 ): Promise<Route[]> {
-  if (!TOMTOM_KEY) throw new Error('TomTom: kein Schlüssel')
-  const points = waypoints.map(([lon, lat]) => `${lat},${lon}`).join(':')
-  const params = new URLSearchParams({
-    key: TOMTOM_KEY,
-    traffic: 'true', // aktuelle Verkehrslage einrechnen
-    travelMode: 'car',
-    routeType: 'fastest',
-    instructionsType: 'coded', // Texte und Ansagen erzeugt die App selbst (in allen drei Sprachen)
-  })
-  if (alternatives && waypoints.length === 2) params.set('maxAlternatives', '2')
-  if (options.avoidTolls) params.set('avoid', 'tollRoads')
-  const response = await fetch(`https://api.tomtom.com/routing/1/calculateRoute/${points}/json?${params}`, { signal })
+  if (!TRAFFIC_PROXY) throw new Error('TomTom: kein Server')
+  const points = waypoints.map(([lon, lat]) => `${lat.toFixed(6)},${lon.toFixed(6)}`).join(':')
+  // Der Server fragt TomTom mit Verkehr und ohne eigene Texte (Ansagen erzeugt die App selbst)
+  const params = new URLSearchParams()
+  if (alternatives && waypoints.length === 2) params.set('alternatives', '1')
+  if (options.avoidTolls) params.set('avoidTolls', '1')
+  const response = await fetch(`${TRAFFIC_PROXY}/route/${points}?${params}`, { signal })
   if (!response.ok) throw new Error(`TomTom: ${response.status}`)
   const data: { routes?: TomTomRoute[] } = await response.json()
   if (!data.routes?.length) throw new Error('TomTom: keine Route')

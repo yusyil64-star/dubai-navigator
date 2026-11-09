@@ -1,0 +1,12 @@
+# Cloudflare Worker für den Live-Verkehr (siehe src/index.js)
+name = "dubai-navigator-traffic"
+main = "src/index.js"
+compatibility_date = "2026-11-01"
+
+[vars]
+# Nur diese Seiten dürfen den Server benutzen
+ALLOWED_ORIGINS = "https://yusyil64-star.github.io,http://localhost:5173,http://localhost:4173"
+
+# Der TomTom-Schlüssel wird NICHT hier eingetragen, sondern geheim hinterlegt:
+#   npx wrangler secret put TOMTOM_KEY
+# Zum Testen auf dem PC steht er in der Datei .dev.vars (wird nicht hochgeladen).
