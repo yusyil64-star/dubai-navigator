@@ -27,7 +27,11 @@ export type RouteStep = {
   startIndex: number // Index in Route.coordinates, an dem das Manöver liegt
   legIndex: number // Teilstrecke (bei Zwischenstopps mehrere)
   isFinal: boolean // letztes Manöver der ganzen Route
+  lanes?: Lane[] // Fahrspuren am Manöver von links nach rechts (nur wo in OpenStreetMap erfasst)
 }
+
+// Eine Fahrspur: erlaubte Richtungen (z. B. ["left", "straight"]) und ob sie zur Route passt
+export type Lane = { indications: string[]; valid: boolean }
 
 export type Route = {
   distanceMeters: number
@@ -45,6 +49,7 @@ type OsrmStep = {
   distance: number
   duration: number
   geometry: { coordinates: LonLat[] }
+  intersections: { lanes?: Lane[] }[]
 }
 
 type OsrmRoute = { distance: number; duration: number; legs: { steps: OsrmStep[] }[] }
@@ -94,6 +99,7 @@ function toRoute(route: OsrmRoute, waypoints: LonLat[], profile: Profile): Route
         startIndex,
         legIndex,
         isFinal: legIndex === legs.length - 1 && stepIndex === leg.steps.length - 1,
+        lanes: step.intersections[0]?.lanes,
       })
     })
   })

@@ -266,3 +266,29 @@
     bottom: calc(var(--space) + 12px);
   }
 }
+
+/* Fahrspuren im Banner (nur wo bekannt): passende Spuren hell, andere gedämpft */
+.lane-guide {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.lane-guide__lane {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  opacity: 0.35;
+}
+
+.lane-guide__lane.is-valid {
+  opacity: 1;
+}
+
+.lane-guide .maneuver-arrow {
+  width: 22px;
+  height: 22px;
+}

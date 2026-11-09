@@ -18,6 +18,7 @@ import {
   MAP_STYLE_URL_DARK,
   MAX_ZOOM,
   MIN_ZOOM,
+  routeLayerAnchorIn,
   START_ZOOM,
   type PaintProperty,
 } from '../config/map'
@@ -125,7 +126,13 @@ export function MapView({ theme, onNotice, onMapReady, onLocation }: MapViewProp
         const sources = { ...next.sources }
         for (const id of APP_SOURCES) if (previous.sources[id]) sources[id] = previous.sources[id]
         const appLayers = previous.layers.filter((l) => 'source' in l && APP_SOURCES.includes(l.source))
-        return { ...next, sources, layers: [...next.layers, ...appLayers] }
+        // Routen wieder über den Straßen, aber unter den Straßennamen einfügen; Punkte ganz oben
+        const isRoute = (l: (typeof appLayers)[number]) => 'source' in l && l.source.startsWith('route')
+        const anchor = routeLayerAnchorIn(next.layers)
+        const at = anchor ? next.layers.findIndex((l) => l.id === anchor) : next.layers.length
+        const layers = [...next.layers]
+        layers.splice(at, 0, ...appLayers.filter(isRoute))
+        return { ...next, sources, layers: [...layers, ...appLayers.filter((l) => !isRoute(l))] }
       },
     })
   }, [theme])

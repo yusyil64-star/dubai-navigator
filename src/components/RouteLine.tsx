@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { LngLatBounds, Marker, type GeoJSONSource, type Map as MapLibreMap } from 'maplibre-gl'
+import { routeLayerAnchor } from '../config/map'
 import type { LonLat } from '../services/routing'
 
 const SOURCE_ID = 'route'
@@ -42,7 +43,7 @@ export function RouteLine({ map, coordinates, fit = true, stops = [] }: RouteLin
     } else {
       map.addSource(SOURCE_ID, { type: 'geojson', data })
       // Unter den Beschriftungen einfügen, damit Straßennamen lesbar bleiben
-      const firstLabel = map.getStyle().layers.find((layer) => layer.type === 'symbol')?.id
+      const firstLabel = routeLayerAnchor(map)
       const line = { 'line-join': 'round', 'line-cap': 'round' } as const
       map.addLayer(
         { id: 'route-casing', type: 'line', source: SOURCE_ID, layout: line, paint: { 'line-color': '#ffffff', 'line-width': 10 } },

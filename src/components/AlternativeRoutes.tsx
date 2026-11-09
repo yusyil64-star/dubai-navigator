@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react'
-import type { GeoJSONSource, Map as MapLibreMap, MapLayerMouseEvent } from 'maplibre-gl'
+import type { GeoJSONSource, Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl'
+import { routeLayerAnchor } from '../config/map'
 import type { Route } from '../services/routing'
 
 const SOURCE_ID = 'route-alternatives'
 const LAYER_ID = 'route-alternatives'
+const TAP_TOLERANCE = 14 // px um den Tippunkt
 
 type AlternativeRoutesProps = {
   map: MapLibreMap
@@ -38,7 +40,7 @@ export function AlternativeRoutes({ map, routes, selected, onSelect }: Alternati
       // unter der gewählten Route, sonst unter den Beschriftungen
       const before = map.getLayer('route-casing')
         ? 'route-casing'
-        : map.getStyle().layers.find((layer) => layer.type === 'symbol')?.id
+        : routeLayerAnchor(map)
       map.addLayer(
         {
           id: LAYER_ID,
@@ -53,17 +55,27 @@ export function AlternativeRoutes({ map, routes, selected, onSelect }: Alternati
   }, [map, routes, selected])
 
   useEffect(() => {
-    const onClick = (event: MapLayerMouseEvent) => {
-      const index = event.features?.[0]?.properties?.index
+    // Großzügiger Tippbereich um die Linie, damit sie auch mit dem Finger leicht zu treffen ist
+    const onClick = (event: MapMouseEvent) => {
+      if (!map.getLayer(LAYER_ID)) return
+      const { x, y } = event.point
+      const [feature] = map.queryRenderedFeatures(
+        [
+          [x - TAP_TOLERANCE, y - TAP_TOLERANCE],
+          [x + TAP_TOLERANCE, y + TAP_TOLERANCE],
+        ],
+        { layers: [LAYER_ID] },
+      )
+      const index = feature?.properties?.index
       if (typeof index === 'number') select.current(index)
     }
     const pointer = () => (map.getCanvas().style.cursor = 'pointer')
     const reset = () => (map.getCanvas().style.cursor = '')
-    map.on('click', LAYER_ID, onClick)
+    map.on('click', onClick)
     map.on('mouseenter', LAYER_ID, pointer)
     map.on('mouseleave', LAYER_ID, reset)
     return () => {
-      map.off('click', LAYER_ID, onClick)
+      map.off('click', onClick)
       map.off('mouseenter', LAYER_ID, pointer)
       map.off('mouseleave', LAYER_ID, reset)
       reset()

@@ -6,6 +6,7 @@ import { useNavigation } from '../navigation/useNavigation'
 import type { Route } from '../services/routing'
 import { updateSettings, useSettings } from '../settings'
 import { formatClock, formatDistance, formatDuration } from '../utils/format'
+import { LaneGuide } from './LaneGuide'
 import { ManeuverArrow } from './ManeuverArrow'
 import { RouteLine } from './RouteLine'
 import './NavigationView.css'
@@ -94,6 +95,7 @@ export function NavigationView({ map, route: initialRoute, simulate, onExit, onN
             <strong className="nav-banner__distance">{formatDistance(progress.distanceToNext, language)}</strong>
           )}
           <span>{bannerText || t('nav.waitingForGps')}</span>
+          {status === 'active' && next?.lanes && <LaneGuide lanes={next.lanes} modifier={next.modifier} />}
         </div>
       </div>
 

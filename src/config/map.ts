@@ -45,3 +45,18 @@ export const DUBAI_BOUNDS: [[number, number], [number, number]] = [
   [54.6, 24.6],
   [56.0, 25.5],
 ]
+
+// Ebene, vor der Routenlinien eingefügt werden: die erste Beschriftung NACH den Straßen und Bahnen.
+// So liegt die Route über allen Straßen, aber unter den Straßennamen. (Nur "erste Beschriftung"
+// reicht nicht: die dunkle Karte hat schon vor den Straßen eine Beschriftung für Gewässer.)
+export function routeLayerAnchor(map: MapLibreMap): string | undefined {
+  return routeLayerAnchorIn(map.getStyle().layers)
+}
+
+export function routeLayerAnchorIn(layers: { id: string; type: string }[]): string | undefined {
+  let lastRoad = -1
+  layers.forEach((layer, i) => {
+    if (layer.type === 'line' && /^(highway|road|railway|transportation|bridge|tunnel)/.test(layer.id)) lastRoad = i
+  })
+  return layers.find((layer, i) => i > lastRoad && layer.type === 'symbol')?.id
+}
