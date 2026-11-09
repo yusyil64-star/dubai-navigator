@@ -311,3 +311,8 @@
   color: var(--color-accent);
   cursor: default;
 }
+
+/* Fahrmodus: kein Banner, Blitzer-Hinweis ganz oben */
+.nav-camera.nav-camera--top {
+  top: max(var(--space), env(safe-area-inset-top));
+}

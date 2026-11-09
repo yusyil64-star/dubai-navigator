@@ -14,6 +14,7 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
   const [cleared, setCleared] = useState(false)
 
   const themes: Settings['theme'][] = ['auto', 'light', 'dark']
+  const SPEED_WARNINGS: Settings['speedWarning'][] = [null, 0, 5, 10]
 
   return (
     <div className="settings">
@@ -78,6 +79,23 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
           />
         </label>
         <p className="settings__note">{t('settings.speedCamerasNote')}</p>
+      </section>
+
+      <section>
+        <h3>{t('settings.speedWarning')}</h3>
+        <div className="settings__choice">
+          {SPEED_WARNINGS.map((value) => (
+            <button
+              key={String(value)}
+              type="button"
+              aria-pressed={settings.speedWarning === value}
+              onClick={() => updateSettings({ speedWarning: value })}
+            >
+              {value === null ? t('settings.off') : value === 0 ? t('settings.atLimit') : `+${value}`}
+            </button>
+          ))}
+        </div>
+        <p className="settings__note">{t('settings.speedWarningNote')}</p>
       </section>
 
       <section>

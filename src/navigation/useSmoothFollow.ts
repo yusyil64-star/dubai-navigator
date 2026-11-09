@@ -8,6 +8,9 @@ import type { LonLat, Route } from '../services/routing'
 import { bearing, cumulativeDistances, distance, pointAlong } from './geo'
 import type { NavProgress } from './useNavigation'
 
+// Was die flüssige Bewegung braucht (Navigation oder Fahrmodus ohne Route)
+export type SmoothInput = Pick<NavProgress, 'position' | 'heading' | 'along' | 'speedMs' | 'fixTime'>
+
 const MAX_AHEAD_SECONDS = 1.5 // höchstens so lange ohne neue Position weiterfahren
 const POSITION_SMOOTHING = 4 // je größer, desto schneller folgt der Pfeil der echten Position
 const HEADING_SMOOTHING = 3
@@ -21,13 +24,13 @@ const SETTLE_MS = 1200 // so lange gleiten Zoom und Neigung nach dem (Wieder-)Fo
 type Options = {
   map: MapLibreMap
   puck: Marker
-  route: Route
-  progress: NavProgress | null
+  route: Route | null // ohne Route (Fahrmodus): nur der gemessenen Position folgen
+  progress: SmoothInput | null
   following: boolean
 }
 
 export function useSmoothFollow({ map, puck, route, progress, following }: Options) {
-  const cum = useMemo(() => cumulativeDistances(route.coordinates), [route])
+  const cum = useMemo(() => (route ? cumulativeDistances(route.coordinates) : []), [route])
   // Aktuelle Werte für die Bildschleife, ohne sie neu zu starten
   const latest = useRef({ route, cum, progress, following })
   useEffect(() => {
@@ -59,7 +62,7 @@ export function useSmoothFollow({ map, puck, route, progress, following }: Optio
 
       let point: LonLat
       let targetHeading = p.heading
-      if (p.along !== null && r.coordinates.length > 1) {
+      if (p.along !== null && r && r.coordinates.length > 1) {
         // Auf der Route: mit der aktuellen Geschwindigkeit weiterfahren, bis die nächste Position kommt
         const ahead = p.speedMs * Math.min(MAX_AHEAD_SECONDS, Math.max(0, (now - p.fixTime) / 1000))
         const target = Math.min(c[c.length - 1], p.along + ahead)
@@ -73,11 +76,13 @@ export function useSmoothFollow({ map, puck, route, progress, following }: Optio
         const lookAhead = pointAlong(r.coordinates, c, shownAlong + LOOK_AHEAD).point
         if (distance(point, lookAhead) > 1) targetHeading = bearing(point, lookAhead)
       } else {
-        // Neben der Route (oder bei neuer Berechnung): direkt zur gemessenen Position gleiten
+        // Ohne Route (oder daneben): in Fahrtrichtung weiterrechnen und dorthin gleiten
         shownAlong = null
-        const from = shownPoint ?? p.position
-        const k = distance(from, p.position) > JUMP_METERS ? 1 : blend(POSITION_SMOOTHING)
-        point = [from[0] + (p.position[0] - from[0]) * k, from[1] + (p.position[1] - from[1]) * k]
+        const ahead = p.speedMs * Math.min(MAX_AHEAD_SECONDS, Math.max(0, (now - p.fixTime) / 1000))
+        const target = moveBy(p.position, p.heading, ahead)
+        const from = shownPoint ?? target
+        const k = distance(from, target) > JUMP_METERS ? 1 : blend(POSITION_SMOOTHING)
+        point = [from[0] + (target[0] - from[0]) * k, from[1] + (target[1] - from[1]) * k]
       }
       shownPoint = point
 
@@ -109,4 +114,13 @@ export function useSmoothFollow({ map, puck, route, progress, following }: Optio
     frame = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(frame)
   }, [map, puck])
+}
+
+// Punkt "meters" Meter in Richtung "heading" (Grad) weiter – für kurze Strecken genau genug
+function moveBy([lon, lat]: LonLat, heading: number, meters: number): LonLat {
+  const rad = (heading * Math.PI) / 180
+  return [
+    lon + (Math.sin(rad) * meters) / (111320 * Math.cos((lat * Math.PI) / 180)),
+    lat + (Math.cos(rad) * meters) / 110540,
+  ]
 }

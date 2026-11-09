@@ -34,6 +34,11 @@ export const translations = {
         favorites: 'Favoriten',
         recents: 'Zuletzt gesucht',
       },
+      drive: {
+        start: 'Fahrmodus (ohne Ziel)',
+        title: 'Fahrmodus',
+        note: 'Tempo, Tempolimit und Blitzer – ohne Ziel',
+      },
       pin: {
         title: 'Markierter Ort',
         near: 'In der Nähe: {{place}}',
@@ -96,6 +101,10 @@ export const translations = {
         speedCameras: 'Blitzer anzeigen und warnen',
         speedCamerasNote:
           'Feste Blitzer aus OpenStreetMap – ohne Gewähr und nicht vollständig. In Deutschland ist das Nutzen von Blitzer-Warnern während der Fahrt verboten.',
+        speedWarning: 'Warnton bei zu schnell',
+        off: 'Aus',
+        atLimit: 'Ab Limit',
+        speedWarningNote: 'Kurzer Ton, wenn du das Tempolimit um mehr als so viele km/h überschreitest (nur wo das Limit bekannt ist).',
         personal: 'Persönliche Daten',
         personalNote: 'Zuhause, Arbeit, Favoriten, Verlauf und Parkplatz werden nur auf diesem Gerät gespeichert.',
         clear: 'Gespeicherte Orte löschen',
@@ -219,6 +228,11 @@ export const translations = {
         favorites: 'Favorites',
         recents: 'Recent searches',
       },
+      drive: {
+        start: 'Drive mode (no destination)',
+        title: 'Drive mode',
+        note: 'Speed, speed limit and cameras – no destination',
+      },
       pin: {
         title: 'Dropped pin',
         near: 'Near {{place}}',
@@ -281,6 +295,10 @@ export const translations = {
         speedCameras: 'Show and warn about speed cameras',
         speedCamerasNote:
           'Fixed speed cameras from OpenStreetMap – without guarantee and not complete. In Germany, using speed camera warnings while driving is prohibited.',
+        speedWarning: 'Speeding alert',
+        off: 'Off',
+        atLimit: 'At limit',
+        speedWarningNote: 'A short tone when you exceed the speed limit by more than this many km/h (only where the limit is known).',
         personal: 'Personal data',
         personalNote: 'Home, work, favorites, history and parking spot are stored only on this device.',
         clear: 'Delete saved places',
@@ -404,6 +422,11 @@ export const translations = {
         favorites: 'المفضلة',
         recents: 'عمليات البحث الأخيرة',
       },
+      drive: {
+        start: 'وضع القيادة (بدون وجهة)',
+        title: 'وضع القيادة',
+        note: 'السرعة وحد السرعة والرادارات – بدون وجهة',
+      },
       pin: {
         title: 'موقع محدد',
         near: 'بالقرب من {{place}}',
@@ -469,6 +492,10 @@ export const translations = {
         speedCameras: 'عرض كاميرات السرعة والتنبيه منها',
         speedCamerasNote:
           'كاميرات سرعة ثابتة من OpenStreetMap – بدون ضمان وغير مكتملة. في ألمانيا يُحظر استخدام تنبيهات كاميرات السرعة أثناء القيادة.',
+        speedWarning: 'تنبيه تجاوز السرعة',
+        off: 'إيقاف',
+        atLimit: 'عند الحد',
+        speedWarningNote: 'نغمة قصيرة عند تجاوز حد السرعة بأكثر من هذا العدد من كم/س (فقط حيث يكون الحد معروفًا).',
         personal: 'البيانات الشخصية',
         personalNote: 'يتم حفظ المنزل والعمل والمفضلة والسجل وموقف السيارة على هذا الجهاز فقط.',
         clear: 'حذف الأماكن المحفوظة',

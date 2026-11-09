@@ -70,11 +70,47 @@ export function stopSpeaking() {
   if (supported()) speechSynthesis.cancel()
 }
 
+let audio: AudioContext | null = null // für den Warnton (siehe playAlert)
+
 // iPhones erlauben Sprachausgabe erst nach einem Fingertipp. Diese Funktion beim Antippen
 // von "Navigation starten" aufrufen, dann funktionieren spätere Ansagen.
 export function unlockSpeech() {
-  if (!supported()) return
-  const silent = new SpeechSynthesisUtterance(' ')
-  silent.volume = 0
-  speechSynthesis.speak(silent)
+  if (supported()) {
+    const silent = new SpeechSynthesisUtterance(' ')
+    silent.volume = 0
+    speechSynthesis.speak(silent)
+  }
+  // Warnton ebenfalls freischalten (auch das verlangt ein Fingertipp)
+  try {
+    audio ??= new AudioContext()
+    void audio.resume()
+  } catch {
+    // kein Ton möglich
+  }
+}
+
+// Kurzer Warnton (z. B. zu schnell) – erzeugt im Browser, keine Audiodatei nötig
+export function playAlert() {
+  try {
+    audio ??= new AudioContext()
+    void audio.resume()
+    const now = audio.currentTime
+    // zwei kurze, sanfte Töne
+    for (const [start, frequency] of [
+      [0, 880],
+      [0.18, 1175],
+    ]) {
+      const tone = audio.createOscillator()
+      const volume = audio.createGain()
+      tone.frequency.value = frequency
+      volume.gain.setValueAtTime(0.0001, now + start)
+      volume.gain.exponentialRampToValueAtTime(0.25, now + start + 0.02)
+      volume.gain.exponentialRampToValueAtTime(0.0001, now + start + 0.15)
+      tone.connect(volume).connect(audio.destination)
+      tone.start(now + start)
+      tone.stop(now + start + 0.16)
+    }
+  } catch {
+    // Ton nicht möglich – die rote Anzeige warnt trotzdem
+  }
 }

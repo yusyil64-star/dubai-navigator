@@ -68,6 +68,21 @@ Legende: ✅ fertig · 🔨 in Arbeit · ⬜ geplant · 💰 braucht Geld/Konto/
 - ✅ Ort teilen: Link über das Teilen-Menü des Handys (sonst kopiert); der Link öffnet die App direkt bei diesem Ort
 - ⬜ Parkzonen: keine offene Quelle mit Koordinaten gefunden (Portal blockiert automatischen Zugriff) – zurückgestellt
 
+## Schritt 7 – Noch mehr wie Waze und Google Maps
+
+- ✅ Flüssige Bewegung: Pfeil und Karte bewegen sich mit bis zu 60 Bildern pro Sekunde entlang der Straße
+- ✅ Bessere Stimme: automatisch die natürlichste Stimme des Geräts, eigene Auswahl und Probe in den Einstellungen
+- ✅ Lange auf die Karte drücken (oder Rechtsklick): Punkt als Ort wählen, mit Adresse in der Nähe
+- ✅ Fahrmodus ohne Ziel: Karte folgt, Tempo, Tempolimit, Blitzer voraus (Anzeige + Ansage)
+- ✅ Warnton bei zu schnell (aus / ab Limit / +5 / +10 km/h)
+- ⬜ Liste aller Abbiegungen der Route
+- ⬜ Ziel liegt links/rechts (bei der Ankunft)
+- ⬜ Ankunftszeit teilen („Ich bin um 14:32 da“, ohne Live-Verfolgung)
+- ⬜ Unterwegs suchen: Tankstelle, Café usw. nahe der Route
+- ⬜ Sprachsuche: Ziel einsprechen
+- ⬜ Karte zoomt vor Abbiegungen automatisch heran; Einstellungen für 2D/3D und Norden oben
+- Nicht möglich mit dem kostenlosen Routendienst: Autobahn/Maut/Fähre meiden (getestet: wird abgelehnt)
+
 ## Schritt 6 – Große Ausbaustufen
 
 - 💰 Live-Verkehr und Staus (Datenanbieter wie TomTom oder HERE)

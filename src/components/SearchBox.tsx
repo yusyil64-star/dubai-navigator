@@ -18,10 +18,12 @@ type SearchBoxProps = {
   onCategory?: (category: Category) => void
   // Falls gesetzt: "Parkplatz hier merken" mit diesem Standort anbieten
   userLocation?: LonLat | null
+  // Falls gesetzt: Knopf "Fahrmodus" (ohne Ziel) anzeigen
+  onDrive?: () => void
 }
 
 // Suchfeld mit Vorschlagsliste. Ohne Eingabe: Kategorien, Zuhause/Arbeit, Favoriten, Verlauf.
-export function SearchBox({ onSelect, onCategory, userLocation }: SearchBoxProps) {
+export function SearchBox({ onSelect, onCategory, userLocation, onDrive }: SearchBoxProps) {
   const { t, i18n } = useTranslation()
   const saved = useSavedPlaces()
   const homeAndWork = [
@@ -104,6 +106,14 @@ export function SearchBox({ onSelect, onCategory, userLocation }: SearchBoxProps
                 </button>
               ))}
             </div>
+          )}
+          {onDrive && (
+            <button type="button" className="search-box__drive" onClick={onDrive}>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 11l2-5h10l2 5v6h-2v2h-3v-2H10v2H7v-2H5zM7.5 15a1.5 1.5 0 1 0 0-.01M16.5 15a1.5 1.5 0 1 0 0-.01M7 11h10l-1.3-3H8.3z" />
+              </svg>
+              {t('drive.start')}
+            </button>
           )}
           {onCategory && (
             <ParkingEntry

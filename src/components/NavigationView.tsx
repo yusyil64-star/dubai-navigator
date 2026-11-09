@@ -11,6 +11,7 @@ import { formatClock, formatDistance, formatDuration } from '../utils/format'
 import { LaneGuide } from './LaneGuide'
 import { ManeuverArrow } from './ManeuverArrow'
 import { RouteLine } from './RouteLine'
+import { SpeedDisplay } from './SpeedDisplay'
 import './NavigationView.css'
 
 const LOCATION_ERRORS: Record<number, string> = { 1: 'location.denied', 3: 'location.timeout' }
@@ -101,27 +102,7 @@ export function NavigationView({ map, route: initialRoute, simulate, onExit, onN
         </div>
       )}
 
-      {progress && (progress.speedLimit || progress.speed !== null) && status !== 'arrived' && (
-        <div className="nav-speed">
-          {progress.speedLimit && (
-            <div className="nav-speed__limit" aria-label={t('nav.speedLimit', { speed: progress.speedLimit })}>
-              {progress.speedLimit}
-            </div>
-          )}
-          {progress.speed !== null && (
-            <div
-              className={
-                progress.speedLimit && progress.speed > progress.speedLimit
-                  ? 'nav-speed__current nav-speed__current--over'
-                  : 'nav-speed__current'
-              }
-            >
-              <strong>{progress.speed}</strong>
-              <span>km/h</span>
-            </div>
-          )}
-        </div>
-      )}
+      {progress && status !== 'arrived' && <SpeedDisplay speed={progress.speed} limit={progress.speedLimit} />}
 
       {!following && (
         <button type="button" className="nav-recenter" onClick={() => setFollowing(true)}>

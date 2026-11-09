@@ -4,6 +4,7 @@ import type { LngLat, Map as MapLibreMap } from 'maplibre-gl'
 import { BottomSheet } from './components/BottomSheet'
 import { BrandBadge } from './components/BrandBadge'
 import { CategoryResults } from './components/CategoryResults'
+import { DriveView } from './components/DriveView'
 import { LanguageSwitcher } from './components/LanguageSwitcher'
 import { MapLongPress } from './components/MapLongPress'
 import { MapView } from './components/MapView'
@@ -15,6 +16,7 @@ import { SearchBox } from './components/SearchBox'
 import { SettingsPanel } from './components/SettingsPanel'
 import { SpeedCameraLayer } from './components/SpeedCameraLayer'
 import { Toast } from './components/Toast'
+import { unlockSpeech } from './navigation/voice'
 import { addRecent, PARKED_ID } from './places'
 import type { Category } from './services/categories'
 import { describeLocation, type Place } from './services/geocoding'
@@ -46,6 +48,8 @@ function App() {
   // Geöffnete Kategorie (z. B. Tankstellen) und der Punkt, um den herum gesucht wird
   const [category, setCategory] = useState<{ category: Category; around: LonLat } | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  // Fahrmodus ohne Ziel (Tempo, Tempolimit, Blitzer)
+  const [driving, setDriving] = useState(false)
 
   // Hell/Dunkel für die ganze Seite setzen (Farben in index.css) und die Farbe der Browserleiste
   useEffect(() => {
@@ -117,16 +121,28 @@ function App() {
       />
     )
   } else {
-    sheetContent = <SearchBox onSelect={selectPlace} onCategory={openCategory} userLocation={userLocation} />
+    sheetContent = (
+      <SearchBox
+        onSelect={selectPlace}
+        onCategory={openCategory}
+        userLocation={userLocation}
+        onDrive={() => {
+          unlockSpeech() // Ansagen und Warnton freischalten (iPhone)
+          setDriving(true)
+        }}
+      />
+    )
   }
 
   return (
     <>
       <MapView theme={theme} onNotice={setNotice} onMapReady={setMap} onLocation={setUserLocation} />
       {map && place && <PlaceMarker map={map} place={place} />}
-      {map && !navigation && <MapLongPress map={map} onPick={pickOnMap} />}
+      {map && !navigation && !driving && <MapLongPress map={map} onPick={pickOnMap} />}
       {map && settings.speedCameras && <SpeedCameraLayer map={map} />}
-      {map && navigation ? (
+      {map && driving && !navigation ? (
+        <DriveView map={map} onExit={() => setDriving(false)} onNotice={setNotice} />
+      ) : map && navigation ? (
         <NavigationView
           map={map}
           route={navigation.route}

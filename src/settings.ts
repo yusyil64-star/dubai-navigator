@@ -6,9 +6,10 @@ export type Settings = {
   speedCameras: boolean // Blitzer auf der Karte und Warnungen
   theme: 'auto' | 'light' | 'dark' // Nachtmodus
   voiceNames: Record<string, string> // gewählte Stimme je Sprache (fehlt = automatisch die beste)
+  speedWarning: number | null // Warnton ab so vielen km/h über dem Limit (null = aus)
 }
 
-const DEFAULTS: Settings = { voice: true, speedCameras: true, theme: 'auto', voiceNames: {} }
+const DEFAULTS: Settings = { voice: true, speedCameras: true, theme: 'auto', voiceNames: {}, speedWarning: 5 }
 const STORAGE_KEY = 'dubai-navigator.settings'
 
 function load(): Settings {
