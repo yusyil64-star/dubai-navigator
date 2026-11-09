@@ -115,6 +115,9 @@ export const translations = {
         speedCameras: 'Blitzer anzeigen und warnen',
         speedCamerasNote:
           'Feste Blitzer aus OpenStreetMap – ohne Gewähr und nicht vollständig. In Deutschland ist das Nutzen von Blitzer-Warnern während der Fahrt verboten.',
+        mapView: 'Kartenansicht beim Fahren',
+        mapViews: { '3d': '3D', '2d': '2D', north: 'Norden oben' },
+        autoZoom: 'Automatisch zoomen (Tempo, Abbiegungen)',
         speedWarning: 'Warnton bei zu schnell',
         off: 'Aus',
         atLimit: 'Ab Limit',
@@ -330,6 +333,9 @@ export const translations = {
         speedCameras: 'Show and warn about speed cameras',
         speedCamerasNote:
           'Fixed speed cameras from OpenStreetMap – without guarantee and not complete. In Germany, using speed camera warnings while driving is prohibited.',
+        mapView: 'Map view while driving',
+        mapViews: { '3d': '3D', '2d': '2D', north: 'North up' },
+        autoZoom: 'Auto zoom (speed, turns)',
         speedWarning: 'Speeding alert',
         off: 'Off',
         atLimit: 'At limit',
@@ -548,6 +554,9 @@ export const translations = {
         speedCameras: 'عرض كاميرات السرعة والتنبيه منها',
         speedCamerasNote:
           'كاميرات سرعة ثابتة من OpenStreetMap – بدون ضمان وغير مكتملة. في ألمانيا يُحظر استخدام تنبيهات كاميرات السرعة أثناء القيادة.',
+        mapView: 'عرض الخريطة أثناء القيادة',
+        mapViews: { '3d': 'ثلاثي الأبعاد', '2d': 'ثنائي الأبعاد', north: 'الشمال للأعلى' },
+        autoZoom: 'تكبير تلقائي (السرعة، المنعطفات)',
         speedWarning: 'تنبيه تجاوز السرعة',
         off: 'إيقاف',
         atLimit: 'عند الحد',

@@ -11,7 +11,7 @@ import { MapView } from './components/MapView'
 import { NavigationView } from './components/NavigationView'
 import { PlaceCard } from './components/PlaceCard'
 import { PlaceMarker } from './components/PlaceMarker'
-import { RoutePanel } from './components/RoutePanel'
+import { RoutePanel, type RouteDraft } from './components/RoutePanel'
 import { SearchBox } from './components/SearchBox'
 import { SettingsPanel } from './components/SettingsPanel'
 import { SpeedCameraLayer } from './components/SpeedCameraLayer'
@@ -48,6 +48,8 @@ function App() {
   // Geöffnete Kategorie (z. B. Tankstellen) und der Punkt, um den herum gesucht wird
   const [category, setCategory] = useState<{ category: Category; around: LonLat } | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  // Start und Zwischenstopps der geplanten Route (gilt für den aktuellen Ort)
+  const [routeDraft, setRouteDraft] = useState<RouteDraft | null>(null)
   // Fahrmodus ohne Ziel (Tempo, Tempolimit, Blitzer)
   const [driving, setDriving] = useState(false)
 
@@ -65,6 +67,7 @@ function App() {
   function selectPlace(selected: Place) {
     if (selected.id !== PARKED_ID) addRecent(selected) // das eigene Auto nicht im Verlauf
     setPlace(selected)
+    setRouteDraft(null)
     setCategory(null)
   }
 
@@ -72,6 +75,7 @@ function App() {
   function pickOnMap({ lng, lat }: LngLat) {
     const id = `pin-${lng.toFixed(5)},${lat.toFixed(5)}`
     setPlace({ id, name: t('pin.title'), detail: '', lon: lng, lat })
+    setRouteDraft(null)
     setRouting(false)
     setCategory(null)
     describeLocation(lng, lat, i18n.resolvedLanguage ?? 'en', AbortSignal.timeout(10000))
@@ -83,6 +87,7 @@ function App() {
 
   function closePlace() {
     setPlace(null)
+    setRouteDraft(null)
     setRouting(false)
   }
 
@@ -104,6 +109,8 @@ function App() {
         userLocation={userLocation}
         onClose={() => setRouting(false)}
         onNavigate={(route, simulate) => setNavigation({ route, simulate })}
+        draft={routeDraft}
+        onDraftChange={setRouteDraft}
       />
     )
   } else if (place) {

@@ -80,7 +80,8 @@ Legende: ✅ fertig · 🔨 in Arbeit · ⬜ geplant · 💰 braucht Geld/Konto/
 - ✅ Ankunftszeit teilen während der Navigation („Ich bin voraussichtlich um 14:32 bei …“, ohne Live-Verfolgung)
 - ✅ Unterwegs suchen während der Navigation: Tankstelle, Café usw. entlang der Route, als Zwischenstopp einfügen
 - ✅ Sprachsuche: Ziel einsprechen (Mikrofon im Suchfeld; Chrome nutzt dafür Google, Safari Apple – steht im Datenschutz-Hinweis)
-- ⬜ Karte zoomt vor Abbiegungen automatisch heran; Einstellungen für 2D/3D und Norden oben
+- ✅ Auto-Zoom (je nach Tempo, vor Abbiegungen heran) und Kartenansicht 3D / 2D / Norden oben (Einstellungen)
+- ✅ Routenplanung bleibt nach einer (Demo-)Fahrt erhalten (Start und Zwischenstopps)
 - Nicht möglich mit dem kostenlosen Routendienst: Autobahn/Maut/Fähre meiden (getestet: wird abgelehnt)
 
 ## Schritt 6 – Große Ausbaustufen

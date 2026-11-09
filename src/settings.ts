@@ -7,9 +7,11 @@ export type Settings = {
   theme: 'auto' | 'light' | 'dark' // Nachtmodus
   voiceNames: Record<string, string> // gewählte Stimme je Sprache (fehlt = automatisch die beste)
   speedWarning: number | null // Warnton ab so vielen km/h über dem Limit (null = aus)
+  mapView: '3d' | '2d' | 'north' // Kartenansicht beim Fahren: schräg, flach in Fahrtrichtung, Norden oben
+  autoZoom: boolean // beim Fahren automatisch zoomen (Tempo, Abbiegungen)
 }
 
-const DEFAULTS: Settings = { voice: true, speedCameras: true, theme: 'auto', voiceNames: {}, speedWarning: 5 }
+const DEFAULTS: Settings = { voice: true, speedCameras: true, theme: 'auto', voiceNames: {}, speedWarning: 5, mapView: '3d', autoZoom: true }
 const STORAGE_KEY = 'dubai-navigator.settings'
 
 function load(): Settings {

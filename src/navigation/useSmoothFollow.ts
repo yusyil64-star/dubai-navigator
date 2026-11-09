@@ -5,11 +5,14 @@
 import { useEffect, useMemo, useRef } from 'react'
 import type { Map as MapLibreMap, Marker } from 'maplibre-gl'
 import type { LonLat, Route } from '../services/routing'
+import { getSettings } from '../settings'
 import { bearing, cumulativeDistances, distance, pointAlong } from './geo'
 import type { NavProgress } from './useNavigation'
 
 // Was die flüssige Bewegung braucht (Navigation oder Fahrmodus ohne Route)
-export type SmoothInput = Pick<NavProgress, 'position' | 'heading' | 'along' | 'speedMs' | 'fixTime'>
+export type SmoothInput = Pick<NavProgress, 'position' | 'heading' | 'along' | 'speedMs' | 'fixTime'> & {
+  distanceToNext?: number // bis zum nächsten Manöver (für Auto-Zoom)
+}
 
 const MAX_AHEAD_SECONDS = 1.5 // höchstens so lange ohne neue Position weiterfahren
 const POSITION_SMOOTHING = 4 // je größer, desto schneller folgt der Pfeil der echten Position
@@ -98,16 +101,17 @@ export function useSmoothFollow({ map, puck, route, progress, following }: Optio
       }
 
       if (follow) {
-        const settle = Math.min(1, (now - followSince.current) / SETTLE_MS)
+        const { mapView, autoZoom } = getSettings()
+        const settling = now - followSince.current < SETTLE_MS
+        // Auto-Zoom: schnell = weiter heraus (mehr Überblick), vor einer Abbiegung heran
+        const targetZoom = autoZoom ? autoZoomLevel(p.speedMs, p.distanceToNext) : FOLLOW_ZOOM
+        const zoomRate = settling ? 5 : autoZoom ? 0.8 : 0 // ohne Auto-Zoom darf man danach selbst zoomen
         map.jumpTo({
           center: point,
-          bearing: shownHeading,
+          bearing: mapView === 'north' ? 0 : shownHeading,
           padding: FOLLOW_PADDING,
-          // nur während des Einstellens Zoom und Neigung ändern, danach darf man selbst zoomen
-          ...(settle < 1 && {
-            zoom: map.getZoom() + (FOLLOW_ZOOM - map.getZoom()) * blend(5),
-            pitch: map.getPitch() + (FOLLOW_PITCH - map.getPitch()) * blend(5),
-          }),
+          zoom: map.getZoom() + (targetZoom - map.getZoom()) * blend(zoomRate),
+          pitch: map.getPitch() + ((mapView === '3d' ? FOLLOW_PITCH : 0) - map.getPitch()) * blend(5),
         })
       }
     }
@@ -123,4 +127,12 @@ function moveBy([lon, lat]: LonLat, heading: number, meters: number): LonLat {
     lon + (Math.sin(rad) * meters) / (111320 * Math.cos((lat * Math.PI) / 180)),
     lat + (Math.cos(rad) * meters) / 110540,
   ]
+}
+
+// Zoomstufe je nach Tempo, vor Abbiegungen näher heran (wie bei Waze/Google Maps)
+function autoZoomLevel(speedMs: number, distanceToNext: number | undefined) {
+  if (distanceToNext !== undefined && distanceToNext < 250) return 17.5
+  if (speedMs > 22) return 15.5 // über ca. 80 km/h
+  if (speedMs > 12) return 16.3 // über ca. 45 km/h
+  return 17
 }

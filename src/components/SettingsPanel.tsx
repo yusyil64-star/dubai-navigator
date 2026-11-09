@@ -15,6 +15,7 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
 
   const themes: Settings['theme'][] = ['auto', 'light', 'dark']
   const SPEED_WARNINGS: Settings['speedWarning'][] = [null, 0, 5, 10]
+  const MAP_VIEWS: Settings['mapView'][] = ['3d', '2d', 'north']
 
   return (
     <div className="settings">
@@ -79,6 +80,30 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
           />
         </label>
         <p className="settings__note">{t('settings.speedCamerasNote')}</p>
+      </section>
+
+      <section>
+        <h3>{t('settings.mapView')}</h3>
+        <div className="settings__choice">
+          {MAP_VIEWS.map((view) => (
+            <button
+              key={view}
+              type="button"
+              aria-pressed={settings.mapView === view}
+              onClick={() => updateSettings({ mapView: view })}
+            >
+              {t(`settings.mapViews.${view}`)}
+            </button>
+          ))}
+        </div>
+        <label className="settings__toggle">
+          <span>{t('settings.autoZoom')}</span>
+          <input
+            type="checkbox"
+            checked={settings.autoZoom}
+            onChange={(e) => updateSettings({ autoZoom: e.target.checked })}
+          />
+        </label>
       </section>
 
       <section>

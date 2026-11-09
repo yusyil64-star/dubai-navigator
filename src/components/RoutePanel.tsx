@@ -16,6 +16,9 @@ import './RoutePanel.css'
 // name = null bedeutet: eigener Standort (Text wird in der aktuellen Sprache angezeigt)
 type Start = { name: string | null; lon: number; lat: number }
 
+// Startpunkt und Zwischenstopps – bleiben erhalten, wenn das Feld kurz verschwindet (z. B. während der Navigation)
+export type RouteDraft = { start: Start | null; stops: Place[] }
+
 // Ergebnis einer Routenanfrage; "key" sagt, zu welcher Anfrage es gehört
 type Result = { key: string; routes?: Route[]; failed?: boolean }
 
@@ -29,16 +32,19 @@ type RoutePanelProps = {
   onClose: () => void
   // Navigation mit dieser Route starten (simulate = Demo-Fahrt)
   onNavigate: (route: Route, simulate: boolean) => void
+  draft: RouteDraft | null
+  onDraftChange: (draft: RouteDraft) => void
 }
 
 // Route vom Startpunkt (GPS oder gesucht) über Zwischenstopps zum Ziel.
-export function RoutePanel({ map, destination, userLocation, onClose, onNavigate }: RoutePanelProps) {
+export function RoutePanel({ map, destination, userLocation, onClose, onNavigate, draft, onDraftChange }: RoutePanelProps) {
   const { t, i18n } = useTranslation()
   const language = i18n.resolvedLanguage ?? 'en'
-  const [start, setStart] = useState<Start | null>(() =>
-    userLocation ? { name: null, lon: userLocation[0], lat: userLocation[1] } : null,
+  const [start, setStart] = useState<Start | null>(
+    () => draft?.start ?? (userLocation ? { name: null, lon: userLocation[0], lat: userLocation[1] } : null),
   )
-  const [stops, setStops] = useState<Place[]>([])
+  const [stops, setStops] = useState<Place[]>(() => draft?.stops ?? [])
+  useEffect(() => onDraftChange({ start, stops }), [start, stops, onDraftChange])
   const [addingStop, setAddingStop] = useState(false)
   const [showSteps, setShowSteps] = useState(false)
   const [profile, setProfile] = useState<Profile>('car')
