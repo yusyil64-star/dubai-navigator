@@ -8,6 +8,11 @@ export const translations = {
         loading: 'Suche läuft …',
         noResults: 'Keine Orte in Dubai gefunden.',
         error: 'Suche gerade nicht möglich. Bitte Internetverbindung prüfen.',
+        mic: 'Ziel einsprechen',
+        micStop: 'Zuhören beenden',
+        listening: 'Ich höre zu … sag dein Ziel.',
+        micDenied: 'Mikrofon nicht erlaubt. Bitte in den Browser-Einstellungen freigeben.',
+        micError: 'Spracheingabe gerade nicht möglich.',
       },
       place: {
         close: 'Schließen',
@@ -121,7 +126,7 @@ export const translations = {
         cleared: 'Gespeicherte Orte wurden gelöscht.',
         privacy: 'Datenschutz',
         privacyText:
-          'Die App hat keinen eigenen Server und kein Konto. Suchbegriffe werden an Photon (komoot) gesendet. Für Routen werden Start, Zwischenstopps und Ziel – bei „Mein Standort“ also deine Position – an den Routendienst des FOSSGIS e.V. gesendet und dort protokolliert. Kartenbilder kommen von OpenFreeMap.',
+          'Die App hat keinen eigenen Server und kein Konto. Suchbegriffe werden an Photon (komoot) gesendet. Für Routen werden Start, Zwischenstopps und Ziel – bei „Mein Standort“ also deine Position – an den Routendienst des FOSSGIS e.V. gesendet und dort protokolliert. Kartenbilder kommen von OpenFreeMap. Bei der Sprachsuche schickt der Browser die Aufnahme an seinen Anbieter (Chrome: Google, Safari: Apple).',
         sources: 'Datenquellen',
         sourcesText:
           'Kartendaten © OpenStreetMap-Mitwirkende (ODbL). Kartenstil: OpenFreeMap. Suche: Photon (komoot). Routen: OSRM des FOSSGIS e.V. Blitzer, Tempolimits und Orte: vorab aus OpenStreetMap geladen. Keine Live-Verkehrsdaten.',
@@ -218,6 +223,11 @@ export const translations = {
         loading: 'Searching …',
         noResults: 'No places found in Dubai.',
         error: 'Search is not available right now. Please check your internet connection.',
+        mic: 'Speak destination',
+        micStop: 'Stop listening',
+        listening: 'Listening … say your destination.',
+        micDenied: 'Microphone not allowed. Please enable it in your browser settings.',
+        micError: 'Voice input is not available right now.',
       },
       place: {
         close: 'Close',
@@ -331,7 +341,7 @@ export const translations = {
         cleared: 'Saved places have been deleted.',
         privacy: 'Privacy',
         privacyText:
-          'The app has no server and no account. Search terms are sent to Photon (komoot). For routes, start, stops and destination – with “My location” that is your position – are sent to the FOSSGIS e.V. routing service and logged there. Map images come from OpenFreeMap.',
+          'The app has no server and no account. Search terms are sent to Photon (komoot). For routes, start, stops and destination – with “My location” that is your position – are sent to the FOSSGIS e.V. routing service and logged there. Map images come from OpenFreeMap. With voice search, your browser sends the recording to its provider (Chrome: Google, Safari: Apple).',
         sources: 'Data sources',
         sourcesText:
           'Map data © OpenStreetMap contributors (ODbL). Map style: OpenFreeMap. Search: Photon (komoot). Routes: OSRM by FOSSGIS e.V. Speed cameras, speed limits and places: pre-loaded from OpenStreetMap. No live traffic data.',
@@ -428,6 +438,11 @@ export const translations = {
         loading: 'جارٍ البحث …',
         noResults: 'لم يتم العثور على أماكن في دبي.',
         error: 'البحث غير متاح حاليًا. يرجى التحقق من اتصال الإنترنت.',
+        mic: 'قل وجهتك',
+        micStop: 'إيقاف الاستماع',
+        listening: 'أستمع … قل وجهتك.',
+        micDenied: 'الميكروفون غير مسموح. يرجى السماح به في إعدادات المتصفح.',
+        micError: 'الإدخال الصوتي غير متاح حاليًا.',
       },
       place: {
         close: 'إغلاق',
@@ -544,7 +559,7 @@ export const translations = {
         cleared: 'تم حذف الأماكن المحفوظة.',
         privacy: 'الخصوصية',
         privacyText:
-          'لا يملك التطبيق خادمًا ولا حسابًا. تُرسل كلمات البحث إلى Photon (komoot). وللمسارات تُرسل نقطة البداية والمحطات والوجهة – ومع "موقعي" يعني ذلك موقعك – إلى خدمة المسارات لدى FOSSGIS e.V. وتُسجَّل هناك. صور الخريطة من OpenFreeMap.',
+          'لا يملك التطبيق خادمًا ولا حسابًا. تُرسل كلمات البحث إلى Photon (komoot). وللمسارات تُرسل نقطة البداية والمحطات والوجهة – ومع "موقعي" يعني ذلك موقعك – إلى خدمة المسارات لدى FOSSGIS e.V. وتُسجَّل هناك. صور الخريطة من OpenFreeMap. عند البحث الصوتي يرسل المتصفح التسجيل إلى مزوده (Chrome: Google، Safari: Apple).',
         sources: 'مصادر البيانات',
         sourcesText:
           'بيانات الخريطة © المساهمون في OpenStreetMap (ODbL). نمط الخريطة: OpenFreeMap. البحث: Photon (komoot). المسارات: OSRM لدى FOSSGIS e.V. كاميرات السرعة وحدود السرعة والأماكن: محمّلة مسبقًا من OpenStreetMap. لا توجد بيانات مرور مباشرة.',

@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PARKED_ID, setParked, useSavedPlaces, type ParkedCar } from '../places'
 import { CATEGORIES, type Category } from '../services/categories'
 import { searchPlaces, type Place } from '../services/geocoding'
+import { listen, speechInputSupported } from '../services/speechInput'
 import type { LonLat } from '../services/routing'
 import { formatClock } from '../utils/format'
 import './SearchBox.css'
@@ -65,6 +66,26 @@ export function SearchBox({ onSelect, onCategory, userLocation, onDrive }: Searc
     }
   }
 
+  // Sprachsuche: Gesprochenes landet im Suchfeld (und wird wie getippt gesucht)
+  const [listening, setListening] = useState(false)
+  const [micError, setMicError] = useState<string | null>(null)
+  const stopListening = useRef<(() => void) | null>(null)
+  useEffect(() => () => stopListening.current?.(), [])
+  function toggleListening() {
+    if (listening) {
+      stopListening.current?.()
+      return
+    }
+    setMicError(null)
+    setListening(true)
+    stopListening.current = listen(i18n.resolvedLanguage ?? 'en', handleChange, (error) => {
+      setListening(false)
+      stopListening.current = null
+      if (error === 'not-allowed' || error === 'service-not-allowed') setMicError('search.micDenied')
+      else if (error && error !== 'aborted' && error !== 'no-speech') setMicError('search.micError')
+    })
+  }
+
   function select(place: Place) {
     onSelect(place)
     setQuery('')
@@ -88,7 +109,23 @@ export function SearchBox({ onSelect, onCategory, userLocation, onDrive }: Searc
           autoComplete="off"
           enterKeyHint="search"
         />
+        {speechInputSupported() && (
+          <button
+            type="button"
+            className={listening ? 'search-box__mic is-listening' : 'search-box__mic'}
+            onClick={toggleListening}
+            aria-pressed={listening}
+            aria-label={t(listening ? 'search.micStop' : 'search.mic')}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="9" y="3" width="6" height="11" rx="3" />
+              <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" />
+            </svg>
+          </button>
+        )}
       </div>
+      {listening && <p className="search-box__status">{t('search.listening')}</p>}
+      {micError && <p className="search-box__status">{t(micError)}</p>}
 
       {status === 'loading' && <p className="search-box__status">{t('search.loading')}</p>}
       {status === 'error' && <p className="search-box__status">{t('search.error')}</p>}
