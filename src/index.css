@@ -50,3 +50,38 @@ body,
   height: 100%;
   overflow: hidden; /* Karte füllt den Bildschirm, kein Scrollen der Seite */
 }
+
+/* Kleine Rückmeldung beim Antippen von Knöpfen */
+button {
+  transition:
+    transform 120ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Ortsmarkierung fällt sanft herein (nur das Bild, die Position setzt die Karte) */
+.place-marker svg {
+  transform-origin: 50% 100%;
+  animation: pin-drop 380ms cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+@keyframes pin-drop {
+  from {
+    transform: translateY(-18px) scale(0.85);
+  }
+}
+
+/* Wer in den Systemeinstellungen "Bewegung reduzieren" gewählt hat, bekommt keine Animationen */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+}

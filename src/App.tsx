@@ -101,7 +101,9 @@ function App() {
   // Inhalt des Bedienfelds: Route → Ort → Kategorie → Suche
   // (Die Einstellungen legen sich darüber, damit z. B. eine geplante Route erhalten bleibt.)
   let sheetContent
+  let sheetView // Name des Inhalts – wechselt er, blendet der neue Inhalt sanft ein
   if (place && routing && map) {
+    sheetView = `route-${place.id}`
     sheetContent = (
       <RoutePanel
         map={map}
@@ -114,10 +116,12 @@ function App() {
       />
     )
   } else if (place) {
+    sheetView = `place-${place.id}`
     sheetContent = (
       <PlaceCard place={place} onClose={closePlace} onRoute={() => setRouting(true)} onNotice={setNotice} />
     )
   } else if (category && map) {
+    sheetView = `category-${category.category}`
     sheetContent = (
       <CategoryResults
         map={map}
@@ -128,6 +132,7 @@ function App() {
       />
     )
   } else {
+    sheetView = 'search'
     sheetContent = (
       <SearchBox
         onSelect={selectPlace}
@@ -177,7 +182,7 @@ function App() {
               <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
             </svg>
           </button>
-          <BottomSheet>{sheetContent}</BottomSheet>
+          <BottomSheet view={sheetView}>{sheetContent}</BottomSheet>
           {settingsOpen && (
             <BottomSheet>
               <SettingsPanel onClose={() => setSettingsOpen(false)} />

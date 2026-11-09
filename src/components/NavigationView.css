@@ -346,3 +346,37 @@
   background: var(--color-text);
   color: var(--color-surface);
 }
+
+/* Weiche Übergänge beim Start der Navigation */
+.nav-banner {
+  animation: nav-from-top 350ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.nav-footer {
+  animation: nav-from-bottom 350ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.nav-camera,
+.nav-search,
+.nav-recenter {
+  animation: nav-pop 220ms ease-out;
+}
+
+@keyframes nav-from-top {
+  from {
+    transform: translateY(-30px);
+  }
+}
+
+@keyframes nav-from-bottom {
+  from {
+    transform: translateY(30px);
+  }
+}
+
+@keyframes nav-pop {
+  from {
+    transform: scale(0.94);
+    opacity: 0.5;
+  }
+}

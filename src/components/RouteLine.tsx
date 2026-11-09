@@ -1,17 +1,11 @@
 import { useEffect } from 'react'
 import { LngLatBounds, Marker, type GeoJSONSource, type Map as MapLibreMap } from 'maplibre-gl'
-import { routeLayerAnchor } from '../config/map'
+import { routeLayerAnchor, sheetPadding } from '../config/map'
 import type { LonLat } from '../services/routing'
 
 const SOURCE_ID = 'route'
 const ROUTE_COLOR = '#2b7a8c' // ruhiges Golf-Türkis, gut sichtbar auf der hellen Karte
 
-// Abstand der Route zum Bildschirmrand, damit Bedienfeld und Kopfzeile sie nicht verdecken
-function fitPadding() {
-  if (window.innerWidth < 768) return { top: 90, bottom: 260, left: 40, right: 40 }
-  const rtl = document.documentElement.dir === 'rtl' // Bedienfeld rechts statt links
-  return { top: 90, bottom: 60, left: rtl ? 80 : 450, right: rtl ? 450 : 80 }
-}
 
 // Zeichnet die Route als Linie (mit weißem Rand) und einen Punkt am Start.
 // fit = ganze Route ins Bild holen (während der Navigation aus, dort folgt die Karte der Position).
@@ -66,7 +60,7 @@ export function RouteLine({ map, coordinates, fit = true, stops = [] }: RouteLin
         (b, point) => b.extend(point),
         new LngLatBounds(coordinates[0], coordinates[0]),
       )
-      map.fitBounds(bounds, { padding: fitPadding(), maxZoom: 16 })
+      map.fitBounds(bounds, { padding: sheetPadding(), maxZoom: 16 })
     }
 
     return () => {

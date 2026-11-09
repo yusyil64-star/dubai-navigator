@@ -41,3 +41,25 @@
     display: none;
   }
 }
+
+/* Weiche Übergänge: Feld gleitet herein, neuer Inhalt blendet ein (index.css: Bewegung reduzieren) */
+.bottom-sheet {
+  animation: sheet-in 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.bottom-sheet__content {
+  animation: content-in 220ms ease-out;
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(40px);
+  }
+}
+
+@keyframes content-in {
+  from {
+    opacity: 0.4;
+    transform: translateY(6px);
+  }
+}

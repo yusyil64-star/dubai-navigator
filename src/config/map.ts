@@ -60,3 +60,16 @@ export function routeLayerAnchorIn(layers: { id: string; type: string }[]): stri
   })
   return layers.find((layer, i) => i > lastRoad && layer.type === 'symbol')?.id
 }
+
+// Platz, den das Bedienfeld und die Kopfzeile auf der Karte verdecken (für "ins Bild holen")
+export function sheetPadding() {
+  if (window.innerWidth < 768) return { top: 90, bottom: 260, left: 40, right: 40 }
+  const rtl = document.documentElement.dir === 'rtl' // Bedienfeld rechts statt links
+  return { top: 90, bottom: 60, left: rtl ? 80 : 450, right: rtl ? 450 : 80 }
+}
+
+// Verschiebung der Kartenmitte, damit ein Ort nicht hinter dem Bedienfeld liegt
+export function sheetOffset(): [number, number] {
+  const p = sheetPadding()
+  return [(p.left - p.right) / 2, (p.top - p.bottom) / 2]
+}
