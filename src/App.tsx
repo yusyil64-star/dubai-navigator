@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Map as MapLibreMap } from 'maplibre-gl'
+import type { LngLat, Map as MapLibreMap } from 'maplibre-gl'
 import { BottomSheet } from './components/BottomSheet'
 import { BrandBadge } from './components/BrandBadge'
 import { CategoryResults } from './components/CategoryResults'
 import { LanguageSwitcher } from './components/LanguageSwitcher'
+import { MapLongPress } from './components/MapLongPress'
 import { MapView } from './components/MapView'
 import { NavigationView } from './components/NavigationView'
 import { PlaceCard } from './components/PlaceCard'
@@ -16,7 +17,7 @@ import { SpeedCameraLayer } from './components/SpeedCameraLayer'
 import { Toast } from './components/Toast'
 import { addRecent, PARKED_ID } from './places'
 import type { Category } from './services/categories'
-import type { Place } from './services/geocoding'
+import { describeLocation, type Place } from './services/geocoding'
 import type { LonLat, Route } from './services/routing'
 import { useResolvedTheme, useSettings } from './settings'
 import { placeFromUrl } from './utils/share'
@@ -25,7 +26,7 @@ const THEME_COLORS = { light: '#f4f1ea', dark: '#1a1917' }
 
 function App() {
   // t('schlüssel') liefert den Text in der aktuellen Sprache
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const settings = useSettings()
   const theme = useResolvedTheme()
   // Die fertige Karte (erst nach dem Laden vorhanden)
@@ -61,6 +62,19 @@ function App() {
     if (selected.id !== PARKED_ID) addRecent(selected) // das eigene Auto nicht im Verlauf
     setPlace(selected)
     setCategory(null)
+  }
+
+  // Lange auf die Karte gedrückt: diesen Punkt als Ort wählen, Adresse dazu nachladen
+  function pickOnMap({ lng, lat }: LngLat) {
+    const id = `pin-${lng.toFixed(5)},${lat.toFixed(5)}`
+    setPlace({ id, name: t('pin.title'), detail: '', lon: lng, lat })
+    setRouting(false)
+    setCategory(null)
+    describeLocation(lng, lat, i18n.resolvedLanguage ?? 'en', AbortSignal.timeout(10000))
+      .then((text) => {
+        if (text) setPlace((current) => (current?.id === id ? { ...current, detail: t('pin.near', { place: text }) } : current))
+      })
+      .catch(() => {}) // ohne Adresse geht es auch
   }
 
   function closePlace() {
@@ -110,6 +124,7 @@ function App() {
     <>
       <MapView theme={theme} onNotice={setNotice} onMapReady={setMap} onLocation={setUserLocation} />
       {map && place && <PlaceMarker map={map} place={place} />}
+      {map && !navigation && <MapLongPress map={map} onPick={pickOnMap} />}
       {map && settings.speedCameras && <SpeedCameraLayer map={map} />}
       {map && navigation ? (
         <NavigationView

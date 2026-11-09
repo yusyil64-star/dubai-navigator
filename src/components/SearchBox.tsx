@@ -121,6 +121,7 @@ export function SearchBox({ onSelect, onCategory, userLocation }: SearchBoxProps
           />
           <QuickList title={t('saved.favorites')} places={saved.favorites} onSelect={select} />
           <QuickList title={t('saved.recents')} places={saved.recents} onSelect={select} />
+          {onCategory && <p className="search-box__status">{t('pin.hint')}</p>}
         </>
       )}
 

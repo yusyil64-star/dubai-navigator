@@ -34,6 +34,11 @@ export const translations = {
         favorites: 'Favoriten',
         recents: 'Zuletzt gesucht',
       },
+      pin: {
+        title: 'Markierter Ort',
+        near: 'In der Nähe: {{place}}',
+        hint: 'Tipp: Lange auf die Karte drücken, um einen Punkt zu wählen.',
+      },
       share: {
         button: 'Teilen',
         copied: 'Link zum Ort kopiert.',
@@ -214,6 +219,11 @@ export const translations = {
         favorites: 'Favorites',
         recents: 'Recent searches',
       },
+      pin: {
+        title: 'Dropped pin',
+        near: 'Near {{place}}',
+        hint: 'Tip: press and hold on the map to choose a point.',
+      },
       share: {
         button: 'Share',
         copied: 'Link to this place copied.',
@@ -393,6 +403,11 @@ export const translations = {
         favorite: 'مفضلة',
         favorites: 'المفضلة',
         recents: 'عمليات البحث الأخيرة',
+      },
+      pin: {
+        title: 'موقع محدد',
+        near: 'بالقرب من {{place}}',
+        hint: 'نصيحة: اضغط مطولًا على الخريطة لاختيار نقطة.',
       },
       share: {
         button: 'مشاركة',

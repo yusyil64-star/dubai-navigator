@@ -77,3 +77,18 @@ function isUsefulDestination(feature: PhotonFeature) {
   if (osm_key === 'boundary') return false
   return !(osm_key === 'place' && osm_value && NOT_A_DESTINATION.has(osm_value))
 }
+
+// Was ist an diesem Punkt? (für "lange auf die Karte drücken") – kurze Beschreibung oder null
+export async function describeLocation(lon: number, lat: number, language: string, signal: AbortSignal) {
+  const params = new URLSearchParams({ lon: String(lon), lat: String(lat), lang: PHOTON_LANGUAGES[language] ?? 'en' })
+  const response = await fetch(`${PHOTON_URL.replace('/api/', '/reverse')}?${params}`, { signal })
+  if (!response.ok) throw new Error(`Photon: ${response.status}`)
+  const data: { features: PhotonFeature[] } = await response.json()
+  const p = data.features[0]?.properties
+  if (!p) return null
+  const latinOnly = language !== 'ar'
+  const parts = [p.name, [p.street, p.housenumber].filter(Boolean).join(' '), p.district, p.city]
+    .filter((part): part is string => !!part && !(latinOnly && ARABIC_SCRIPT.test(part)))
+  const unique = [...new Set(parts)]
+  return unique.length > 0 ? unique.slice(0, 3).join(', ') : null
+}
