@@ -34,7 +34,7 @@ const LOCATION_ERRORS: Record<number, string> = {
 }
 
 // Eigene Ebenen der App, die beim Wechsel Hell/Dunkel erhalten bleiben sollen
-const APP_SOURCES = ['transit-lines', 'transit-stations', 'route', 'route-alternatives', 'speed-cameras', 'category-places']
+const APP_SOURCES = ['traffic-flow', 'traffic-incidents', 'transit-lines', 'transit-stations', 'route', 'route-alternatives', 'speed-cameras', 'category-places']
 
 type Theme = 'light' | 'dark'
 const STYLES: Record<Theme, string> = { light: MAP_STYLE_URL, dark: MAP_STYLE_URL_DARK }
@@ -128,7 +128,7 @@ export function MapView({ theme, onNotice, onMapReady, onLocation }: MapViewProp
         const appLayers = previous.layers.filter((l) => 'source' in l && APP_SOURCES.includes(l.source))
         // Routen wieder über den Straßen, aber unter den Straßennamen einfügen; Punkte ganz oben
         const isRoute = (l: (typeof appLayers)[number]) =>
-          'source' in l && (l.source.startsWith('route') || l.source === 'transit-lines')
+          'source' in l && (l.source.startsWith('route') || l.source === 'transit-lines' || l.source === 'traffic-flow')
         const anchor = routeLayerAnchorIn(next.layers)
         const at = anchor ? next.layers.findIndex((l) => l.id === anchor) : next.layers.length
         const layers = [...next.layers]

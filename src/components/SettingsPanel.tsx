@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { hasLiveTraffic } from '../config/tomtom'
 import { LANGUAGES, setLanguage } from '../i18n'
 import { clearPersonalData } from '../places'
 import { updateSettings, useSettings, type Settings } from '../settings'
@@ -102,6 +103,16 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
             </button>
           ))}
         </div>
+        {hasLiveTraffic && (
+          <label className="settings__toggle">
+            <span>{t('settings.liveTraffic')}</span>
+            <input
+              type="checkbox"
+              checked={settings.liveTraffic}
+              onChange={(e) => updateSettings({ liveTraffic: e.target.checked })}
+            />
+          </label>
+        )}
         <label className="settings__toggle">
           <span>{t('settings.transitLayer')}</span>
           <input

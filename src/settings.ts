@@ -11,6 +11,7 @@ export type Settings = {
   mapView: '3d' | '2d' | 'north' // Kartenansicht beim Fahren: schräg, flach in Fahrtrichtung, Norden oben
   autoZoom: boolean // beim Fahren automatisch zoomen (Tempo, Abbiegungen)
   transitLayer: boolean // Metro- und Tram-Linien auf der Karte
+  liveTraffic: boolean // Live-Verkehr von TomTom (nur mit Schlüssel)
 }
 
 const DEFAULTS: Settings = {
@@ -22,6 +23,7 @@ const DEFAULTS: Settings = {
   mapView: '3d',
   autoZoom: true,
   transitLayer: false,
+  liveTraffic: true,
 }
 const STORAGE_KEY = 'dubai-navigator.settings'
 

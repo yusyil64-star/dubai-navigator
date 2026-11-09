@@ -6,6 +6,7 @@ import { BrandBadge } from './components/BrandBadge'
 import { CategoryResults } from './components/CategoryResults'
 import { DriveView } from './components/DriveView'
 import { LanguageSwitcher } from './components/LanguageSwitcher'
+import { LiveTrafficLayer } from './components/LiveTrafficLayer'
 import { MapLongPress } from './components/MapLongPress'
 import { MapView } from './components/MapView'
 import { NavigationView } from './components/NavigationView'
@@ -17,6 +18,7 @@ import { SettingsPanel } from './components/SettingsPanel'
 import { SpeedCameraLayer } from './components/SpeedCameraLayer'
 import { Toast } from './components/Toast'
 import { TransitLayer } from './components/TransitLayer'
+import { hasLiveTraffic } from './config/tomtom'
 import { unlockSpeech } from './navigation/voice'
 import { addRecent, PARKED_ID } from './places'
 import type { Category } from './services/categories'
@@ -152,6 +154,7 @@ function App() {
       <MapView theme={theme} onNotice={setNotice} onMapReady={setMap} onLocation={setUserLocation} />
       {map && place && <PlaceMarker map={map} place={place} />}
       {map && !navigation && !driving && <MapLongPress map={map} onPick={pickOnMap} />}
+      {map && hasLiveTraffic && settings.liveTraffic && <LiveTrafficLayer map={map} theme={theme} />}
       {map && settings.transitLayer && <TransitLayer map={map} />}
       {map && settings.speedCameras && <SpeedCameraLayer map={map} />}
       {map && driving && !navigation ? (
