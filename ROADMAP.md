@@ -94,10 +94,11 @@ Legende: ✅ fertig · 🔨 in Arbeit · ⬜ geplant · 💰 braucht Geld/Konto/
 
 ## Schritt 6 – Große Ausbaustufen
 
-- 🔨 Live-Verkehr mit TomTom (kostenloses Konto, 2.500 Abfragen + 50.000 Kartenkacheln pro Tag):
+- ✅ Live-Verkehr mit TomTom (kostenloses Konto, 2.500 Abfragen + 50.000 Kartenkacheln pro Tag):
   Verkehrslage auf der Karte, Meldungen (Unfall, Sperrung, Baustelle, Gefahr), Autorouten mit aktuellem Verkehr,
-  „Maut meiden“; fällt TomTom aus, kommt die Route wie bisher von OSRM. Lokal fertig und getestet (Schlüssel in .env.local);
-  online noch offen: Schlüssel wäre in einer reinen Web-App für jeden auslesbar → Entscheidung nötig (z. B. kleiner Server)
+  „Maut meiden“; fällt TomTom aus, kommt die Route wie bisher von OSRM.
+  Der Schlüssel liegt nur im eigenen kleinen Server (Ordner traffic-proxy, Cloudflare Worker, kostenlos),
+  nicht in der App. Der Server lässt nur die eigene Seite zu und speichert Antworten 1–3 Minuten zwischen.
 - 💰 Meldungen von Nutzern (Unfall, Polizei, Gefahr) – eigener Server + Datenbank
 - 💰 Ankunftszeit teilen, Konten, Synchronisieren zwischen Geräten
 - 💰 Eigener Such- und Routendienst (Pflicht bei vielen Nutzern; Route ohne Maut möglich)

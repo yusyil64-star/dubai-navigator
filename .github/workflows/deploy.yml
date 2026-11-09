@@ -32,7 +32,7 @@ jobs:
           BASE_PATH: /dubai-navigator/
           # Adresse des kleinen Verkehrs-Servers (traffic-proxy); der TomTom-Schlüssel liegt nur dort.
           # Leer = App ohne Live-Verkehr
-          VITE_TRAFFIC_PROXY: ''
+          VITE_TRAFFIC_PROXY: https://dubai-navigator-traffic.traffic-proxy.workers.dev
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
