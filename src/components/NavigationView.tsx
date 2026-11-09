@@ -6,10 +6,11 @@ import { useNavigation } from '../navigation/useNavigation'
 import { useSmoothFollow } from '../navigation/useSmoothFollow'
 import { setParked } from '../places'
 import type { Place } from '../services/geocoding'
-import type { Route } from '../services/routing'
+import { getRoute, type Route } from '../services/routing'
 import { updateSettings, useSettings } from '../settings'
 import { formatClock, formatDistance, formatDuration } from '../utils/format'
 import { placeLink, share } from '../utils/share'
+import { AlongRouteSearch } from './AlongRouteSearch'
 import { LaneGuide } from './LaneGuide'
 import { ManeuverArrow } from './ManeuverArrow'
 import { RouteLine } from './RouteLine'
@@ -25,15 +26,25 @@ type NavigationViewProps = {
   onExit: () => void
   onNotice: (key: string) => void
   destination: Place | null // für "Ankunftszeit teilen"
+  onReroute: (route: Route) => void // neue Route (z. B. mit Zwischenstopp unterwegs)
 }
 
 // Navigations-Ansicht: Banner mit nächstem Manöver, Restzeit, Karte folgt der Position.
-export function NavigationView({ map, route: initialRoute, simulate, onExit, onNotice, destination }: NavigationViewProps) {
+export function NavigationView({
+  map,
+  route: initialRoute,
+  simulate,
+  onExit,
+  onNotice,
+  destination,
+  onReroute,
+}: NavigationViewProps) {
   const { t, i18n } = useTranslation()
   const language = i18n.resolvedLanguage ?? 'en'
   const settings = useSettings()
   const [following, setFollowing] = useState(true)
   const [parkedHere, setParkedHere] = useState(false)
+  const [searching, setSearching] = useState(false)
   const { route, progress, status } = useNavigation(initialRoute, {
     simulate,
     voiceEnabled: settings.voice,
@@ -42,6 +53,20 @@ export function NavigationView({ map, route: initialRoute, simulate, onExit, onN
   })
 
   const toggleVoice = () => updateSettings({ voice: !settings.voice })
+
+  // Unterwegs gefundenen Ort als nächsten Zwischenstopp einfügen
+  async function addStop(place: Place) {
+    setSearching(false)
+    if (!progress) return
+    const legIndex = progress.nextStep?.legIndex ?? route.waypoints.length - 2
+    const remaining = route.waypoints.slice(legIndex + 1)
+    try {
+      const signal = AbortSignal.timeout(15000)
+      onReroute(await getRoute([progress.position, [place.lon, place.lat], ...remaining], route.profile, signal))
+    } catch {
+      onNotice('route.error')
+    }
+  }
 
   // Ankunftszeit teilen, z. B. per WhatsApp: "Ich bin um 14:32 bei Dubai Mall." (ohne Live-Verfolgung)
   async function shareArrival() {
@@ -124,6 +149,10 @@ export function NavigationView({ map, route: initialRoute, simulate, onExit, onN
         </button>
       )}
 
+      {searching && progress?.along != null && (
+        <AlongRouteSearch route={route} along={progress.along} onPick={addStop} onClose={() => setSearching(false)} />
+      )}
+
       <div className="nav-footer">
         <div className="nav-footer__info">
           {progress && status !== 'arrived' && (
@@ -151,6 +180,20 @@ export function NavigationView({ map, route: initialRoute, simulate, onExit, onN
           )}
           {simulate && <span className="nav-footer__badge">{t('nav.simulation')}</span>}
         </div>
+        {status === 'active' && progress?.along != null && (
+          <button
+            type="button"
+            className="nav-footer__icon"
+            onClick={() => setSearching((open) => !open)}
+            aria-pressed={searching}
+            aria-label={t('along.title')}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="6" className="stroke" />
+              <path d="M16 16l4 4" className="stroke" />
+            </svg>
+          </button>
+        )}
         {destination && status !== 'arrived' && (
           <button type="button" className="nav-footer__icon" onClick={shareArrival} aria-label={t('share.etaButton')}>
             <svg viewBox="0 0 24 24" aria-hidden="true">

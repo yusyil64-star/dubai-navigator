@@ -316,3 +316,33 @@
 .nav-camera.nav-camera--top {
   top: max(var(--space), env(safe-area-inset-top));
 }
+
+/* Unterwegs suchen: Feld über der Fußleiste */
+.nav-search {
+  position: absolute;
+  z-index: 7;
+  inset-inline: var(--space);
+  bottom: calc(96px + env(safe-area-inset-bottom));
+  max-width: 480px;
+  max-height: 55%;
+  margin-inline: auto;
+  overflow-y: auto;
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
+}
+
+.nav-search__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.nav-search .search-box__categories button[aria-pressed='true'] {
+  border-color: var(--color-text);
+  background: var(--color-text);
+  color: var(--color-surface);
+}

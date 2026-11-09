@@ -144,12 +144,15 @@ function App() {
         <DriveView map={map} onExit={() => setDriving(false)} onNotice={setNotice} />
       ) : map && navigation ? (
         <NavigationView
+          // neue Route (Zwischenstopp unterwegs) = Navigation neu starten
+          key={JSON.stringify(navigation.route.waypoints)}
           map={map}
           route={navigation.route}
           simulate={navigation.simulate}
           onExit={() => setNavigation(null)}
           onNotice={setNotice}
           destination={place}
+          onReroute={(newRoute) => setNavigation((current) => current && { ...current, route: newRoute })}
         />
       ) : (
         <>

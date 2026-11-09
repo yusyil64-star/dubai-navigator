@@ -34,6 +34,13 @@ export const translations = {
         favorites: 'Favoriten',
         recents: 'Zuletzt gesucht',
       },
+      along: {
+        title: 'Unterwegs suchen',
+        ahead: 'in {{distance}} auf der Route',
+        offset: '{{distance}} daneben',
+        none: 'Nichts davon entlang der restlichen Route.',
+        note: 'Antippen fügt den Ort als nächsten Zwischenstopp ein. Orte aus OpenStreetMap, ohne Öffnungszeiten.',
+      },
       drive: {
         start: 'Fahrmodus (ohne Ziel)',
         title: 'Fahrmodus',
@@ -237,6 +244,13 @@ export const translations = {
         favorites: 'Favorites',
         recents: 'Recent searches',
       },
+      along: {
+        title: 'Search along route',
+        ahead: 'in {{distance}} along the route',
+        offset: '{{distance}} off route',
+        none: 'None of these along the rest of the route.',
+        note: 'Tap to add the place as your next stop. Places from OpenStreetMap, without opening hours.',
+      },
       drive: {
         start: 'Drive mode (no destination)',
         title: 'Drive mode',
@@ -439,6 +453,13 @@ export const translations = {
         favorite: 'مفضلة',
         favorites: 'المفضلة',
         recents: 'عمليات البحث الأخيرة',
+      },
+      along: {
+        title: 'البحث على طول المسار',
+        ahead: 'بعد {{distance}} على المسار',
+        offset: 'على بعد {{distance}} من المسار',
+        none: 'لا يوجد شيء من هذا على باقي المسار.',
+        note: 'اضغط لإضافة المكان كمحطة تالية. الأماكن من OpenStreetMap، بدون ساعات العمل.',
       },
       drive: {
         start: 'وضع القيادة (بدون وجهة)',

@@ -78,7 +78,7 @@ Legende: ✅ fertig · 🔨 in Arbeit · ⬜ geplant · 💰 braucht Geld/Konto/
 - ✅ Wegbeschreibung: Liste aller Abbiegungen der Route
 - ✅ Ziel liegt links/rechts (Ansage und Anzeige bei der Ankunft)
 - ✅ Ankunftszeit teilen während der Navigation („Ich bin voraussichtlich um 14:32 bei …“, ohne Live-Verfolgung)
-- ⬜ Unterwegs suchen: Tankstelle, Café usw. nahe der Route
+- ✅ Unterwegs suchen während der Navigation: Tankstelle, Café usw. entlang der Route, als Zwischenstopp einfügen
 - ⬜ Sprachsuche: Ziel einsprechen
 - ⬜ Karte zoomt vor Abbiegungen automatisch heran; Einstellungen für 2D/3D und Norden oben
 - Nicht möglich mit dem kostenlosen Routendienst: Autobahn/Maut/Fähre meiden (getestet: wird abgelehnt)
