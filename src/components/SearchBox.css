@@ -113,13 +113,13 @@
   color: var(--color-text-muted);
 }
 
-/* Geparktes Auto: Eintrag mit Knopf zum Vergessen */
-.search-box__parking {
+/* Einträge mit ×-Knopf (geparktes Auto, Verlauf) */
+.search-box__removable {
   display: flex;
   align-items: center;
 }
 
-.search-box__parking > button:first-child {
+.search-box__removable > button:first-child {
   flex: 1;
 }
 

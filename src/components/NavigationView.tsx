@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Marker, type Map as MapLibreMap } from 'maplibre-gl'
 import { instructionText, maneuverIcon } from '../navigation/instructions'
@@ -48,12 +48,23 @@ export function NavigationView({
   const [following, setFollowing] = useState(true)
   const [parkedHere, setParkedHere] = useState(false)
   const [searching, setSearching] = useState(false)
+
   const { route, progress, status } = useNavigation(initialRoute, {
     simulate,
     sound: settings.sound,
     cameraWarnings: settings.speedCameras,
     onLocationError: (code) => onNotice(LOCATION_ERRORS[code] ?? 'location.unavailable'),
   })
+
+  // Fahrtenübersicht: Startzeit merken, bei der Ankunft Dauer festhalten
+  const startedAt = useRef(0)
+  useEffect(() => {
+    startedAt.current = Date.now()
+  }, [])
+  const [tripSeconds, setTripSeconds] = useState<number | null>(null)
+  useEffect(() => {
+    if (status === 'arrived') setTripSeconds((Date.now() - startedAt.current) / 1000)
+  }, [status])
 
   // Ton umschalten wie bei Waze: alle Ansagen → nur Warnungen → stumm → …
   const nextSound = { all: 'alerts', alerts: 'off', off: 'all' } as const
@@ -170,6 +181,17 @@ export function NavigationView({
             </>
           )}
           {/* Mit dem Auto angekommen: Parkplatz merken anbieten */}
+          {status === 'arrived' && tripSeconds !== null && (
+            <>
+              <strong>{t('nav.tripDone')}</strong>
+              <span>
+                {t('nav.tripSummary', {
+                  distance: formatDistance(route.distanceMeters, language),
+                  duration: formatDuration(tripSeconds, language),
+                })}
+              </span>
+            </>
+          )}
           {status === 'arrived' && route.profile === 'car' && progress && (
             <button
               type="button"

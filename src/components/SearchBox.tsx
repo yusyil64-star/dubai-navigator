@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { PARKED_ID, setParked, useSavedPlaces, type ParkedCar } from '../places'
+import { PARKED_ID, removeRecent, setParked, useSavedPlaces, type ParkedCar } from '../places'
 import { CATEGORIES, type Category } from '../services/categories'
 import { searchPlaces, type Place } from '../services/geocoding'
 import { listen, speechInputSupported } from '../services/speechInput'
@@ -167,7 +167,7 @@ export function SearchBox({ onSelect, onCategory, userLocation, onDrive }: Searc
             onSelect={select}
           />
           <QuickList title={t('saved.favorites')} places={saved.favorites} onSelect={select} />
-          <QuickList title={t('saved.recents')} places={saved.recents} onSelect={select} />
+          <QuickList title={t('saved.recents')} places={saved.recents} onSelect={select} onRemove={removeRecent} />
           {onCategory && <p className="search-box__status">{t('pin.hint')}</p>}
         </>
       )}
@@ -193,21 +193,33 @@ type QuickListProps = {
   places: Place[]
   labels?: string[] // optionale Beschriftung je Ort, z. B. "Zuhause"
   onSelect: (place: Place) => void
+  onRemove?: (place: Place) => void // falls gesetzt: ×-Knopf je Eintrag
 }
 
 // Kurze Liste gespeicherter Orte (Zuhause/Arbeit, Favoriten, zuletzt gesucht)
-function QuickList({ title, places, labels, onSelect }: QuickListProps) {
+function QuickList({ title, places, labels, onSelect, onRemove }: QuickListProps) {
+  const { t } = useTranslation()
   if (places.length === 0) return null
   return (
     <>
       {title && <h3 className="search-box__heading">{title}</h3>}
       <ul className="search-box__results">
         {places.map((place, i) => (
-          <li key={`${place.id}-${i}`}>
+          <li key={`${place.id}-${i}`} className={onRemove ? 'search-box__removable' : undefined}>
             <button type="button" onClick={() => onSelect(place)}>
               <span className="search-box__name">{labels?.[i] ?? place.name}</span>
               <span className="search-box__detail">{labels?.[i] ? place.name : place.detail}</span>
             </button>
+            {onRemove && (
+              <button
+                type="button"
+                className="search-box__forget"
+                onClick={() => onRemove(place)}
+                aria-label={t('saved.remove', { name: place.name })}
+              >
+                ×
+              </button>
+            )}
           </li>
         ))}
       </ul>
@@ -235,7 +247,7 @@ function ParkingEntry({ parked, userLocation, language, onSelect }: ParkingEntry
     }
     return (
       <ul className="search-box__results">
-        <li className="search-box__parking">
+        <li className="search-box__removable">
           <button type="button" onClick={() => onSelect(place)}>
             <span className="search-box__name">{place.name}</span>
             <span className="search-box__detail">{place.detail}</span>

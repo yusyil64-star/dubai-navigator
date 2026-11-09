@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { toggleFavorite, toggleHome, toggleWork, useSavedPlaces } from '../places'
+import { renameFavorite, toggleFavorite, toggleHome, toggleWork, useSavedPlaces } from '../places'
 import type { Place } from '../services/geocoding'
 import { sharePlace } from '../utils/share'
 import { TransitDepartures } from './TransitDepartures'
@@ -16,13 +17,29 @@ type PlaceCardProps = {
 export function PlaceCard({ place, onClose, onRoute, onNotice }: PlaceCardProps) {
   const { t } = useTranslation()
   const saved = useSavedPlaces()
-  const favorite = saved.favorites.some((p) => p.id === place.id)
+  const favorite = saved.favorites.find((p) => p.id === place.id)
+  const name = favorite?.name ?? place.name // Favoriten können einen eigenen Namen haben
+  const [editing, setEditing] = useState(false)
 
   return (
     <>
       <div className="place-card">
         <div className="place-card__text">
-          <h2 className="place-card__name">{place.name}</h2>
+          {editing && favorite ? (
+            <form
+              className="place-card__rename"
+              onSubmit={(e) => {
+                e.preventDefault()
+                renameFavorite(place, new FormData(e.currentTarget).get('name') as string)
+                setEditing(false)
+              }}
+            >
+              <input name="name" defaultValue={name} aria-label={t('saved.rename')} autoFocus maxLength={60} />
+              <button type="submit">{t('saved.save')}</button>
+            </form>
+          ) : (
+            <h2 className="place-card__name">{name}</h2>
+          )}
           {place.detail && <p className="place-card__detail">{place.detail}</p>}
         </div>
         <button type="button" className="place-card__close" onClick={onClose} aria-label={t('place.close')}>
@@ -33,9 +50,14 @@ export function PlaceCard({ place, onClose, onRoute, onNotice }: PlaceCardProps)
       </div>
 
       <div className="place-card__save">
-        <button type="button" aria-pressed={favorite} onClick={() => toggleFavorite(place)}>
+        <button type="button" aria-pressed={!!favorite} onClick={() => toggleFavorite(place)}>
           {favorite ? '★' : '☆'} {t('saved.favorite')}
         </button>
+        {favorite && !editing && (
+          <button type="button" onClick={() => setEditing(true)}>
+            ✎ {t('saved.rename')}
+          </button>
+        )}
         <button type="button" aria-pressed={saved.home?.id === place.id} onClick={() => toggleHome(place)}>
           {t('saved.home')}
         </button>

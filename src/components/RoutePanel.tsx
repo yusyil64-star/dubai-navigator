@@ -6,7 +6,9 @@ import type { Place } from '../services/geocoding'
 import { mainRoads } from '../navigation/instructions'
 import { getRoutes, type LonLat, type Profile, type Route } from '../services/routing'
 import { formatDistance, formatDuration } from '../utils/format'
+import { departureOf, type Timing } from '../utils/timing'
 import { AlternativeRoutes } from './AlternativeRoutes'
+import { DepartureTime } from './DepartureTime'
 import { RouteExtras } from './RouteExtras'
 import { RouteLine } from './RouteLine'
 import { SearchBox } from './SearchBox'
@@ -47,6 +49,7 @@ export function RoutePanel({ map, destination, userLocation, onClose, onNavigate
   useEffect(() => onDraftChange({ start, stops }), [start, stops, onDraftChange])
   const [addingStop, setAddingStop] = useState(false)
   const [showSteps, setShowSteps] = useState(false)
+  const [timing, setTiming] = useState<Timing>({ mode: 'now' })
   const [profile, setProfile] = useState<Profile>('car')
   const [result, setResult] = useState<Result | null>(null)
   const [selection, setSelection] = useState<{ key: string; index: number } | null>(null)
@@ -211,7 +214,10 @@ export function RoutePanel({ map, destination, userLocation, onClose, onNavigate
             </p>
           )}
           <p className="route-panel__hint">{t(`route.note.${profile}`)}</p>
-          <RouteExtras route={route} />
+          {profile === 'car' && (
+            <DepartureTime timing={timing} onChange={setTiming} durationSeconds={route.durationSeconds} />
+          )}
+          <RouteExtras route={route} departAt={departureOf(timing, route.durationSeconds)} />
           <button type="button" className="route-panel__link" onClick={() => setShowSteps((open) => !open)}>
             {showSteps ? t('route.hideSteps') : t('route.showSteps', { count: route.steps.length })}
           </button>

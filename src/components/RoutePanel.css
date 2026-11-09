@@ -285,3 +285,50 @@
   color: var(--color-text-muted);
   white-space: nowrap;
 }
+
+/* Abfahrt planen */
+.departure {
+  margin: 4px 0 8px;
+}
+
+.departure__modes {
+  display: flex;
+  gap: 6px;
+}
+
+.departure__modes button {
+  flex: 1;
+  height: 32px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.departure__modes button[aria-checked='true'] {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.departure__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.departure__row input {
+  height: 36px;
+  padding: 0 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-field);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 16px;
+}

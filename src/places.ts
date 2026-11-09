@@ -71,6 +71,17 @@ export function setParked(position: LonLat | null) {
   update({ parked: position && { lon: position[0], lat: position[1], savedAt: Date.now() } })
 }
 
+export function removeRecent(place: Place) {
+  update({ recents: current.recents.filter((p) => !samePlace(p, place)) })
+}
+
+// Eigenen Namen für einen Favoriten setzen (z. B. "Büro von Ali")
+export function renameFavorite(place: Place, name: string) {
+  const trimmed = name.trim()
+  if (!trimmed) return
+  update({ favorites: current.favorites.map((p) => (samePlace(p, place) ? { ...p, name: trimmed } : p)) })
+}
+
 export function clearPersonalData() {
   update(EMPTY)
 }

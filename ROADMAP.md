@@ -87,6 +87,9 @@ Legende: ✅ fertig · 🔨 in Arbeit · ⬜ geplant · 💰 braucht Geld/Konto/
 - ✅ Nachtmodus nach Tageszeit (Sonnenauf- und -untergang in Dubai)
 - ✅ „Parkplätze am Ziel“ kurz vor der Ankunft
 - ✅ Kartenebene Metro- und Tram-Linien in ihren Farben (aus dem RTA-Fahrplan)
+- ✅ Verlaufseinträge einzeln löschen, Favoriten umbenennen
+- ✅ Abfahrt planen: „Abfahrt um“ / „Ankunft um“ (ohne Verkehr), Salik-Tarif passend zur Abfahrtszeit
+- ✅ Fahrtenübersicht nach der Ankunft (Strecke und Dauer)
 - Nicht möglich mit dem kostenlosen Routendienst: Autobahn/Maut/Fähre meiden (getestet: wird abgelehnt)
 
 ## Schritt 6 – Große Ausbaustufen

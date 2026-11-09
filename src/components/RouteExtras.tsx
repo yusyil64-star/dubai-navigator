@@ -8,7 +8,8 @@ import { currentTemperature } from '../services/weather'
 const HOT_CELSIUS = 38 // ab hier zu Fuß/mit dem Fahrrad warnen
 
 // Zusatzinfos zur Route: Salik-Maut (Auto) bzw. Hitze-Hinweis (zu Fuß / Fahrrad).
-export function RouteExtras({ route }: { route: Route }) {
+// departAt = geplante Abfahrt (Zeitstempel), sonst jetzt
+export function RouteExtras({ route, departAt = null }: { route: Route; departAt?: number | null }) {
   const { t, i18n } = useTranslation()
   const language = i18n.resolvedLanguage ?? 'en'
   const [salik, setSalik] = useState<SalikEstimate | null>(null)
@@ -18,12 +19,12 @@ export function RouteExtras({ route }: { route: Route }) {
     if (route.profile !== 'car') return
     let cancelled = false
     loadTollGates()
-      .then((gates) => !cancelled && setSalik(estimateSalik(route.coordinates, gates, new Date())))
+      .then((gates) => !cancelled && setSalik(estimateSalik(route.coordinates, gates, new Date(departAt ?? Date.now()))))
       .catch(() => {})
     return () => {
       cancelled = true
     }
-  }, [route.profile, route.coordinates])
+  }, [route.profile, route.coordinates, departAt])
 
   useEffect(() => {
     if (route.profile === 'car') return
@@ -44,7 +45,7 @@ export function RouteExtras({ route }: { route: Route }) {
       <div className="route-extras">
         <p>
           <strong>{t('salik.title', { count: salik.gates.length })}</strong> ·{' '}
-          {salik.period === 'free' ? t('salik.freeNow') : t(`salik.${salik.period}`, { cost: money })}
+          {salik.period === 'free' ? t(departAt ? 'salik.freeThen' : 'salik.freeNow') : t(`salik.${salik.period}`, { cost: money })}
         </p>
         <p className="route-extras__small">{salik.gates.join(', ')}</p>
         <p className="route-extras__small">{t('salik.note')}</p>
