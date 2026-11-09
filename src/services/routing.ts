@@ -2,6 +2,10 @@
 // Nutzungsregeln: max. 1 Anfrage pro Sekunde, keine intensive Nutzung.
 // Für eine echte Veröffentlichung mit vielen Nutzern: eigener/kostenpflichtiger Dienst nötig.
 // Hinweis: keine Live-Verkehrsdaten – Fahrzeiten sind Schätzungen.
+// Mit TomTom-Schlüssel kommen Autorouten stattdessen von TomTom (mit Verkehr, auf Wunsch ohne Maut).
+import { hasLiveTraffic } from '../config/tomtom'
+import { getSettings } from '../settings'
+import { getTomTomRoutes } from './tomtomRouting'
 
 const OSRM_BASE = 'https://routing.openstreetmap.de/'
 
@@ -40,6 +44,8 @@ export type Route = {
   steps: RouteStep[]
   waypoints: LonLat[] // Start, Zwischenstopps, Ziel
   profile: Profile
+  provider?: 'osrm' | 'tomtom' // woher die Route kommt
+  trafficDelaySeconds?: number // Verzögerung durch Verkehr (nur TomTom)
 }
 
 type OsrmStep = {
@@ -66,6 +72,15 @@ export async function getRoutes(
   signal: AbortSignal,
   alternatives = true,
 ): Promise<Route[]> {
+  const settings = getSettings()
+  if (profile === 'car' && hasLiveTraffic && settings.liveTraffic) {
+    try {
+      return await getTomTomRoutes(waypoints, { avoidTolls: settings.avoidTolls }, signal, alternatives)
+    } catch (error) {
+      if (signal.aborted) throw error
+      // TomTom nicht erreichbar oder Tageskontingent verbraucht: kostenloser Dienst ohne Verkehr
+    }
+  }
   const points = waypoints.map((p) => p.join(',')).join(';')
   const extra = alternatives && waypoints.length === 2 ? '&alternatives=2' : ''
   const url = `${OSRM_BASE}${PROFILE_PATHS[profile]}${points}?steps=true&overview=false&geometries=geojson${extra}`
@@ -111,5 +126,6 @@ function toRoute(route: OsrmRoute, waypoints: LonLat[], profile: Profile): Route
     steps,
     waypoints,
     profile,
+    provider: 'osrm',
   }
 }

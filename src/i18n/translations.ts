@@ -99,7 +99,8 @@ export const translations = {
         freeNow: 'jetzt kostenlos (1–6 Uhr)',
         freeThen: 'zu dieser Zeit kostenlos (1–6 Uhr)',
         none: 'Keine Salik-Mautstellen auf dieser Route.',
-        note: 'Tarif ab 1. 6. 2026 zur Abfahrtszeit, ohne Gewähr. An Feiertagen und im Ramadan gelten andere Zeiten. Eine Route ohne Maut kann der kostenlose Routendienst nicht berechnen.',
+        note: 'Tarif ab 1. 6. 2026 zur Abfahrtszeit, ohne Gewähr. An Feiertagen und im Ramadan gelten andere Zeiten.',
+        noAvoid: 'Eine Route ohne Maut kann der kostenlose Routendienst nicht berechnen.',
       },
       heat: {
         current: 'Aktuell {{temperature}} °C in Dubai.',
@@ -154,10 +155,10 @@ export const translations = {
         cleared: 'Gespeicherte Orte wurden gelöscht.',
         privacy: 'Datenschutz',
         privacyText:
-          'Die App hat keinen eigenen Server und kein Konto. Suchbegriffe werden an Photon (komoot) gesendet. Für Routen werden Start, Zwischenstopps und Ziel – bei „Mein Standort“ also deine Position – an den Routendienst des FOSSGIS e.V. gesendet und dort protokolliert. Kartenbilder kommen von OpenFreeMap. Bei der Sprachsuche schickt der Browser die Aufnahme an seinen Anbieter (Chrome: Google, Safari: Apple).',
+          'Die App hat keinen eigenen Server und kein Konto. Suchbegriffe werden an Photon (komoot) gesendet. Für Routen werden Start, Zwischenstopps und Ziel – bei „Mein Standort“ also deine Position – an den Routendienst des FOSSGIS e.V. gesendet und dort protokolliert. Kartenbilder kommen von OpenFreeMap. Bei der Sprachsuche schickt der Browser die Aufnahme an seinen Anbieter (Chrome: Google, Safari: Apple). Ist Live-Verkehr eingeschaltet, gehen Autorouten (Start, Stopps, Ziel) und der Kartenausschnitt an TomTom.',
         sources: 'Datenquellen',
         sourcesText:
-          'Kartendaten © OpenStreetMap-Mitwirkende (ODbL). Kartenstil: OpenFreeMap. Suche: Photon (komoot). Routen: OSRM des FOSSGIS e.V. Blitzer, Tempolimits und Orte: vorab aus OpenStreetMap geladen. Keine Live-Verkehrsdaten.',
+          'Kartendaten © OpenStreetMap-Mitwirkende (ODbL). Kartenstil: OpenFreeMap. Suche: Photon (komoot). Routen: OSRM des FOSSGIS e.V., mit Live-Verkehr fürs Auto TomTom. Live-Verkehr und Verkehrsmeldungen: © TomTom. Metro/Tram: RTA (Dubai Pulse). Blitzer, Tempolimits und Orte: vorab aus OpenStreetMap geladen.',
       },
       route: {
         button: 'Route hierher',
@@ -170,6 +171,7 @@ export const translations = {
         error: 'Route konnte nicht berechnet werden. Bitte später erneut versuchen.',
         note: {
           car: 'Mit dem Auto · Fahrzeit ohne aktuelle Verkehrslage',
+          carLive: 'Mit dem Auto · Fahrzeit mit aktuellem Verkehr (TomTom)',
           bike: 'Mit dem Fahrrad · geschätzte Fahrzeit',
           foot: 'Zu Fuß · geschätzte Gehzeit',
         },
@@ -178,6 +180,8 @@ export const translations = {
         stop: 'Stopp {{number}}',
         addStop: 'Zwischenstopp hinzufügen',
         removeStop: 'Zwischenstopp {{name}} entfernen',
+        avoidTolls: 'Maut meiden (Salik)',
+        trafficDelay: 'davon {{time}} durch Verkehr',
         options: 'Routen zur Auswahl',
         fastest: 'Schnellste',
         slower: '+{{time}}',
@@ -343,7 +347,8 @@ export const translations = {
         freeNow: 'free right now (1–6 am)',
         freeThen: 'free at that time (1–6 am)',
         none: 'No Salik toll gates on this route.',
-        note: 'Rates from 1 June 2026 at the departure time, without guarantee. Different times apply on public holidays and during Ramadan. The free routing service cannot avoid tolls.',
+        note: 'Rates from 1 June 2026 at the departure time, without guarantee. Different times apply on public holidays and during Ramadan.',
+        noAvoid: 'The free routing service cannot avoid tolls.',
       },
       heat: {
         current: 'Currently {{temperature}} °C in Dubai.',
@@ -398,10 +403,10 @@ export const translations = {
         cleared: 'Saved places have been deleted.',
         privacy: 'Privacy',
         privacyText:
-          'The app has no server and no account. Search terms are sent to Photon (komoot). For routes, start, stops and destination – with “My location” that is your position – are sent to the FOSSGIS e.V. routing service and logged there. Map images come from OpenFreeMap. With voice search, your browser sends the recording to its provider (Chrome: Google, Safari: Apple).',
+          'The app has no server and no account. Search terms are sent to Photon (komoot). For routes, start, stops and destination – with “My location” that is your position – are sent to the FOSSGIS e.V. routing service and logged there. Map images come from OpenFreeMap. With voice search, your browser sends the recording to its provider (Chrome: Google, Safari: Apple). With live traffic on, car routes (start, stops, destination) and the visible map area are sent to TomTom.',
         sources: 'Data sources',
         sourcesText:
-          'Map data © OpenStreetMap contributors (ODbL). Map style: OpenFreeMap. Search: Photon (komoot). Routes: OSRM by FOSSGIS e.V. Speed cameras, speed limits and places: pre-loaded from OpenStreetMap. No live traffic data.',
+          'Map data © OpenStreetMap contributors (ODbL). Map style: OpenFreeMap. Search: Photon (komoot). Routes: OSRM by FOSSGIS e.V.; car routes with live traffic: TomTom. Live traffic and incidents: © TomTom. Metro/tram: RTA (Dubai Pulse). Speed cameras, speed limits and places: pre-loaded from OpenStreetMap.',
       },
       route: {
         button: 'Directions',
@@ -414,6 +419,7 @@ export const translations = {
         error: 'The route could not be calculated. Please try again later.',
         note: {
           car: 'By car · travel time without live traffic',
+          carLive: 'By car · travel time with live traffic (TomTom)',
           bike: 'By bike · estimated travel time',
           foot: 'On foot · estimated walking time',
         },
@@ -422,6 +428,8 @@ export const translations = {
         stop: 'Stop {{number}}',
         addStop: 'Add stop',
         removeStop: 'Remove stop {{name}}',
+        avoidTolls: 'Avoid tolls (Salik)',
+        trafficDelay: 'incl. {{time}} due to traffic',
         options: 'Route options',
         fastest: 'Fastest',
         slower: '+{{time}}',
@@ -591,7 +599,8 @@ export const translations = {
         freeNow: 'مجاني الآن (1–6 صباحًا)',
         freeThen: 'مجاني في ذلك الوقت (1–6 صباحًا)',
         none: 'لا توجد بوابات سالك على هذا المسار.',
-        note: 'التعرفة اعتبارًا من 1 يونيو 2026 وفق وقت الانطلاق، بدون ضمان. تختلف الأوقات في العطلات وفي رمضان. لا يمكن لخدمة المسارات المجانية تجنب الرسوم.',
+        note: 'التعرفة اعتبارًا من 1 يونيو 2026 وفق وقت الانطلاق، بدون ضمان. تختلف الأوقات في العطلات وفي رمضان.',
+        noAvoid: 'لا يمكن لخدمة المسارات المجانية تجنب الرسوم.',
       },
       heat: {
         current: 'الحرارة الآن {{temperature}} °م في دبي.',
@@ -645,10 +654,10 @@ export const translations = {
         cleared: 'تم حذف الأماكن المحفوظة.',
         privacy: 'الخصوصية',
         privacyText:
-          'لا يملك التطبيق خادمًا ولا حسابًا. تُرسل كلمات البحث إلى Photon (komoot). وللمسارات تُرسل نقطة البداية والمحطات والوجهة – ومع "موقعي" يعني ذلك موقعك – إلى خدمة المسارات لدى FOSSGIS e.V. وتُسجَّل هناك. صور الخريطة من OpenFreeMap. عند البحث الصوتي يرسل المتصفح التسجيل إلى مزوده (Chrome: Google، Safari: Apple).',
+          'لا يملك التطبيق خادمًا ولا حسابًا. تُرسل كلمات البحث إلى Photon (komoot). وللمسارات تُرسل نقطة البداية والمحطات والوجهة – ومع "موقعي" يعني ذلك موقعك – إلى خدمة المسارات لدى FOSSGIS e.V. وتُسجَّل هناك. صور الخريطة من OpenFreeMap. عند البحث الصوتي يرسل المتصفح التسجيل إلى مزوده (Chrome: Google، Safari: Apple). عند تشغيل حركة المرور المباشرة تُرسل مسارات السيارة (البداية والمحطات والوجهة) ومنطقة الخريطة المعروضة إلى TomTom.',
         sources: 'مصادر البيانات',
         sourcesText:
-          'بيانات الخريطة © المساهمون في OpenStreetMap (ODbL). نمط الخريطة: OpenFreeMap. البحث: Photon (komoot). المسارات: OSRM لدى FOSSGIS e.V. كاميرات السرعة وحدود السرعة والأماكن: محمّلة مسبقًا من OpenStreetMap. لا توجد بيانات مرور مباشرة.',
+          'بيانات الخريطة © المساهمون في OpenStreetMap (ODbL). نمط الخريطة: OpenFreeMap. البحث: Photon (komoot). المسارات: OSRM لدى FOSSGIS e.V.، ومسارات السيارة مع حركة المرور المباشرة: TomTom. حركة المرور والحوادث: © TomTom. المترو والترام: هيئة الطرق والمواصلات (Dubai Pulse). كاميرات السرعة وحدود السرعة والأماكن: محمّلة مسبقًا من OpenStreetMap.',
       },
       route: {
         button: 'الاتجاهات',
@@ -661,6 +670,7 @@ export const translations = {
         error: 'تعذّر حساب المسار. يرجى المحاولة لاحقًا.',
         note: {
           car: 'بالسيارة · مدة الرحلة بدون حركة المرور الحالية',
+          carLive: 'بالسيارة · مدة الرحلة مع حركة المرور الحالية (TomTom)',
           bike: 'بالدراجة · مدة تقديرية',
           foot: 'سيرًا على الأقدام · مدة تقديرية',
         },
@@ -669,6 +679,8 @@ export const translations = {
         stop: 'محطة {{number}}',
         addStop: 'إضافة محطة',
         removeStop: 'إزالة المحطة {{name}}',
+        avoidTolls: 'تجنب الرسوم (سالك)',
+        trafficDelay: 'منها {{time}} بسبب حركة المرور',
         options: 'خيارات المسار',
         fastest: 'الأسرع',
         slower: '+{{time}}',

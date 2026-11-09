@@ -48,7 +48,9 @@ export function RouteExtras({ route, departAt = null }: { route: Route; departAt
           {salik.period === 'free' ? t(departAt ? 'salik.freeThen' : 'salik.freeNow') : t(`salik.${salik.period}`, { cost: money })}
         </p>
         <p className="route-extras__small">{salik.gates.join(', ')}</p>
-        <p className="route-extras__small">{t('salik.note')}</p>
+        <p className="route-extras__small">
+          {t('salik.note')} {route.provider !== 'tomtom' && t('salik.noAvoid')}
+        </p>
       </div>
     )
   }

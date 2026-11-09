@@ -12,6 +12,7 @@ export type Settings = {
   autoZoom: boolean // beim Fahren automatisch zoomen (Tempo, Abbiegungen)
   transitLayer: boolean // Metro- und Tram-Linien auf der Karte
   liveTraffic: boolean // Live-Verkehr von TomTom (nur mit Schlüssel)
+  avoidTolls: boolean // Route ohne Salik-Maut (nur mit TomTom möglich)
 }
 
 const DEFAULTS: Settings = {
@@ -24,6 +25,7 @@ const DEFAULTS: Settings = {
   autoZoom: true,
   transitLayer: false,
   liveTraffic: true,
+  avoidTolls: false,
 }
 const STORAGE_KEY = 'dubai-navigator.settings'
 

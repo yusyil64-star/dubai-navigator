@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Map as MapLibreMap } from 'maplibre-gl'
+import { hasLiveTraffic } from '../config/tomtom'
 import { unlockSpeech } from '../navigation/voice'
 import type { Place } from '../services/geocoding'
+import { updateSettings, useSettings } from '../settings'
 import { mainRoads } from '../navigation/instructions'
 import { getRoutes, type LonLat, type Profile, type Route } from '../services/routing'
 import { formatDistance, formatDuration } from '../utils/format'
@@ -41,6 +43,7 @@ type RoutePanelProps = {
 // Route vom Startpunkt (GPS oder gesucht) über Zwischenstopps zum Ziel.
 export function RoutePanel({ map, destination, userLocation, onClose, onNavigate, draft, onDraftChange }: RoutePanelProps) {
   const { t, i18n } = useTranslation()
+  const settings = useSettings()
   const language = i18n.resolvedLanguage ?? 'en'
   const [start, setStart] = useState<Start | null>(
     () => draft?.start ?? (userLocation ? { name: null, lon: userLocation[0], lat: userLocation[1] } : null),
@@ -51,6 +54,8 @@ export function RoutePanel({ map, destination, userLocation, onClose, onNavigate
   const [showSteps, setShowSteps] = useState(false)
   const [timing, setTiming] = useState<Timing>({ mode: 'now' })
   const [profile, setProfile] = useState<Profile>('car')
+  // Live-Verkehr und "Maut meiden" gibt es nur mit TomTom und nur fürs Auto
+  const tomtom = hasLiveTraffic && settings.liveTraffic && profile === 'car'
   const [result, setResult] = useState<Result | null>(null)
   const [selection, setSelection] = useState<{ key: string; index: number } | null>(null)
 
@@ -62,7 +67,8 @@ export function RoutePanel({ map, destination, userLocation, onClose, onNavigate
         [destination.lon, destination.lat],
       ])
     : null
-  const key = pointsKey ? `${profile}|${pointsKey}` : null
+  // neue Anfrage, wenn sich Punkte, Fortbewegungsart oder Maut-Wunsch ändern
+  const key = pointsKey ? `${profile}|${tomtom && settings.avoidTolls}|${tomtom}|${pointsKey}` : null
 
   useEffect(() => {
     if (!key || !pointsKey) return
@@ -154,6 +160,16 @@ export function RoutePanel({ map, destination, userLocation, onClose, onNavigate
               </button>
             ))}
           </div>
+          {tomtom && (
+            <label className="route-panel__option-toggle">
+              <input
+                type="checkbox"
+                checked={settings.avoidTolls}
+                onChange={(e) => updateSettings({ avoidTolls: e.target.checked })}
+              />
+              {t('route.avoidTolls')}
+            </label>
+          )}
 
           {addingStop ? (
             <div className="route-panel__add-stop">
@@ -213,7 +229,12 @@ export function RoutePanel({ map, destination, userLocation, onClose, onNavigate
               <span>{formatDistance(route.distanceMeters, language)}</span>
             </p>
           )}
-          <p className="route-panel__hint">{t(`route.note.${profile}`)}</p>
+          <p className="route-panel__hint">
+            {route.provider === 'tomtom' ? t('route.note.carLive') : t(`route.note.${profile}`)}
+            {route.provider === 'tomtom' &&
+              (route.trafficDelaySeconds ?? 0) >= 60 &&
+              ` · ${t('route.trafficDelay', { time: formatDuration(route.trafficDelaySeconds ?? 0, language) })}`}
+          </p>
           {profile === 'car' && (
             <DepartureTime timing={timing} onChange={setTiming} durationSeconds={route.durationSeconds} />
           )}
