@@ -1,0 +1,66 @@
+/* Abfahrtstafel für Metro und Tram im Ortsfeld */
+.transit {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: var(--color-field);
+}
+
+.transit__title {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.transit__list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.transit__row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 2px;
+  font-size: 14px;
+}
+
+.transit__line {
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: #000000; /* Schriftfarbe laut RTA-Fahrplandaten */
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.transit__to {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.transit__times {
+  grid-column: 2;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.transit__empty,
+.transit__note {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* mehrere Stationen (Umsteigepunkt) durch eine Linie trennen */
+.transit__station + .transit__station {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}

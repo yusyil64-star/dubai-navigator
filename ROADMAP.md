@@ -56,7 +56,8 @@ Legende: ✅ fertig · 🔨 in Arbeit · ⬜ geplant · 💰 braucht Geld/Konto/
 - ✅ Ramadan-Modus: Iftar-Zeit wird im Ramadan automatisch angezeigt (islamischer Kalender des Browsers)
 - ✅ Hitze-Hinweis für Fuß- und Fahrradwege (aktuelle Temperatur von Open-Meteo)
 - ✅ Metro- und Tram-Stationen als Kategorie
-- ⬜ Fahrplanauskunft Metro/Tram – offene GTFS-Daten der RTA vorhanden (Dubai Pulse), Umsetzung später
+- ✅ Abfahrten Metro/Tram – nächste Abfahrten je Linie und Richtung im Ortsfeld (Planfahrplan der RTA, Stand Aug. 2025, keine Echtzeit; aktualisieren mit `npm run fetch-transit-data`)
+- ⬜ Verbindungssuche mit Umsteigen (A → B mit Metro/Tram/Bus) – braucht einen Routenplaner für Fahrpläne
 - ⬜ Parkzonen und Parkgebühren – noch keine geprüfte offene Datenquelle gefunden
 - Hinweis: Route ohne Maut ist mit dem kostenlosen Routendienst nicht möglich (siehe Schritt 6)
 

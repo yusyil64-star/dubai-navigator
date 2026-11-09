@@ -48,6 +48,14 @@ export const translations = {
         warning:
           'Achtung Hitze: aktuell {{temperature}} °C. Zu Fuß oder mit dem Fahrrad anstrengend – Wasser mitnehmen, Metro oder Auto erwägen.',
       },
+      transit: {
+        title: '{{station}} · nächste Abfahrten',
+        lines: { red: 'Rote Linie', green: 'Grüne Linie', tram: 'Tram' },
+        towards: 'Richtung {{place}}',
+        now: 'jetzt',
+        none: 'In den nächsten 12 Stunden keine Abfahrten.',
+        note: 'Planfahrplan der RTA (Stand {{date}}), keine Echtzeit – Abweichungen möglich.',
+      },
       prayer: {
         fajr: 'Fadschr',
         dhuhr: 'Dhuhr',
@@ -197,6 +205,14 @@ export const translations = {
         current: 'Currently {{temperature}} °C in Dubai.',
         warning:
           'Heat warning: currently {{temperature}} °C. Walking or cycling is strenuous – take water, consider the Metro or a car.',
+      },
+      transit: {
+        title: '{{station}} · next departures',
+        lines: { red: 'Red Line', green: 'Green Line', tram: 'Tram' },
+        towards: 'towards {{place}}',
+        now: 'now',
+        none: 'No departures in the next 12 hours.',
+        note: 'RTA scheduled timetable (as of {{date}}), not real-time – times may differ.',
       },
       prayer: {
         fajr: 'Fajr',
@@ -350,6 +366,14 @@ export const translations = {
       heat: {
         current: 'الحرارة الآن {{temperature}} °م في دبي.',
         warning: 'تحذير من الحر: الحرارة الآن {{temperature}} °م. المشي أو ركوب الدراجة مرهق – احمل الماء وفكّر في المترو أو السيارة.',
+      },
+      transit: {
+        title: '{{station}} · الرحلات التالية',
+        lines: { red: 'الخط الأحمر', green: 'الخط الأخضر', tram: 'الترام' },
+        towards: 'باتجاه {{place}}',
+        now: 'الآن',
+        none: 'لا توجد رحلات خلال الساعات الـ12 القادمة.',
+        note: 'جدول المواعيد المخطط من هيئة الطرق والمواصلات (إصدار {{date}})، ليس مباشرًا – قد تختلف الأوقات.',
       },
       prayer: {
         fajr: 'الفجر',

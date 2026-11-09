@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { toggleFavorite, toggleHome, toggleWork, useSavedPlaces } from '../places'
 import type { Place } from '../services/geocoding'
+import { TransitDepartures } from './TransitDepartures'
 import './PlaceCard.css'
 
 type PlaceCardProps = { place: Place; onClose: () => void; onRoute: () => void }
@@ -40,6 +41,8 @@ export function PlaceCard({ place, onClose, onRoute }: PlaceCardProps) {
       <button type="button" className="place-card__route" onClick={onRoute}>
         {t('route.button')}
       </button>
+
+      <TransitDepartures place={place} />
     </>
   )
 }

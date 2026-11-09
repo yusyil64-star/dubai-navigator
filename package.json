@@ -9,7 +9,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "generate-pwa-assets": "pwa-assets-generator",
-    "fetch-osm-data": "node scripts/fetch-osm-data.mjs"
+    "fetch-osm-data": "node scripts/fetch-osm-data.mjs",
+    "fetch-transit-data": "node scripts/fetch-transit-data.mjs"
   },
   "dependencies": {
     "adhan": "^4.4.6",
@@ -25,6 +26,7 @@
     "@types/react-dom": "^19.3.0",
     "@vite-pwa/assets-generator": "^2.0.0",
     "@vitejs/plugin-react": "^6.1.2",
+    "fflate": "^0.8.3",
     "oxlint": "^1.90.0",
     "typescript": "~7.0.2",
     "vite": "^8.3.6",
