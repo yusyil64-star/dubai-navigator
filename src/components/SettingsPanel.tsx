@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { hasLiveTraffic } from '../config/tomtom'
 import { LANGUAGES, setLanguage } from '../i18n'
 import { clearPersonalData } from '../places'
+import { hasReports } from '../services/reports'
 import { updateSettings, useSettings, type Settings } from '../settings'
 import { VoicePicker } from './VoicePicker'
 import './SettingsPanel.css'
@@ -103,6 +104,16 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
             </button>
           ))}
         </div>
+        {hasReports && (
+          <label className="settings__toggle">
+            <span>{t('settings.communityReports')}</span>
+            <input
+              type="checkbox"
+              checked={settings.communityReports}
+              onChange={(e) => updateSettings({ communityReports: e.target.checked })}
+            />
+          </label>
+        )}
         {hasLiveTraffic && (
           <label className="settings__toggle">
             <span>{t('settings.liveTraffic')}</span>

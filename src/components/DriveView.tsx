@@ -5,10 +5,14 @@ import { bearing, distance } from '../navigation/geo'
 import { spokenDistance } from '../navigation/instructions'
 import { watchRealPosition } from '../navigation/positions'
 import { loadSpeedCameras, loadSpeedLimits, speedLimitAt, type Camera, type SpeedLimitIndex } from '../navigation/roadData'
+import { reportAheadByHeading } from '../navigation/reportsAhead'
 import { useSmoothFollow, type SmoothInput } from '../navigation/useSmoothFollow'
 import { speak, stopSpeaking } from '../navigation/voice'
+import { hasReports, useReports } from '../services/reports'
 import { useSettings } from '../settings'
 import { formatDistance } from '../utils/format'
+import { ReportButton } from './ReportButton'
+import { ReportWarning } from './ReportWarning'
 import { SpeedDisplay } from './SpeedDisplay'
 import './NavigationView.css'
 
@@ -126,6 +130,10 @@ export function DriveView({ map, onExit, onNotice }: DriveViewProps) {
   useEffect(() => () => void puck.remove(), [puck])
   useSmoothFollow({ map, puck, route: null, progress: state, following })
 
+  // Meldungen anderer Nutzer voraus (ohne Route: ungefähr geradeaus)
+  const reports = useReports(hasReports && settings.communityReports)
+  const reportAhead = state ? reportAheadByHeading(reports, state.position, state.heading) : null
+
   return (
     <>
       {state?.camera && (
@@ -139,6 +147,9 @@ export function DriveView({ map, onExit, onNotice }: DriveViewProps) {
           </span>
         </div>
       )}
+
+      <ReportWarning ahead={reportAhead} className={state?.camera ? 'nav-camera--top nav-report--below' : 'nav-camera--top'} />
+      {hasReports && <ReportButton position={state?.position ?? null} heading={state?.heading ?? null} onNotice={onNotice} />}
 
       {state && <SpeedDisplay speed={state.speed} limit={state.limit} />}
 

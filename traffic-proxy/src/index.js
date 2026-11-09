@@ -1,4 +1,4 @@
-// Kleiner Server (Cloudflare Worker) zwischen App und TomTom.
+// Kleiner Server (Cloudflare Worker) für die App: Live-Verkehr von TomTom und Meldungen von Nutzern.
 // Zweck: Der TomTom-Schlüssel bleibt hier geheim und steht nicht in der öffentlichen App.
 // Außerdem werden Antworten kurz zwischengespeichert, damit sich alle Nutzer das Tageskontingent teilen.
 //
@@ -6,6 +6,9 @@
 //   /tile/<stil>/<z>/<x>/<y>.png   Verkehrslage als Kartenkachel (stil: relative0 oder relative0-dark)
 //   /incidents?language=de-DE      Verkehrsmeldungen in Dubai
 //   /route/<punkte>?avoidTolls=1&alternatives=1   Autoroute mit Verkehr (punkte: lat,lon:lat,lon:…)
+//   /reports …                     Meldungen von Nutzern (siehe reports.js)
+
+import { handleReports } from './reports.js'
 
 const TOMTOM = 'https://api.tomtom.com'
 const DUBAI_BBOX = '54.9,24.75,55.65,25.35' // höchstens 10.000 km² laut TomTom
@@ -19,11 +22,22 @@ export default {
     const origin = request.headers.get('Origin') ?? ''
     const allowed = env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
     // Nur die eigene App darf den Server benutzen (Browser schicken immer "Origin" mit)
-    const cors = allowed.includes(origin) ? { 'Access-Control-Allow-Origin': origin, Vary: 'Origin' } : null
+    const cors = allowed.includes(origin)
+      ? {
+          'Access-Control-Allow-Origin': origin,
+          'Access-Control-Allow-Methods': 'GET, POST',
+          'Access-Control-Allow-Headers': 'Content-Type',
+          Vary: 'Origin',
+        }
+      : null
     if (request.method === 'OPTIONS') return new Response(null, { status: cors ? 204 : 403, headers: cors ?? {} })
-    if (!cors || request.method !== 'GET') return new Response('Forbidden', { status: 403 })
+    if (!cors) return new Response('Forbidden', { status: 403 })
 
     const url = new URL(request.url)
+    // Meldungen von Nutzern (eigene Datenbank, siehe reports.js)
+    if (url.pathname.startsWith('/reports')) return handleReports(request, url, env, cors)
+    if (request.method !== 'GET') return new Response('Forbidden', { status: 403, headers: cors })
+
     const target = buildTarget(url, env.TOMTOM_KEY)
     if (!target) return new Response('Not found', { status: 404, headers: cors })
 

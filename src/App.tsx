@@ -12,6 +12,7 @@ import { MapView } from './components/MapView'
 import { NavigationView } from './components/NavigationView'
 import { PlaceCard } from './components/PlaceCard'
 import { PlaceMarker } from './components/PlaceMarker'
+import { ReportsLayer } from './components/ReportsLayer'
 import { RoutePanel, type RouteDraft } from './components/RoutePanel'
 import { SearchBox } from './components/SearchBox'
 import { SettingsPanel } from './components/SettingsPanel'
@@ -21,6 +22,7 @@ import { TransitLayer } from './components/TransitLayer'
 import { hasLiveTraffic } from './config/tomtom'
 import { unlockSpeech } from './navigation/voice'
 import { addRecent, PARKED_ID } from './places'
+import { hasReports } from './services/reports'
 import type { Category } from './services/categories'
 import { describeLocation, type Place } from './services/geocoding'
 import type { LonLat, Route } from './services/routing'
@@ -156,6 +158,7 @@ function App() {
       {map && !navigation && !driving && <MapLongPress map={map} onPick={pickOnMap} />}
       {map && hasLiveTraffic && settings.liveTraffic && <LiveTrafficLayer map={map} theme={theme} />}
       {map && settings.transitLayer && <TransitLayer map={map} />}
+      {map && hasReports && settings.communityReports && <ReportsLayer map={map} onNotice={setNotice} />}
       {map && settings.speedCameras && <SpeedCameraLayer map={map} />}
       {map && driving && !navigation ? (
         <DriveView map={map} onExit={() => setDriving(false)} onNotice={setNotice} />

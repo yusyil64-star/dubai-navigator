@@ -10,3 +10,10 @@ ALLOWED_ORIGINS = "https://yusyil64-star.github.io,http://localhost:5173,http://
 # Der TomTom-Schlüssel wird NICHT hier eingetragen, sondern geheim hinterlegt:
 #   npx wrangler secret put TOMTOM_KEY
 # Zum Testen auf dem PC steht er in der Datei .dev.vars (wird nicht hochgeladen).
+
+# Datenbank für Meldungen von Nutzern (Unfall, Polizei, Gefahr …)
+[[d1_databases]]
+binding = "DB"
+database_name = "dubai-navigator"
+database_id = "ec08bf60-56c9-4276-86cc-bfd450427072"
+migrations_dir = "migrations"

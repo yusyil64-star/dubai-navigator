@@ -13,6 +13,7 @@ export type Settings = {
   transitLayer: boolean // Metro- und Tram-Linien auf der Karte
   liveTraffic: boolean // Live-Verkehr von TomTom (nur mit Schlüssel)
   avoidTolls: boolean // Route ohne Salik-Maut (nur mit TomTom möglich)
+  communityReports: boolean // Meldungen anderer Nutzer zeigen und davor warnen
 }
 
 const DEFAULTS: Settings = {
@@ -26,6 +27,7 @@ const DEFAULTS: Settings = {
   transitLayer: false,
   liveTraffic: true,
   avoidTolls: false,
+  communityReports: true,
 }
 const STORAGE_KEY = 'dubai-navigator.settings'
 

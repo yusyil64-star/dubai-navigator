@@ -1,11 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Marker, type Map as MapLibreMap } from 'maplibre-gl'
 import { instructionText, maneuverIcon } from '../navigation/instructions'
+import { cumulativeDistances } from '../navigation/geo'
+import { reportAheadOnRoute } from '../navigation/reportsAhead'
 import { useNavigation } from '../navigation/useNavigation'
 import { useSmoothFollow } from '../navigation/useSmoothFollow'
 import { setParked } from '../places'
 import type { Place } from '../services/geocoding'
+import { hasReports, useReports } from '../services/reports'
 import { getRoute, type LonLat, type Route } from '../services/routing'
 import { updateSettings, useSettings } from '../settings'
 import { formatClock, formatDistance, formatDuration } from '../utils/format'
@@ -13,6 +16,8 @@ import { placeLink, share } from '../utils/share'
 import { AlongRouteSearch } from './AlongRouteSearch'
 import { LaneGuide } from './LaneGuide'
 import { ManeuverArrow } from './ManeuverArrow'
+import { ReportButton } from './ReportButton'
+import { ReportWarning } from './ReportWarning'
 import { RouteLine } from './RouteLine'
 import { SpeedDisplay } from './SpeedDisplay'
 import './NavigationView.css'
@@ -68,6 +73,14 @@ export function NavigationView({
 
   // Ton umschalten wie bei Waze: alle Ansagen → nur Warnungen → stumm → …
   const nextSound = { all: 'alerts', alerts: 'off', off: 'all' } as const
+  // Meldungen anderer Nutzer auf der Route voraus
+  const reports = useReports(hasReports && settings.communityReports)
+  const cum = useMemo(() => cumulativeDistances(route.coordinates), [route])
+  const reportAhead =
+    status === 'active' && progress?.along != null
+      ? reportAheadOnRoute(reports, route.coordinates, cum, progress.along, progress.position)
+      : null
+
   const toggleVoice = () => updateSettings({ sound: nextSound[settings.sound] })
 
   // Unterwegs gefundenen Ort als nächsten Zwischenstopp einfügen
@@ -155,6 +168,11 @@ export function NavigationView({
             {progress.camera.speed && ` · ${progress.camera.speed} km/h`}
           </span>
         </div>
+      )}
+
+      <ReportWarning ahead={reportAhead} className={progress?.camera ? 'nav-report--below' : ''} />
+      {hasReports && status !== 'arrived' && (
+        <ReportButton position={progress?.position ?? null} heading={progress?.heading ?? null} onNotice={onNotice} />
       )}
 
       {progress && status !== 'arrived' && <SpeedDisplay speed={progress.speed} limit={progress.speedLimit} />}

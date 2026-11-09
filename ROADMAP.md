@@ -99,7 +99,9 @@ Legende: ✅ fertig · 🔨 in Arbeit · ⬜ geplant · 💰 braucht Geld/Konto/
   „Maut meiden“; fällt TomTom aus, kommt die Route wie bisher von OSRM.
   Der Schlüssel liegt nur im eigenen kleinen Server (Ordner traffic-proxy, Cloudflare Worker, kostenlos),
   nicht in der App. Der Server lässt nur die eigene Seite zu und speichert Antworten 1–3 Minuten zwischen.
-- 💰 Meldungen von Nutzern (Unfall, Polizei, Gefahr) – eigener Server + Datenbank
+- ✅ Meldungen von Nutzern wie bei Waze: Unfall, Polizei, Gefahr, Stau, Baustelle, Sperrung – während der Fahrt
+  mit dem gelben Knopf melden; andere sehen sie auf der Karte, bestätigen („Noch da“ / „Nicht mehr da“) und werden
+  davor gewarnt (Anzeige + Ansage). Ohne Konto; Datenbank Cloudflare D1 (kostenlos), Missbrauchsschutz 10 Meldungen/Stunde
 - 💰 Ankunftszeit teilen, Konten, Synchronisieren zwischen Geräten
 - 💰 Eigener Such- und Routendienst (Pflicht bei vielen Nutzern; Route ohne Maut möglich)
 - 📱 Echte Handy-App (App Store / Play Store), Navigation im Hintergrund, Offline-Karten

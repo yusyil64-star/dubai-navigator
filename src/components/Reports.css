@@ -1,0 +1,148 @@
+/* Meldungen von Nutzern: Symbole auf der Karte */
+.report-marker {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: #f2a900; /* Signal-Gelb, gut zu unterscheiden von Blitzern (rot) und Meldungen von TomTom (Ringe) */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  animation: nav-pop 220ms ease-out;
+}
+
+.report-marker--police {
+  background: #2f5fd0;
+}
+
+.report-marker--accident,
+.report-marker--closed {
+  background: #d32f2f;
+}
+
+.report-popup {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  color: #1c1c1e;
+}
+
+.report-popup strong {
+  font-size: 14px;
+}
+
+.report-popup__buttons {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.report-popup__buttons button {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #d9d4c9;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #1c1c1e;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Melden-Knopf während der Fahrt (rechts unten, über der Fußleiste) */
+.report-button {
+  position: absolute;
+  z-index: 7;
+  inset-inline-end: var(--space);
+  bottom: calc(100px + env(safe-area-inset-bottom));
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border: 0;
+  border-radius: 50%;
+  background: #f2a900;
+  color: #1c1c1e;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+.report-button svg {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.report-button:disabled {
+  opacity: 0.5;
+}
+
+.report-sheet {
+  position: absolute;
+  z-index: 8;
+  inset-inline: var(--space);
+  bottom: calc(166px + env(safe-area-inset-bottom));
+  max-width: 420px;
+  margin-inline: auto;
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+  animation: nav-pop 220ms ease-out;
+}
+
+.report-sheet__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.report-sheet__grid button {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 12px 4px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-field);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.report-sheet__grid button span {
+  font-size: 26px;
+}
+
+.report-sheet p {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* Warnung vor einer Meldung voraus (unter dem Banner, wie der Blitzer-Hinweis) */
+.nav-camera.nav-report {
+  background: #f2a900;
+  color: #1c1c1e;
+}
+
+/* Liegt schon ein Blitzer-Hinweis dort, die Meldung darunter */
+.nav-camera.nav-report--below {
+  top: calc(max(var(--space), env(safe-area-inset-top)) + 86px + 46px);
+}
+
+.nav-camera.nav-camera--top.nav-report--below {
+  top: calc(max(var(--space), env(safe-area-inset-top)) + 46px);
+}
