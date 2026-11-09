@@ -43,6 +43,19 @@ export function roadLabel(step: RouteStep, language: string) {
   return name || step.ref || ''
 }
 
+// Die Straßen, auf denen die Route am längsten verläuft (z. B. "E11, D71") – zum Unterscheiden von Routen
+export function mainRoads(steps: RouteStep[], language: string, count = 2) {
+  const lengths = new Map<string, number>()
+  for (const step of steps) {
+    const label = step.ref?.split(';')[0] || roadLabel(step, language) // Nummer ist kürzer als der Name
+    if (label) lengths.set(label, (lengths.get(label) ?? 0) + step.distance)
+  }
+  return [...lengths.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, count)
+    .map(([label]) => label)
+}
+
 // Anweisung ohne Entfernung, z. B. "Rechts abbiegen auf D71"
 export function instructionText(step: RouteStep, t: TFunction, language: string) {
   let text: string

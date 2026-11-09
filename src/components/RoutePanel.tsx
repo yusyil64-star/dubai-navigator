@@ -3,8 +3,10 @@ import { useTranslation } from 'react-i18next'
 import type { Map as MapLibreMap } from 'maplibre-gl'
 import { unlockSpeech } from '../navigation/voice'
 import type { Place } from '../services/geocoding'
-import { getRoute, type LonLat, type Profile, type Route } from '../services/routing'
+import { mainRoads } from '../navigation/instructions'
+import { getRoutes, type LonLat, type Profile, type Route } from '../services/routing'
 import { formatDistance, formatDuration } from '../utils/format'
+import { AlternativeRoutes } from './AlternativeRoutes'
 import { RouteExtras } from './RouteExtras'
 import { RouteLine } from './RouteLine'
 import { SearchBox } from './SearchBox'
@@ -14,7 +16,7 @@ import './RoutePanel.css'
 type Start = { name: string | null; lon: number; lat: number }
 
 // Ergebnis einer Routenanfrage; "key" sagt, zu welcher Anfrage es gehört
-type Result = { key: string; route?: Route; failed?: boolean }
+type Result = { key: string; routes?: Route[]; failed?: boolean }
 
 const PROFILES: Profile[] = ['car', 'bike', 'foot']
 const MAX_STOPS = 3
@@ -39,6 +41,7 @@ export function RoutePanel({ map, destination, userLocation, onClose, onNavigate
   const [addingStop, setAddingStop] = useState(false)
   const [profile, setProfile] = useState<Profile>('car')
   const [result, setResult] = useState<Result | null>(null)
+  const [selection, setSelection] = useState<{ key: string; index: number } | null>(null)
 
   // Alle Punkte der Route als Text – ändert sich nur, wenn sich wirklich ein Punkt ändert
   const pointsKey = start
@@ -53,8 +56,8 @@ export function RoutePanel({ map, destination, userLocation, onClose, onNavigate
   useEffect(() => {
     if (!key || !pointsKey) return
     const controller = new AbortController()
-    getRoute(JSON.parse(pointsKey) as LonLat[], profile, controller.signal)
-      .then((route) => setResult({ key, route }))
+    getRoutes(JSON.parse(pointsKey) as LonLat[], profile, controller.signal)
+      .then((routes) => setResult({ key, routes }))
       .catch(() => {
         if (!controller.signal.aborted) setResult({ key, failed: true })
       })
@@ -63,11 +66,26 @@ export function RoutePanel({ map, destination, userLocation, onClose, onNavigate
 
   // Nur das Ergebnis für die aktuelle Anfrage zählt
   const current = result && result.key === key ? result : null
+  const routes = current?.routes ?? []
+  // gewählte Route (nach jeder neuen Anfrage wieder die schnellste)
+  const selected = selection && selection.key === key ? selection.index : 0
+  const route = routes[selected] as Route | undefined
+  const selectRoute = (index: number) => {
+    if (key) setSelection({ key, index })
+  }
+  const fastest = routes.reduce((best, r, i) => (r.durationSeconds < routes[best].durationSeconds ? i : best), 0)
+
+  // Straßen, die eine Route von den anderen unterscheiden (z. B. "über E11")
+  const roads = routes.map((r) => mainRoads(r.steps, language, 4))
+  const viaText = (i: number) => {
+    const own = roads[i].filter((road) => !roads.every((list) => list.includes(road)))
+    return (own.length > 0 ? own : roads[i]).slice(0, 2).join(', ')
+  }
 
   function startNavigation(simulate: boolean) {
-    if (!current?.route) return
+    if (!route) return
     unlockSpeech() // nötig für Sprachansagen auf dem iPhone
-    onNavigate(current.route, simulate)
+    onNavigate(route, simulate)
   }
 
   function addStop(place: Place) {
@@ -146,19 +164,46 @@ export function RoutePanel({ map, destination, userLocation, onClose, onNavigate
       {start && !current && <p className="route-panel__hint">{t('route.loading')}</p>}
       {current?.failed && <p className="route-panel__hint">{t('route.error')}</p>}
 
-      {current?.route && (
+      {route && (
         <>
-          <RouteLine
-            map={map}
-            coordinates={current.route.coordinates}
-            stops={current.route.waypoints.slice(1, -1)}
-          />
-          <p className="route-panel__summary">
-            <strong>{formatDuration(current.route.durationSeconds, language)}</strong>
-            <span>{formatDistance(current.route.distanceMeters, language)}</span>
-          </p>
+          {routes.length > 1 && (
+            <AlternativeRoutes map={map} routes={routes} selected={selected} onSelect={selectRoute} />
+          )}
+          <RouteLine map={map} coordinates={route.coordinates} stops={route.waypoints.slice(1, -1)} />
+          {routes.length > 1 ? (
+            <div className="route-panel__options" role="radiogroup" aria-label={t('route.options')}>
+              {routes.map((r, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  role="radio"
+                  aria-checked={i === selected}
+                  className="route-panel__option"
+                  onClick={() => selectRoute(i)}
+                >
+                  <span className="route-panel__option-main">
+                    <strong>{formatDuration(r.durationSeconds, language)}</strong>
+                    <span>{formatDistance(r.distanceMeters, language)}</span>
+                  </span>
+                  <span className="route-panel__option-detail">
+                    {i === fastest
+                      ? t('route.fastest')
+                      : t('route.slower', {
+                          time: formatDuration(r.durationSeconds - routes[fastest].durationSeconds, language),
+                        })}
+                    {viaText(i) && ` · ${t('route.via', { roads: viaText(i) })}`}
+                  </span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="route-panel__summary">
+              <strong>{formatDuration(route.durationSeconds, language)}</strong>
+              <span>{formatDistance(route.distanceMeters, language)}</span>
+            </p>
+          )}
           <p className="route-panel__hint">{t(`route.note.${profile}`)}</p>
-          <RouteExtras route={current.route} />
+          <RouteExtras route={route} />
           <div className="route-panel__actions">
             {/* Echte Navigation nur, wenn vom eigenen Standort aus gestartet wird */}
             {start?.name === null && (

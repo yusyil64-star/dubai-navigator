@@ -212,3 +212,45 @@
   background: #3b1d1b;
   color: #f2b8b5;
 }
+
+/* Auswahl zwischen mehreren Routen (die gewählte ist auf der Karte farbig, die anderen grau) */
+.route-panel__options {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.route-panel__option {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.route-panel__option[aria-checked='true'] {
+  border-color: #2b7a8c; /* Farbe der Routenlinie */
+  box-shadow: inset 0 0 0 1px #2b7a8c;
+}
+
+.route-panel__option-main {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.route-panel__option-main strong {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.route-panel__option-main span,
+.route-panel__option-detail {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}

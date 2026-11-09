@@ -47,20 +47,36 @@ type OsrmStep = {
   geometry: { coordinates: LonLat[] }
 }
 
+type OsrmRoute = { distance: number; duration: number; legs: { steps: OsrmStep[] }[] }
+
+// Die schnellste Route (z. B. für die Neuberechnung unterwegs)
 export async function getRoute(waypoints: LonLat[], profile: Profile, signal: AbortSignal): Promise<Route> {
+  return (await getRoutes(waypoints, profile, signal, false))[0]
+}
+
+// Bis zu drei Routen, die schnellste zuerst. OSRM liefert Alternativen nur ohne Zwischenstopps.
+export async function getRoutes(
+  waypoints: LonLat[],
+  profile: Profile,
+  signal: AbortSignal,
+  alternatives = true,
+): Promise<Route[]> {
   const points = waypoints.map((p) => p.join(',')).join(';')
-  const url = `${OSRM_BASE}${PROFILE_PATHS[profile]}${points}?steps=true&overview=false&geometries=geojson`
+  const extra = alternatives && waypoints.length === 2 ? '&alternatives=2' : ''
+  const url = `${OSRM_BASE}${PROFILE_PATHS[profile]}${points}?steps=true&overview=false&geometries=geojson${extra}`
   const response = await fetch(url, { signal })
   if (!response.ok) throw new Error(`OSRM: ${response.status}`)
   const data = await response.json()
-  const route = data.routes?.[0]
-  if (data.code !== 'Ok' || !route) throw new Error(`OSRM: ${data.code}`)
+  if (data.code !== 'Ok' || !data.routes?.length) throw new Error(`OSRM: ${data.code}`)
+  return (data.routes as OsrmRoute[]).map((route) => toRoute(route, waypoints, profile))
+}
 
+function toRoute(route: OsrmRoute, waypoints: LonLat[], profile: Profile): Route {
   // Die Linie aus den Linien der einzelnen Schritte zusammensetzen – so ist für jedes
   // Manöver bekannt, an welcher Stelle der Linie es liegt.
   const coordinates: LonLat[] = []
   const steps: RouteStep[] = []
-  const legs: { steps: OsrmStep[] }[] = route.legs
+  const legs = route.legs
   legs.forEach((leg, legIndex) => {
     leg.steps.forEach((step, stepIndex) => {
       const startIndex = Math.max(0, coordinates.length - 1)

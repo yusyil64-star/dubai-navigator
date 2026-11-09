@@ -58,8 +58,15 @@ Legende: ✅ fertig · 🔨 in Arbeit · ⬜ geplant · 💰 braucht Geld/Konto/
 - ✅ Metro- und Tram-Stationen als Kategorie
 - ✅ Abfahrten Metro/Tram – nächste Abfahrten je Linie und Richtung im Ortsfeld (Planfahrplan der RTA, Stand Aug. 2025, keine Echtzeit; aktualisieren mit `npm run fetch-transit-data`)
 - ⬜ Verbindungssuche mit Umsteigen (A → B mit Metro/Tram/Bus) – braucht einen Routenplaner für Fahrpläne
-- ⬜ Parkzonen und Parkgebühren – noch keine geprüfte offene Datenquelle gefunden
 - Hinweis: Route ohne Maut ist mit dem kostenlosen Routendienst nicht möglich (siehe Schritt 6)
+
+## Schritt 5b – Weitere Funktionen ohne Server
+
+- ✅ Alternativrouten: bis zu 3 Routen zur Auswahl (Zeit, Strecke, „über E11“), andere grau auf der Karte, Salik je Route – der Routendienst liefert sie nur ohne Zwischenstopps und nicht für jede Strecke
+- ⬜ Spurempfehlung bei Abzweigungen (Spurdaten aus OpenStreetMap über den Routendienst)
+- ⬜ „Wo habe ich geparkt?“ – Parkplatz merken und wiederfinden
+- ⬜ Ziel teilen (Link zum Ort über die Teilen-Funktion des Handys)
+- ⬜ Parkzonen: keine offene Quelle mit Koordinaten gefunden (Portal blockiert automatischen Zugriff) – zurückgestellt
 
 ## Schritt 6 – Große Ausbaustufen
 

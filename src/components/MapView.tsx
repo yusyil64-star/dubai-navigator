@@ -33,7 +33,7 @@ const LOCATION_ERRORS: Record<number, string> = {
 }
 
 // Eigene Ebenen der App, die beim Wechsel Hell/Dunkel erhalten bleiben sollen
-const APP_SOURCES = ['route', 'speed-cameras', 'category-places']
+const APP_SOURCES = ['route', 'route-alternatives', 'speed-cameras', 'category-places']
 
 type Theme = 'light' | 'dark'
 const STYLES: Record<Theme, string> = { light: MAP_STYLE_URL, dark: MAP_STYLE_URL_DARK }
